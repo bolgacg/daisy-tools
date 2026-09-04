@@ -18,6 +18,8 @@
 | subject (retrieval_ceiling_k3.jsonl) | 360 | 0.803 |
 | question (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.215 |
 | subject (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.787 |
+| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 116 | 0.155 |
+| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 116 | 0.284 |
 | shaped (retrieval_ceiling_k3_shaped.jsonl) | 592 | 0.404 |
 
 ## Our runs: small models, greedy, zero-shot, the group's prompt and scorer
@@ -45,6 +47,7 @@
 | llama3b | closed | 592 | 0.041 | 0.044 | 0.060 | 0.033 | 0 | 0 | 0.4 |
 | llama3b | retrieve-oracle | 592 | 0.644 | 0.718 | 0.709 | 0.463 | 592 | 0 | 2.2 |
 | llama3b | retrieve | 592 | 0.282 | 0.328 | 0.326 | 0.208 | 592 | 0 | 2.9 |
+| mimir-official | closed | 0 | 0.000 | 0.000 | 0.000 | 0.000 | 0 | 0 | nan |
 | mimir | agentic-fewshot | 592 | 0.030 | 0.059 | 0.063 | 0.030 | 0 | 0 | 7.4 |
 | mimir | agentic-scaffold | 592 | 0.120 | 0.152 | 0.163 | 0.096 | 182 | 0 | 8.3 |
 | mimir | agentic | 592 | 0.049 | 0.076 | 0.076 | 0.045 | 0 | 0 | 7.1 |
@@ -85,6 +88,7 @@
 | llama3b | closed | 0.050 (n=141) | 0.000 (n=52) | 0.043 (n=399) |
 | llama3b | retrieve-oracle | 0.816 (n=141) | 0.423 (n=52) | 0.612 (n=399) |
 | llama3b | retrieve | 0.305 (n=141) | 0.231 (n=52) | 0.281 (n=399) |
+| mimir-official | closed | - | - | - |
 | mimir | agentic-fewshot | 0.057 (n=141) | 0.000 (n=52) | 0.025 (n=399) |
 | mimir | agentic-scaffold | 0.121 (n=141) | 0.115 (n=52) | 0.120 (n=399) |
 | mimir | agentic | 0.092 (n=141) | 0.000 (n=52) | 0.040 (n=399) |
@@ -172,6 +176,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | llama3b | closed | hans christian andersen (24); københavn (9); 1984 (8) | 0.07 |
 | llama3b | retrieve-oracle | kai normann andersen (12); 1838 (4); h c lumbye (4) | 0.03 |
 | llama3b | retrieve | jeg er ikke klar over spørgs (9); jeg er ukendt (8); carl nielsen (7) | 0.04 |
+| mimir-official | closed |  | 0.00 |
 | mimir | agentic-fewshot | 2000 (31); søren ulrik thomsen (19); svar carl nielsen (17) | 0.11 |
 | mimir | agentic-scaffold | mona lisa (16); hans christian andersen (14); carl nielsen (14) | 0.07 |
 | mimir | agentic | carl nielsen (18); mona lisa (17); 2000 (17) | 0.09 |
