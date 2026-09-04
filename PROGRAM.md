@@ -11,7 +11,7 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 | record | holder now | value | our best | status |
 |---|---|---|---|---|
 | R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 (57/592) | 8.4 (50/592) official transformers fp16, prefix attention, their prompt, 100 tokens; 5.6 on the causal-only Q8 port | CLOSED within 1 SE (1.2 pts); causal-t100 arm (012) running for the attention effect |
-| R1 accuracy: best system, any small model (<=4B) | ours: Gemma 3 4B agentic | 40.0 | 40.0 | beaten 70B closed (22.5); next target 50 |
+| R1 accuracy: best system, any small model (<=4B), model + one lookup | ours: Gemma 3 4B agentic (live API) | 40.0 | 48.2 partial (fixed Mimir, Qwen queries) | TARGET 79 = answer-recall ceiling of one lookup (Bo, 4 Sep 19:40). Report EM, ceiling, and EM/ceiling ("fraction of ceiling attained"). Realistic landing 65-72 with plain lookup on the offline index; the rest is reader fidelity |
 | R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Qwen queries 38.2 (contains-gold 42.7); reads Gemma queries 36.5; rule query 26.5 | 020 done; 021 cross hybrids + query union queued |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
 | R4 decision quality: selective prediction (coverage vs risk), AUROC of confidence | Mimir AUROC 0.91 (sum logprob) | | gate useless on DAISY (base rate 5%) | second benchmark needed |
@@ -131,6 +131,10 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   live search box's all-words matching was the failure). Paragraph rerank / composed contexts = one labelled variant
   row, not the headline. Exact-title trick dropped from main runs. Extractive reader = later side skill. Cloud GPU: no.
   Bo found the four "new ideas from the conversation" not sharp; do not push them.
+
+- 04 Sep 19:40 Bo: "aim for 79 and claim the theoretical limit"; "you can go on with your objectives, I trust you."
+  Decomposition to report on every row: EM = answer recall (ceiling) x reader accuracy given the answer is present.
+  Offline plain lookup: recall 0.78; composed variant 0.83. Reader given-present today: 0.86 (4B), Mimir-fixed ~0.87.
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
