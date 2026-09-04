@@ -81,6 +81,10 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   explains the gap; 8-bit quantisation costs nothing measurable. A fact the group would want: the community GGUF
   port undercounts Mimir by about a third on knowledge QA. Job 013 (prefix Mimir, all conditions) running.
 
+- 04 Sep 15:35 fixed Mimir (prefix attention, official path) in progress: closed 0.084 (port 0.056); retrieve with
+  the rule query 0.328 on the first 341 rows (port 0.265). Expect the Qwen-query reader run to land near or above
+  the 4B agentic record (0.40). Bo's 29-minute recording (English) is being transcribed on both machines.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
