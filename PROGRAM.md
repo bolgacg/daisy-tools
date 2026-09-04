@@ -12,7 +12,7 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 |---|---|---|---|---|
 | R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 | 5.6 (Q8 llama.cpp, causal) | jobs 011/012 (prefix A/B) pending |
 | R1 accuracy: best system, any small model (<=4B) | ours: Gemma 3 4B agentic | 40.0 | 40.0 | beaten 70B closed (22.5); next target 50 |
-| R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Gemma queries 36.5; reads Qwen queries 40.0 (105 rows, running) | job 020 running; 021 cross hybrids + query union queued |
+| R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Qwen queries 38.2 (contains-gold 42.7); reads Gemma queries 36.5; rule query 26.5 | 020 done; 021 cross hybrids + query union queued |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
 | R4 decision quality: selective prediction (coverage vs risk), AUROC of confidence | Mimir AUROC 0.91 (sum logprob) | | gate useless on DAISY (base rate 5%) | second benchmark needed |
 | R6 identical-terms record: PopQA long-tail 1,399 with Self-RAG's released passages, acc(contains) | untrained Llama2-7B+ret 38.2, Alpaca-7B 46.7, Llama2-chat-13B 51.8, Ret-ChatGPT 50.8; trained Self-RAG 7B 54.9, CRAG 59.8 | 51.8 (untrained) | not run | data download + runner needed |
@@ -63,6 +63,11 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   MultiWikiQA-da probe (1 iteration; model id syntax to confirm), 090/091 PopQA long-tail on Self-RAG's released
   passages (HF mirror awinml/popqa_longtail: 1,399 rows, 20 passages each; metric match). The Self-RAG Google Drive
   link is dead (404), the mirror carries the same fields. Estimated queue time: 20 to 30 hours on the 1060.
+
+- 04 Sep 14:05 job 020 done. Query generator / reader split, full 592: Mimir reads Qwen queries EM 0.382 (contains
+  0.427, F1 0.446), reads Gemma queries 0.365; Qwen alone 0.400, Gemma alone 0.399. Llama 1B reads Gemma queries
+  0.250 at 1.1 s/q (rule query 0.152): the cheap reader. 20 to 26 percent of model queries return nothing on Danish
+  Wikipedia and fall back to the rule query; the union run (021) and English Wikipedia (040) attack that.
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).

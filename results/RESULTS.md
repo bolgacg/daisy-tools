@@ -18,8 +18,8 @@
 | subject (retrieval_ceiling_k3.jsonl) | 360 | 0.803 |
 | question (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.215 |
 | subject (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.787 |
-| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 557 | 0.151 |
-| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 557 | 0.282 |
+| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 592 | 0.149 |
+| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 592 | 0.282 |
 | shaped (retrieval_ceiling_k3_shaped.jsonl) | 592 | 0.404 |
 
 ## Our runs: small models, greedy, zero-shot, the group's prompt and scorer
@@ -38,6 +38,7 @@
 | llama1b | agentic | 592 | 0.008 | 0.002 to 0.017 | 0.022 | 0.028 | 0.012 | 0 | 0 | 0.2 |
 | llama1b | closed-sc | 592 | 0.012 | 0.003 to 0.022 | 0.034 | 0.033 | 0.016 | 0 | 0 | 1.0 |
 | llama1b | closed | 592 | 0.008 | 0.002 to 0.017 | 0.029 | 0.031 | 0.012 | 0 | 0 | 0.3 |
+| llama1b | retrieve-given-gemma | 592 | 0.250 | 0.215 to 0.285 | 0.367 | 0.314 | 0.180 | 476 | 116 | 1.1 |
 | llama1b | retrieve-oracle | 592 | 0.392 | 0.353 to 0.431 | 0.579 | 0.482 | 0.285 | 592 | 0 | 0.9 |
 | llama1b | retrieve | 592 | 0.152 | 0.125 to 0.181 | 0.257 | 0.214 | 0.118 | 592 | 0 | 1.3 |
 | llama3b | agentic-fewshot | 592 | 0.052 | 0.035 to 0.071 | 0.074 | 0.086 | 0.040 | 13 | 0 | 0.6 |
@@ -47,6 +48,7 @@
 | llama3b | closed | 592 | 0.041 | 0.025 to 0.057 | 0.044 | 0.060 | 0.033 | 0 | 0 | 0.4 |
 | llama3b | retrieve-oracle | 592 | 0.644 | 0.606 to 0.681 | 0.718 | 0.709 | 0.463 | 592 | 0 | 2.2 |
 | llama3b | retrieve | 592 | 0.282 | 0.247 to 0.318 | 0.328 | 0.326 | 0.208 | 592 | 0 | 2.9 |
+| mimir-official-prefix-t100 | closed | 10 | 0.100 | 0.000 to 0.300 | 0.200 | 0.220 | 0.128 | 0 | 0 | 13.9 |
 | mimir-official | closed | 0 | 0.000 | nan to nan | 0.000 | 0.000 | 0.000 | 0 | 0 | nan |
 | mimir | agentic-fewshot | 592 | 0.030 | 0.019 to 0.044 | 0.059 | 0.063 | 0.030 | 0 | 0 | 7.4 |
 | mimir | agentic-scaffold | 592 | 0.120 | 0.095 to 0.147 | 0.152 | 0.163 | 0.096 | 182 | 0 | 8.3 |
@@ -54,7 +56,7 @@
 | mimir | closed-sc | 592 | 0.062 | 0.042 to 0.083 | 0.078 | 0.087 | 0.055 | 0 | 0 | 20.2 |
 | mimir | closed | 592 | 0.056 | 0.037 to 0.074 | 0.078 | 0.087 | 0.048 | 0 | 0 | 6.0 |
 | mimir | retrieve-given-gemma | 592 | 0.365 | 0.328 to 0.402 | 0.402 | 0.415 | 0.263 | 476 | 116 | 9.1 |
-| mimir | retrieve-given-qwen | 105 | 0.400 | 0.295 to 0.505 | 0.467 | 0.478 | 0.293 | 87 | 18 | 9.1 |
+| mimir | retrieve-given-qwen | 592 | 0.382 | 0.345 to 0.422 | 0.427 | 0.446 | 0.267 | 437 | 155 | 9.3 |
 | mimir | retrieve-oracle | 592 | 0.606 | 0.571 to 0.645 | 0.650 | 0.669 | 0.441 | 592 | 0 | 8.5 |
 | mimir | retrieve | 592 | 0.265 | 0.233 to 0.299 | 0.301 | 0.316 | 0.202 | 592 | 0 | 9.3 |
 | qwen3b | agentic-fewshot | 592 | 0.390 | 0.351 to 0.427 | 0.443 | 0.452 | 0.268 | 588 | 135 | 3.6 |
@@ -81,6 +83,7 @@
 | llama1b | agentic | 0.007 (n=141) | 0.000 (n=52) | 0.010 (n=399) |
 | llama1b | closed-sc | 0.014 (n=141) | 0.019 (n=52) | 0.010 (n=399) |
 | llama1b | closed | 0.007 (n=141) | 0.000 (n=52) | 0.010 (n=399) |
+| llama1b | retrieve-given-gemma | 0.305 (n=141) | 0.173 (n=52) | 0.241 (n=399) |
 | llama1b | retrieve-oracle | 0.504 (n=141) | 0.269 (n=52) | 0.368 (n=399) |
 | llama1b | retrieve | 0.213 (n=141) | 0.115 (n=52) | 0.135 (n=399) |
 | llama3b | agentic-fewshot | 0.035 (n=141) | 0.019 (n=52) | 0.063 (n=399) |
@@ -90,6 +93,7 @@
 | llama3b | closed | 0.050 (n=141) | 0.000 (n=52) | 0.043 (n=399) |
 | llama3b | retrieve-oracle | 0.816 (n=141) | 0.423 (n=52) | 0.612 (n=399) |
 | llama3b | retrieve | 0.305 (n=141) | 0.231 (n=52) | 0.281 (n=399) |
+| mimir-official-prefix-t100 | closed | 0.000 (n=4) | 0.000 (n=1) | 0.200 (n=5) |
 | mimir-official | closed | - | - | - |
 | mimir | agentic-fewshot | 0.057 (n=141) | 0.000 (n=52) | 0.025 (n=399) |
 | mimir | agentic-scaffold | 0.121 (n=141) | 0.115 (n=52) | 0.120 (n=399) |
@@ -97,7 +101,7 @@
 | mimir | closed-sc | 0.113 (n=141) | 0.000 (n=52) | 0.053 (n=399) |
 | mimir | closed | 0.078 (n=141) | 0.000 (n=52) | 0.055 (n=399) |
 | mimir | retrieve-given-gemma | 0.489 (n=141) | 0.308 (n=52) | 0.328 (n=399) |
-| mimir | retrieve-given-qwen | 0.536 (n=28) | 0.000 (n=4) | 0.370 (n=73) |
+| mimir | retrieve-given-qwen | 0.433 (n=141) | 0.231 (n=52) | 0.383 (n=399) |
 | mimir | retrieve-oracle | 0.837 (n=141) | 0.365 (n=52) | 0.556 (n=399) |
 | mimir | retrieve | 0.348 (n=141) | 0.192 (n=52) | 0.246 (n=399) |
 | qwen3b | agentic-fewshot | 0.369 (n=141) | 0.327 (n=52) | 0.406 (n=399) |
@@ -171,6 +175,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | llama1b | agentic | 2014 (14); 2010 (12); mogens lindberg (10) | 0.06 |
 | llama1b | closed-sc | leonardo da vinci (16); ludwig van beethoven (4); mozart (4) | 0.04 |
 | llama1b | closed | leonardo da vinci (14); mogens lindberg (9); 1995 (9) | 0.05 |
+| llama1b | retrieve-given-gemma | kai normann andersen (5); niels w gade (4); 1998 (3) | 0.02 |
 | llama1b | retrieve-oracle | kai normann andersen (6); 1838 (5); børge og arvid m ller (5) | 0.03 |
 | llama1b | retrieve | carl nielsen (11); niels w gade (8); 1998 (3) | 0.04 |
 | llama3b | agentic-fewshot | jørgen leth (11); jørgen madsen (11); jeg er usikker på svaret (11) | 0.06 |
@@ -180,6 +185,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | llama3b | closed | hans christian andersen (24); københavn (9); 1984 (8) | 0.07 |
 | llama3b | retrieve-oracle | kai normann andersen (12); 1838 (4); h c lumbye (4) | 0.03 |
 | llama3b | retrieve | jeg er ikke klar over spørgs (9); jeg er ukendt (8); carl nielsen (7) | 0.04 |
+| mimir-official-prefix-t100 | closed | carl nielsen (2); n f s grundtvig (1); 1937 (1) | 0.40 |
 | mimir-official | closed |  | 0.00 |
 | mimir | agentic-fewshot | 2000 (31); søren ulrik thomsen (19); svar carl nielsen (17) | 0.11 |
 | mimir | agentic-scaffold | mona lisa (16); hans christian andersen (14); carl nielsen (14) | 0.07 |
@@ -187,7 +193,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | mimir | closed-sc | carl nielsen (19); mona lisa (18); h c andersen (17) | 0.09 |
 | mimir | closed | carl nielsen (27); hans christian andersen (20); mona lisa (19) | 0.11 |
 | mimir | retrieve-given-gemma | carl nielsen (13); 1973 (8); kai normann andersen (5) | 0.04 |
-| mimir | retrieve-given-qwen | kai normann andersen (4); grundtvig (2); 1967 (2) | 0.08 |
+| mimir | retrieve-given-qwen | kai normann andersen (6); 2000 (6); 1973 (5) | 0.03 |
 | mimir | retrieve-oracle | kai normann andersen (11); poul reichhardt (4); 1978 (4) | 0.03 |
 | mimir | retrieve | carl nielsen (11); niels w gade (7); 1973 (6) | 0.04 |
 | qwen3b | agentic-fewshot | kai normann andersen (8); 1988 (4); carl nielsen (4) | 0.03 |
