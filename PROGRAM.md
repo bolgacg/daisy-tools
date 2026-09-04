@@ -110,6 +110,12 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   queries. This is the "simple elegant solution": a better search index, deployable offline (nothing leaves the
   building). Dev job 014 tests it; a full-592 job follows.
 
+- 04 Sep 18:10 composed-context ceiling (592): top-page intro + 2 best paragraphs 76.9% (below three intros, 78.0%);
+  exact-title-first page finding put the subject page at rank 1 only 67.2% (BM25 rule query alone: 75.7%), so exact
+  title matching is appended, not preferred. New composition "retrieve-plus": three intros + two best other
+  paragraphs (target ~83%, full pages carry 84.5%). Jobs 014/015 test retrieve, retrieve-plus and agentic on the
+  offline index.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query

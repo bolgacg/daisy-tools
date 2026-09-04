@@ -6,16 +6,18 @@ from daisy_tools import localwiki as lw, query as q, wiki as w
 w.search, w.extracts, w.lookup, w.intro, w.paragraphs, w.find_pages_by_title = lw.search, lw.extracts, lw.lookup, lw.intro, lw.paragraphs, lw.find_pages_by_title
 q.search, q.extracts = lw.search, lw.extracts
 from daisy_tools.query import shaped_search
-from daisy_tools.runner import compose_docs
+from daisy_tools.runner import compose_docs, compose_plus
 def norm(s): return re.sub(r"[^a-z0-9æøå]+", " ", s.lower()).strip()
 rows = [json.loads(l) for l in open(sys.argv[1] if len(sys.argv) > 1 else "data/daisy.jsonl", encoding="utf-8")]
-hits = {"rule_composed": 0, "title_bm25_composed": 0, "title_bm25_top1_is_subject": 0}
+hits = {"rule_composed": 0, "rule_plus": 0, "title_bm25_composed": 0, "title_bm25_top1_is_subject": 0}
 t0 = time.time()
 for i, r in enumerate(rows):
     gold = norm(r["Answer"])
     titles, used = shaped_search(r["Question"], limit=3)
     docs = compose_docs(r["Question"], titles, k=3, chars=900, page_fn=lw.paragraphs, intro_fn=lw.intro)
     hits["rule_composed"] += bool(gold) and gold in norm(" ".join(p for _, p in docs))
+    dplus = compose_plus(r["Question"], titles, page_fn=lw.paragraphs, intro_fn=lw.intro)
+    hits["rule_plus"] += bool(gold) and gold in norm(" ".join(p for _, p in dplus))
     th = lw.find_pages_by_title(r["Question"], limit=3)
     for t in titles:
         if t not in th: th.append(t)

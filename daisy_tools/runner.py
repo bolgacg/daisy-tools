@@ -126,6 +126,19 @@ def compose_docs(question, titles, k=3, chars=900, page_fn=None, intro_fn=None):
         docs.append((t, p))
     return docs
 
+def compose_plus(question, titles, k_intro=3, k_para=2, chars_intro=1200, chars_para=900, page_fn=None, intro_fn=None):
+    """Three page intros (answer recall 78 percent on the offline index) plus the two best other paragraphs (full
+    pages carry the answer 85 percent of the time): the widest net that still fits a small model's context."""
+    docs = [(t, intro_fn(t, chars_intro)) for t in titles[:k_intro]] if intro_fn else []
+    intro_heads = {d[1][:200] for d in docs}
+    for t, p in rerank_paragraphs(question, titles, k=k_para + 4, chars=chars_para, page_fn=page_fn):
+        if len(docs) >= k_intro + k_para:
+            break
+        if p[:200] in intro_heads:
+            continue
+        docs.append((t, p))
+    return docs
+
 def _ctx_block(docs, chars):
     parts = []
     for t, e in docs:
@@ -162,18 +175,25 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
                 samples.append(a.replace("\n", " ").strip())
             rec["samples"] = samples
             pred = _vote(samples)
+        elif condition == "retrieve-plus":
+            # rule query -> top-3 pages -> three intros + two best paragraphs (offline index only)
+            qs = (queries or {}).get(r["id"]) if queries else None
+            used = (qs[0] if isinstance(qs, list) else qs) if qs else None
+            titles = _wiki.search(used, limit=3) if used else []
+            if not titles:
+                docs0, used = shaped_lookup(r["Question"], limit=3, chars=200); titles = [t for t, _ in docs0]
+            rec["tool_query"] = used; rec["titles"] = titles
+            docs = compose_plus(r["Question"], titles, page_fn=_page_paragraphs, intro_fn=getattr(_wiki, "intro", None))
+            prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, 1200) + "\n\n" + base_prompt
+            pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
         elif condition == "retrieve-title":
             # find the page by its title (capitalised spans in the question), fall back to the rule query; rerank sections
             finder = getattr(_wiki, "find_pages_by_title", None)
-            titles = finder(r["Question"], limit=3) if finder else []
-            rec["title_hits"] = list(titles)
-            if len(titles) < 3:
-                docs0, used = shaped_lookup(r["Question"], limit=3, chars=200)
-                for t, _ in docs0:
-                    if t not in titles: titles.append(t)
-                titles = titles[:3]; rec["tool_query"] = used
-            else:
-                rec["tool_query"] = "title:" + titles[0]
+            docs0, used = shaped_lookup(r["Question"], limit=3, chars=200); titles = [t for t, _ in docs0]
+            hits = finder(r["Question"], limit=2) if finder else []
+            rec["title_hits"] = list(hits); rec["tool_query"] = used
+            for t in hits:
+                if t not in titles: titles.append(t)
             rec["titles"] = titles
             docs = compose_docs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs, intro_fn=getattr(_wiki, "intro", None))
             if not docs:
@@ -286,7 +306,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-title", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
+    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-title", "retrieve-plus", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
     ap.add_argument("--data", default="data/daisy.jsonl")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
     ap.add_argument("--model", default="mimir")
