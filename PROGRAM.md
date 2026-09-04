@@ -11,7 +11,7 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 | record | holder now | value | our best | status |
 |---|---|---|---|---|
 | R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 (57/592) | 8.4 (50/592) official transformers fp16, prefix attention, their prompt, 100 tokens; 5.6 on the causal-only Q8 port | CLOSED within 1 SE (1.2 pts); causal-t100 arm (012) running for the attention effect |
-| R1 accuracy: best system, any small model (<=4B), model + one lookup | ours: Gemma 3 4B agentic (live API) | 40.0 | 48.2 partial (fixed Mimir, Qwen queries) | TARGET 79 = answer-recall ceiling of one lookup (Bo, 4 Sep 19:40). Report EM, ceiling, and EM/ceiling ("fraction of ceiling attained"). Realistic landing 65-72 with plain lookup on the offline index; the rest is reader fidelity |
+| R1 accuracy: best system, any small model (<=4B), model + one lookup | ours: Gemma 3 4B, plain lookup, offline index | 68.7 (dev 150) | full 592 running | TARGET 79 = answer-recall ceiling of one lookup (Bo, 4 Sep 19:40). Report EM, ceiling, and EM/ceiling ("fraction of ceiling attained"). Realistic landing 65-72 with plain lookup on the offline index; the rest is reader fidelity |
 | R2 Mimir-reader system beats every other small model's best | OURS: fixed Mimir reads Gemma+Qwen queries (six pages) | 53.4 | 53.4 EM (contains 57.9, F1 0.596), answer-in-context 61.9%, reader fidelity 84.1%, 12.3 s/q, live API | FELL; offline-index runs next |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
 | R4 decision quality: selective prediction (coverage vs risk), AUROC of confidence | Mimir AUROC 0.91 (sum logprob) | | gate useless on DAISY (base rate 5%) | second benchmark needed |
@@ -146,6 +146,13 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   answer was in the six fetched intros 61.9% of the time and the reader converted 84.1% of those. The GPU whisper job
   failed twice (CTranslate2 has no fast fp16/int8_fp16 on Pascal); the two CPU passes agree at 96% and suffice, so it
   is dropped. Dev job 014 (offline index) running.
+
+- 04 Sep 22:40 FIRST OFFLINE-INDEX READER RESULTS (dev slice, 150 q, Gemma 3 4B): plain one-lookup (rule query, three
+  intros) EM 0.687 (contains 0.727), answer-in-context 0.780, reader fidelity 0.846, 5.7 s/q; retrieve-plus 0.713
+  (ans-in-ctx 0.827); rerank with Qwen queries 0.640. Same 150 questions on the live API: retrieve 0.307, agentic
+  0.347, oracle 0.727. So the plain lookup on the offline index (0.687) sits one point under the oracle query (0.727)
+  and 38 points above the same lookup through the live search box. Fraction of ceiling attained: 0.687/0.780 = 88%.
+  Full run (015) in progress; Mimir-hf part failed on CUDA OOM (batch 4 with long contexts): 015b queued with batch 2.
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
