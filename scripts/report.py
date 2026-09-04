@@ -3,6 +3,13 @@ import glob, json, os, re, sys, collections
 sys.path.insert(0, ".")
 from daisy_tools.metrics import score_all
 
+import random
+def boot_ci(vals, n=1000, seed=4242):
+    rnd = random.Random(seed); m = len(vals)
+    if not m: return (float("nan"), float("nan"))
+    means = sorted(sum(rnd.choice(vals) for _ in range(m)) / m for _ in range(n))
+    return means[int(0.025 * n)], means[int(0.975 * n)]
+
 def load(path):
     return [json.loads(l) for l in open(path, encoding="utf-8")]
 
@@ -28,8 +35,8 @@ if ceil:
 preds = sorted(glob.glob("results/pred_*.jsonl"))
 if preds:
     print("## Our runs: small models, greedy, zero-shot, the group's prompt and scorer\n")
-    from daisy_tools.metrics import lenient_match
-    print("| model | condition | n | EM (SQuAD) | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |\n|---|---|---|---|---|---|---|---|---|---|")
+    from daisy_tools.metrics import lenient_match, exact_match_score
+    print("| model | condition | n | EM (SQuAD) | 95% CI | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |\n|---|---|---|---|---|---|---|---|---|---|---|")
     for p in preds:
         m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve|agentic-scaffold|agentic-fewshot|agentic)\.jsonl", p)
         if not m:
@@ -43,7 +50,8 @@ if preds:
         len_em = sum(lenient_match(r["prediction"], r["gold"]) for r in rows) / max(len(rows), 1)
         secs = [r["seconds"] for r in rows if isinstance(r.get("seconds"), (int, float))]
         spr = sum(secs) / len(secs) if secs else float("nan")
-        print(f"| {m.group(1)} | {m.group(2)} | {s['n']} | {s['EM']:.3f} | {len_em:.3f} | {s['F1']:.3f} | {s['BLEU']:.3f} | {calls} | {fb} | {spr:.1f} |")
+        lo, hi = boot_ci([exact_match_score(r["prediction"], r["gold"]) for r in rows])
+        print(f"| {m.group(1)} | {m.group(2)} | {s['n']} | {s['EM']:.3f} | {lo:.3f} to {hi:.3f} | {len_em:.3f} | {s['F1']:.3f} | {s['BLEU']:.3f} | {calls} | {fb} | {spr:.1f} |")
     print()
     print("## By answer type (EM)\n")
     def atype(a):

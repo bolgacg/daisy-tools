@@ -60,3 +60,17 @@ def lenient_match(prediction: str, ground_truth: str) -> float:
     """1 if the normalised gold appears inside the normalised prediction (format-tolerant EM)."""
     p, g = normalize_text(prediction or ""), normalize_text(ground_truth or "")
     return float(bool(g) and g in p)
+
+
+# The same prompt as used by the group's own Inspect task (dfm-evals/dfm_evals/tasks/daisy.py, max_gen_toks 100,
+# temperature 0). Differs from eval.py only in the leading newline and the blank line before "Spørgsmål".
+PROMPT_TEMPLATE_DFM = """Besvar spørgsmålet med kun det direkte svar, uden forklaring om hvorfor.
+Regelsæt:
+- Svar kun på dansk.
+- Hvis svaret er i højde, svar i meter (m).
+- Hvis svaret er i vægt, svar i kilogram (kg).
+- Hvis svaret er om en størrelse, svar i centimeter (cm). Fx Hvor stort er maleriet Mona Lisa? Svar: 77 cm x 53 cm.
+- Hvis svaret er en person angiv den måde de typisk bliver angivet på i danske tekster.
+
+Spørgsmål: {question}
+Svar:"""

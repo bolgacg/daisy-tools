@@ -39,6 +39,25 @@ def _vote(answers):
 
 LOGPROBS = False   # when True, token log-probabilities of the answer are stored in usage["lp"]
 
+SEARCH_TOOL = [{"type": "function", "function": {"name": "search_wikipedia", "description": "Søg i dansk Wikipedia og få de første afsnit af de bedste artikler.",
+    "parameters": {"type": "object", "properties": {"query": {"type": "string", "description": "søgeord"}}, "required": ["query"]}}}]
+
+def _chat_tools(base_url, model, messages, max_tokens, temperature, api_key="none", timeout=180):
+    """One turn with the search tool offered through the model's native tool format. Returns (text, tool_query|None, raw)."""
+    body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature, "tools": SEARCH_TOOL, "tool_choice": "auto"}
+    r = requests.post(f"{base_url}/chat/completions", timeout=timeout, headers={"Authorization": f"Bearer {api_key}"}, json=body)
+    if r.status_code >= 400:
+        raise RuntimeError(f"HTTP {r.status_code} from server: {r.text[:300]}")
+    j = r.json(); msg = j["choices"][0]["message"]
+    calls = msg.get("tool_calls") or []
+    q = None
+    if calls:
+        try:
+            q = json.loads(calls[0]["function"]["arguments"]).get("query")
+        except Exception:
+            q = calls[0]["function"].get("arguments")
+    return (msg.get("content") or "").strip(), (q or None), msg
+
 def _chat(base_url, model, messages, max_tokens, temperature, api_key="none", timeout=180):
     body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature}
     if LOGPROBS:
@@ -120,6 +139,28 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
                 rec["tool_query"] = used; rec["titles"] = [t for t, _ in docs]
                 prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
                 pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
+        elif condition == "agentic-native":
+            # the model's own tool-call format (chat template), one round: call -> tool result -> answer
+            msgs = [{"role": "user", "content": base_prompt}]
+            first, q, raw = _chat_tools(base_url, model, msgs, max_tokens, temperature)
+            rec["first_output"] = first; rec["native_call"] = bool(q)
+            usage = {}
+            if q:
+                rec["tool_query"] = q
+                docs = lookup(q, limit=k, chars=chars)
+                if not docs:
+                    docs, _ = shaped_lookup(r["Question"], limit=k, chars=chars); rec["fallback"] = True
+                rec["titles"] = [t for t, _ in docs]
+                msgs.append({"role": "assistant", "content": raw.get("content") or "", "tool_calls": raw.get("tool_calls")})
+                msgs.append({"role": "tool", "name": "search_wikipedia", "tool_call_id": (raw.get("tool_calls") or [{}])[0].get("id", "call_1"), "content": _ctx_block(docs, chars)})
+                try:
+                    pred, usage = _chat(base_url, model, msgs + [{"role": "user", "content": base_prompt}], max_tokens, temperature)
+                except Exception as e:  # templates that refuse tool messages: fall back to plain context
+                    rec["tool_turn_error"] = str(e)[:120]
+                    prompt = "Søgeresultater fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
+                    pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
+            else:
+                pred = first
         elif condition in ("agentic", "agentic-fewshot"):
             pre = AGENT_PREAMBLE if condition == "agentic" else AGENT_FEWSHOT
             first, usage = _chat(base_url, model, [{"role": "user", "content": pre + base_prompt}],
@@ -158,7 +199,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold"])
+    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
     ap.add_argument("--data", default="data/daisy.jsonl")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
     ap.add_argument("--model", default="mimir")
