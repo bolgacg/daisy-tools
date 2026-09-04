@@ -10,8 +10,13 @@ import json, os, re, sys, time
 import requests
 
 from .metrics import PROMPT_TEMPLATE
+from . import wiki as _wiki
 from .query import shaped_lookup
 from .wiki import lookup
+
+def _page_paragraphs(title):
+    fn = getattr(_wiki, "paragraphs", None)
+    return fn(title) if fn else []
 
 AGENT_PREAMBLE = (
     "Du har adgang til ét værktøj: en søgning i dansk Wikipedia. Hvis du ikke er sikker på svaret, "
@@ -77,6 +82,37 @@ def _chat(base_url, model, messages, max_tokens, temperature, api_key="none", ti
             usage["lp"] = None
     return (j["choices"][0]["message"]["content"] or "").strip(), usage
 
+def _tokens(t):
+    return re.findall(r"[0-9a-zæøå]+", (t or "").lower())
+
+def rerank_paragraphs(question, titles, k=3, chars=900, page_fn=None):
+    """Split the top pages into paragraphs and rank them by BM25-like overlap with the question (no model)."""
+    import math
+    qt = [w for w in _tokens(question) if len(w) > 2]
+    paras = []
+    for t in titles[:3]:
+        for p in (page_fn(t) if page_fn else []):
+            paras.append((t, p))
+    if not paras:
+        return []
+    N = len(paras); df = {}
+    for _, p in paras:
+        for w in set(_tokens(p)):
+            df[w] = df.get(w, 0) + 1
+    avgdl = sum(len(_tokens(p)) for _, p in paras) / N
+    scored = []
+    for t, p in paras:
+        pt = _tokens(p); tf = {}
+        for w in pt: tf[w] = tf.get(w, 0) + 1
+        sc = 0.0
+        for w in qt:
+            if w in tf:
+                idf = math.log(1 + (N - df.get(w, 0) + 0.5) / (df.get(w, 0) + 0.5))
+                sc += idf * tf[w] * 2.2 / (tf[w] + 1.2 * (0.25 + 0.75 * len(pt) / max(avgdl, 1)))
+        scored.append((sc, t, p[:chars]))
+    scored.sort(key=lambda x: -x[0])
+    return [(t, p) for _, t, p in scored[:k]]
+
 def _ctx_block(docs, chars):
     parts = []
     for t, e in docs:
@@ -113,6 +149,20 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
                 samples.append(a.replace("\n", " ").strip())
             rec["samples"] = samples
             pred = _vote(samples)
+        elif condition == "retrieve-rerank":
+            # full pages for the rule query (or a given query), best paragraphs by lexical rank, then read
+            qs = (queries or {}).get(r["id"]) if queries else None
+            used = (qs[0] if isinstance(qs, list) else qs) if qs else None
+            if used:
+                titles = _wiki.search(used, limit=3)
+            if not used or not titles:
+                docs0, used = shaped_lookup(r["Question"], limit=3, chars=200); titles = [t for t, _ in docs0]
+            rec["tool_query"] = used; rec["titles"] = titles
+            docs = rerank_paragraphs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs)
+            if not docs:
+                docs = [(t, e) for t, e in _wiki.lookup(used, limit=k, chars=chars)]
+            prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
+            pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
         elif condition in ("retrieve", "retrieve-oracle", "retrieve-given"):
             if condition == "retrieve-given":  # query written by another model (query generator / reader split)
                 qs = (queries or {}).get(r["id"]) or []
@@ -205,7 +255,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
+    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
     ap.add_argument("--data", default="data/daisy.jsonl")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
     ap.add_argument("--model", default="mimir")
@@ -217,12 +267,20 @@ if __name__ == "__main__":
     ap.add_argument("--logprobs", action="store_true")
     ap.add_argument("--queries-from", default=None, help="jsonl of a previous run; its tool_query per id is used (retrieve-given)")
     ap.add_argument("--wiki-lang", default="da")
+    ap.add_argument("--wiki-source", default="api", choices=["api", "local"], help="local = offline SQLite index of Danish Wikipedia")
     ap.add_argument("--chars", type=int, default=900)
     a = ap.parse_args()
     if a.logprobs:
         LOGPROBS = True
     if a.wiki_lang != "da":
         from . import wiki as _w; _w.set_lang(a.wiki_lang)
+    if a.wiki_source == "local":
+        from . import localwiki as _lw, query as _q
+        _wiki.search, _wiki.extracts, _wiki.lookup = _lw.search, _lw.extracts, _lw.lookup
+        _wiki.paragraphs = _lw.paragraphs
+        _q.search, _q.extracts = _lw.search, _lw.extracts
+        globals()["lookup"] = _lw.lookup
+        print("wiki source: local index", _lw.DB)
     queries = None
     if a.queries_from:
         queries = {}
