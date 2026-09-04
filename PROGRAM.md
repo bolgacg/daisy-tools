@@ -125,6 +125,13 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   Gemma alone 0.399, Qwen alone 0.400). If it holds on 592, the Mimir-reader system beats every other small model's
   own agentic result, i.e. R2 falls, still on the live Wikipedia API; the offline index run (015) comes after.
 
+- 04 Sep 19:35 Bo's steer: MAIN PRODUCT = the model plus one Wikipedia lookup in an equal race, nothing stacked; the
+  offline index is allowed as long as it cannot be called cheating or a parameter change (argument: same source, whole
+  Danish Wikipedia, Nov-2023 snapshot older than the benchmark, generic BM25 with title weight, no hidden field; the
+  live search box's all-words matching was the failure). Paragraph rerank / composed contexts = one labelled variant
+  row, not the headline. Exact-title trick dropped from main runs. Extractive reader = later side skill. Cloud GPU: no.
+  Bo found the four "new ideas from the conversation" not sharp; do not push them.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
