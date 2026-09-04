@@ -1,14 +1,15 @@
 """Offline Danish Wikipedia: a SQLite FTS5 index of the wikimedia/wikipedia 20231101.da dump (plain text).
 Same interface as wiki.py (search, extracts, lookup) plus page access and paragraph splitting for reranking.
 Build with scripts/build_localwiki.py; the DB path defaults to ~/data/dawiki/dawiki.sqlite."""
-import os, re, sqlite3
+import os, re, sqlite3, threading
 DB = os.environ.get("DAWIKI_DB", os.path.expanduser("~/data/dawiki/dawiki.sqlite"))
-_con = None
+_local = threading.local()
 def con():
-    global _con
-    if _con is None:
-        _con = sqlite3.connect(DB, check_same_thread=False)
-    return _con
+    """One SQLite connection per thread: a shared connection breaks under the runner's worker threads."""
+    c = getattr(_local, "con", None)
+    if c is None:
+        c = sqlite3.connect(DB, check_same_thread=False); _local.con = c
+    return c
 
 def _fts_query(q):
     toks = re.findall(r"[0-9A-Za-zÆØÅæøå]+", q)
