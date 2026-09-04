@@ -64,3 +64,10 @@ the right attention mode Mimir scores 8.4 from memory against their 9.6, one sta
 - The numbers: 8.4 from memory (their code path); 32.8 with the rule query; 60.6 with the oracle query, which is a ceiling
   not a tool; 40 with a model that writes its own query. "65 from 8.6" was a mix of the ceiling and a rounding.
 - The 9.6 versus 8.4 sentence is exactly right, and it is the sentence that makes everything else credible.
+
+## 1 and 2. What they optimise for (source: lit/WHAT-THEY-OPTIMISE-FOR.md, researched 4 Sep)
+[integrate: sovereignty and legally permissible data as the design driver; DFM does both from-scratch and fine-tunes
+(Munin); Mimir 1B beats their fine-tuned 8B and 9B on their Danish suite but their own state-of-the-art list is still
+Mistral 24B and Gemma 27B; half the Danish suite is grammar/instruction following (Ordbogen territory); nothing on
+retrieval, tool use, cost or energy; future work: HRM scaling, RL, licensing; the PhD call's three topics are exactly
+their measured gaps; Schneider-Kamp is also CIO of Ordbogen (Chat.dk)]
