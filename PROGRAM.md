@@ -121,6 +121,10 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   query intros on the full set (78.9%). This is the composition to run. Fixed Mimir: agentic 12.3% (56 calls),
   scaffold 12.3% (94 calls), oracle 69.4% final; retrieve-given-qwen running.
 
+- 04 Sep 19:20 R2 in motion: fixed Mimir reading Qwen-written queries EM 0.482 on the first 249 rows (old port 0.382;
+  Gemma alone 0.399, Qwen alone 0.400). If it holds on 592, the Mimir-reader system beats every other small model's
+  own agentic result, i.e. R2 falls, still on the live Wikipedia API; the offline index run (015) comes after.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
