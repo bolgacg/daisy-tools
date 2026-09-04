@@ -70,9 +70,10 @@ def find_pages_by_title(question, limit=3):
     hits = []
     cur = con()
     for c in title_candidates(question):
+        if len(c) < 4 or any(c.lower() in h.lower() for h in hits):
+            continue  # too short, or already inside a longer hit
         r = cur.execute("SELECT title FROM titles WHERE title_lower = ? LIMIT 1", (c.lower(),)).fetchone()
         if r and r[0] not in hits:
-            # skip trivially short generic hits when longer ones exist
             hits.append(r[0])
         if len(hits) >= limit:
             break

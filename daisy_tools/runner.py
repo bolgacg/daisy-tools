@@ -113,6 +113,19 @@ def rerank_paragraphs(question, titles, k=3, chars=900, page_fn=None):
     scored.sort(key=lambda x: -x[0])
     return [(t, p) for _, t, p in scored[:k]]
 
+def compose_docs(question, titles, k=3, chars=900, page_fn=None, intro_fn=None):
+    """Intro of the top page first (answers live in intros 78 percent of the time), then the best other paragraphs."""
+    docs = []
+    if titles and intro_fn:
+        docs.append((titles[0], intro_fn(titles[0], chars)))
+    for t, p in rerank_paragraphs(question, titles, k=k + 2, chars=chars, page_fn=page_fn):
+        if len(docs) >= k:
+            break
+        if docs and p[:200] == docs[0][1][:200]:
+            continue  # the intro again
+        docs.append((t, p))
+    return docs
+
 def _ctx_block(docs, chars):
     parts = []
     for t, e in docs:
@@ -162,7 +175,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
             else:
                 rec["tool_query"] = "title:" + titles[0]
             rec["titles"] = titles
-            docs = rerank_paragraphs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs)
+            docs = compose_docs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs, intro_fn=getattr(_wiki, "intro", None))
             if not docs:
                 docs = [(t, e) for t, e in _wiki.lookup(rec["tool_query"].replace("title:", ""), limit=k, chars=chars)]
             prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
@@ -176,7 +189,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
             if not used or not titles:
                 docs0, used = shaped_lookup(r["Question"], limit=3, chars=200); titles = [t for t, _ in docs0]
             rec["tool_query"] = used; rec["titles"] = titles
-            docs = rerank_paragraphs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs)
+            docs = compose_docs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs, intro_fn=getattr(_wiki, "intro", None))
             if not docs:
                 docs = [(t, e) for t, e in _wiki.lookup(used, limit=k, chars=chars)]
             prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
@@ -295,7 +308,7 @@ if __name__ == "__main__":
     if a.wiki_source == "local":
         from . import localwiki as _lw, query as _q
         _wiki.search, _wiki.extracts, _wiki.lookup = _lw.search, _lw.extracts, _lw.lookup
-        _wiki.paragraphs = _lw.paragraphs; _wiki.find_pages_by_title = _lw.find_pages_by_title
+        _wiki.paragraphs = _lw.paragraphs; _wiki.find_pages_by_title = _lw.find_pages_by_title; _wiki.intro = _lw.intro
         _q.search, _q.extracts = _lw.search, _lw.extracts
         globals()["lookup"] = _lw.lookup
         print("wiki source: local index", _lw.DB)

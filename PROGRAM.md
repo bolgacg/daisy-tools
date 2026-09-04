@@ -100,6 +100,16 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   offline index + section rerank); dev job 014 tests retrieve / rerank / title for Gemma 4B and fixed Mimir.
 - Records: R1 target set to 80 (stretch 85) per the ceiling analysis; "90 without a bigger model" answered: no.
 
+- 04 Sep 17:55 OFFLINE INDEX CEILING (no model, 592 q): with a local BM25 index of Danish Wikipedia (title weighted),
+  the RULE query puts the subject page at rank 1 for 75.7% of questions and the answer inside the top-3 intros for
+  78.0% (live Wikipedia search: 40.4%); inside the full top-3 pages 84.5%. Oracle query: 78.9 / 85.3. So the live
+  search API, not the model, was the weak link: the offline index alone nearly reaches the oracle ceiling. My lexical
+  paragraph rerank alone covered only 68.8%, below intros; contexts are now composed as top-page intro + best
+  paragraphs (local_ceiling2 measuring). Exact title match finds the subject page first for 58.6% (any hit 87%).
+  Expected: fixed Mimir with the rule query on the offline index ~0.86 x 0.78 = 65 to 68 EM, no oracle, no model
+  queries. This is the "simple elegant solution": a better search index, deployable offline (nothing leaves the
+  building). Dev job 014 tests it; a full-592 job follows.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
