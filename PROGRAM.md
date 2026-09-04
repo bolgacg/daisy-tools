@@ -116,6 +116,11 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   paragraphs (target ~83%, full pages carry 84.5%). Jobs 014/015 test retrieve, retrieve-plus and agentic on the
   offline index.
 
+- 04 Sep 18:45 dev-slice ceiling (150 q, no model): retrieve-plus (three intros + two best paragraphs, rule query,
+  offline index) puts the answer in the context 82.7% of the time, above three intros (77.3%) and above the oracle-
+  query intros on the full set (78.9%). This is the composition to run. Fixed Mimir: agentic 12.3% (56 calls),
+  scaffold 12.3% (94 calls), oracle 69.4% final; retrieve-given-qwen running.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
