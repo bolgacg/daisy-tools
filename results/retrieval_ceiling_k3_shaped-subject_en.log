@@ -10,3 +10,4 @@ resuming with 0 rows already done
 450/592 shaped=62 subject=127 either=137 2677s
 500/592 shaped=71 subject=138 either=150 2908s
 550/592 shaped=82 subject=152 either=166 3145s
+FINAL {"shaped": 0.149, "subject": 0.282, "either": 0.309} n=592 k=3

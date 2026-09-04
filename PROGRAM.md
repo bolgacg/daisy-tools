@@ -15,6 +15,8 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 | R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Gemma queries 36.5; reads Qwen queries 40.0 (105 rows, running) | job 020 running; 021 cross hybrids + query union queued |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
 | R4 decision quality: selective prediction (coverage vs risk), AUROC of confidence | Mimir AUROC 0.91 (sum logprob) | | gate useless on DAISY (base rate 5%) | second benchmark needed |
+| R6 identical-terms record: PopQA long-tail 1,399 with Self-RAG's released passages, acc(contains) | untrained Llama2-7B+ret 38.2, Alpaca-7B 46.7, Llama2-chat-13B 51.8, Ret-ChatGPT 50.8; trained Self-RAG 7B 54.9, CRAG 59.8 | 51.8 (untrained) | not run | data download + runner needed |
+| R7 identical-terms record: EuroEval MultiWikiQA-da (2048 q, 4-shot, F1/EM) via the CLI on our llama-server | Mimir 79.94/66.25; Llama-3.2-3B-Inst 70.23/52.62; Llama-3.3-70B 70.18/41.74; board best 83.76/69.88 | | not run (Gemma 3 4B and Qwen 2.5 3B are holes on the board) | euroeval install + backend check |
 | R5 second field: Multi Wiki QA da, their task code verbatim | their paper: Mimir 66.8, Gemma 3 1B 42.6 | 66.8 | not run | jobs 060/061 queued |
 
 ## Findings so far (keep appending, dated)
@@ -48,6 +50,19 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   0.265; Gemma itself 0.399); reading Qwen-written queries 0.400 on the first 105 rows. The query is the lever and
   Mimir reads as well as the 3-4B models once the page is right. Cost: Mimir 9.1 s/q as reader plus ~1 s asker; not
   cheaper than Gemma alone (5.9 s). Next: cross hybrids and union of two askers' queries (job 021).
+
+- 04 Sep 13:40 lit-sota report (lit/SOTA-COMPARABLES.md): our numbers land where the literature predicts (closed-book
+  = long-tail floor; +15 to +28 points from one lookup is the field's band; untrained 3-4B agentic at 40 EM equals
+  RL-trained 3B search agents on English single-hop sets because RL barely beats one-call RAG there). Two runs on
+  identical terms recommended: PopQA long-tail with Self-RAG's released passages (beat untrained 7B/13B rows with a
+  4B: the English twin of the DAISY story) and EuroEval MultiWikiQA-da for Gemma 3 4B and Qwen 2.5 3B (board holes;
+  a 3-4B above Llama-3.3-70B's 41.74 EM is the norm there). Added as R6 and R7.
+
+- 04 Sep 14:00 queue now holds 12 jobs: 011/012 prefix A/B, 015 native tools, 021 cross hybrids + query union,
+  030 k sweep, 040 English Wikipedia, 050 logprobs rest, 060/061 Multi Wiki QA (their task verbatim), 080 EuroEval
+  MultiWikiQA-da probe (1 iteration; model id syntax to confirm), 090/091 PopQA long-tail on Self-RAG's released
+  passages (HF mirror awinml/popqa_longtail: 1,399 rows, 20 passages each; metric match). The Self-RAG Google Drive
+  link is dead (404), the mirror carries the same fields. Estimated queue time: 20 to 30 hours on the 1060.
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
