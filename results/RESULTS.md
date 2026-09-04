@@ -51,7 +51,7 @@
 | mimir-hf | agentic-scaffold | 592 | 0.123 | 0.098 to 0.150 | 0.137 | 0.154 | 0.111 | 94 | 0 | 4.2 | | |
 | mimir-hf | agentic | 592 | 0.123 | 0.096 to 0.150 | 0.139 | 0.145 | 0.096 | 56 | 1 | 3.3 | | |
 | mimir-hf | closed | 592 | 0.084 | 0.062 to 0.108 | 0.096 | 0.115 | 0.076 | 0 | 0 | 1.9 | | |
-| mimir-hf | retrieve-given-gemma+qwen | 76 | 0.618 | 0.513 to 0.724 | 0.684 | 0.675 | 0.440 | 72 | 4 | 12.9 | 0.684 | 0.846 |
+| mimir-hf | retrieve-given-gemma+qwen | 592 | 0.534 | 0.495 to 0.574 | 0.579 | 0.596 | 0.375 | 543 | 49 | 12.3 | 0.619 | 0.841 |
 | mimir-hf | retrieve-given-qwen | 592 | 0.473 | 0.434 to 0.514 | 0.503 | 0.525 | 0.328 | 437 | 155 | 8.3 | | |
 | mimir-hf | retrieve-oracle | 592 | 0.694 | 0.660 to 0.730 | 0.736 | 0.748 | 0.498 | 592 | 0 | 8.6 | | |
 | mimir-hf | retrieve | 592 | 0.326 | 0.289 to 0.365 | 0.351 | 0.365 | 0.237 | 592 | 0 | 8.1 | | |
@@ -104,7 +104,7 @@
 | mimir-hf | agentic-scaffold | 0.248 (n=141) | 0.058 (n=52) | 0.088 (n=399) |
 | mimir-hf | agentic | 0.106 (n=141) | 0.038 (n=52) | 0.140 (n=399) |
 | mimir-hf | closed | 0.113 (n=141) | 0.019 (n=52) | 0.083 (n=399) |
-| mimir-hf | retrieve-given-gemma+qwen | 0.600 (n=20) | 0.000 (n=3) | 0.660 (n=53) |
+| mimir-hf | retrieve-given-gemma+qwen | 0.546 (n=141) | 0.385 (n=52) | 0.549 (n=399) |
 | mimir-hf | retrieve-given-qwen | 0.454 (n=141) | 0.346 (n=52) | 0.496 (n=399) |
 | mimir-hf | retrieve-oracle | 0.823 (n=141) | 0.481 (n=52) | 0.677 (n=399) |
 | mimir-hf | retrieve | 0.369 (n=141) | 0.288 (n=52) | 0.316 (n=399) |
@@ -208,7 +208,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | mimir-hf | agentic-scaffold | carl nielsen (24); hans christian andersen (14); johannes v jensen (13) | 0.09 |
 | mimir-hf | agentic | præcis (47); søren kierkegaard (46); 2005 (18) | 0.19 |
 | mimir-hf | closed | carl nielsen (25); hans christian andersen (14); johannes v jensen (13) | 0.09 |
-| mimir-hf | retrieve-given-gemma+qwen | kai normann andersen (5); n f s grundtvig (2); 1963 (2) | 0.12 |
+| mimir-hf | retrieve-given-gemma+qwen | kai normann andersen (8); ukendt (5); 1978 (4) | 0.03 |
 | mimir-hf | retrieve-given-qwen | kai normann andersen (7); ikke nævnt (6); niels w gade (5) | 0.03 |
 | mimir-hf | retrieve-oracle | kai normann andersen (12); 1838 (4); h c lumbye (4) | 0.03 |
 | mimir-hf | retrieve | niels w gade (10); carl nielsen (9); ikke nævnt (8) | 0.05 |
@@ -267,8 +267,8 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | gemma4b | retrieve-oracle | 592 | 0.679 | 708 | 6.2 | 1.00 | 3.6 | 0.95 | 0.188 |
 | llama3b | retrieve-oracle | 592 | 0.644 | 780 | 8.5 | 1.00 | 2.2 | 0.82 | 0.293 |
 | qwen3b | retrieve-oracle | 592 | 0.628 | 798 | 6.8 | 1.00 | 2.2 | 0.78 | 0.291 |
-| mimir-hf | retrieve-given-gemma+qwen | 76 | 0.618 | 902 | 5.9 | 0.95 | 12.9 | 0.68 | 0.048 |
 | mimir | retrieve-oracle | 592 | 0.606 | 715 | 7.0 | 1.00 | 8.5 | 0.84 | 0.071 |
+| mimir-hf | retrieve-given-gemma+qwen | 592 | 0.534 | 869 | 6.0 | 0.92 | 12.3 | 0.61 | 0.043 |
 | mimir-hf | retrieve-given-qwen | 592 | 0.473 | 675 | 5.9 | 0.74 | 8.3 | 0.69 | 0.057 |
 | qwen3b | agentic | 592 | 0.400 | 267 | 13.4 | 1.00 | 3.7 | 1.43 | 0.109 |
 | gemma4b | agentic | 592 | 0.399 | 222 | 13.6 | 0.93 | 5.9 | 1.69 | 0.068 |
