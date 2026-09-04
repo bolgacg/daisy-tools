@@ -133,3 +133,11 @@ if preds:
         top = c.most_common(3)
         share = sum(n for _, n in top) / max(len(rows), 1)
         print(f"| {m.group(1)} | {m.group(2)} | " + "; ".join(f"{t[:28]} ({n})" for t, n in top) + f" | {share:.2f} |")
+
+
+# --- Failure taxonomy with counts (rule-based; see scripts/failure_taxonomy.py) ---
+import subprocess
+print("\n## What goes wrong, counted (rule-based taxonomy; first matching category wins)\n")
+print(subprocess.run([sys.executable, "scripts/failure_taxonomy.py"], capture_output=True, text=True).stdout)
+print("\n## Cost axis: tokens, lookups and seconds per question; exact match per 1k tokens and per second\n")
+print(subprocess.run([sys.executable, "scripts/cost_table.py"], capture_output=True, text=True).stdout)
