@@ -4,7 +4,7 @@ import glob, json, os, re, sys, collections
 sys.path.insert(0, ".")
 from daisy_tools.metrics import exact_match_score as em, f1_score, lenient_match
 
-MODELS = {"mimir": "DFM Mimir 1B", "llama1b": "Llama 3.2 1B", "llama3b": "Llama 3.2 3B", "gemma4b": "Gemma 3 4B", "qwen3b": "Qwen 2.5 3B"}
+MODELS = {"mimir": "DFM Mimir 1B (llama.cpp, causal)", "mimir-hf": "DFM Mimir 1B (official, prefix attention)", "llama1b": "Llama 3.2 1B", "llama3b": "Llama 3.2 3B", "gemma4b": "Gemma 3 4B", "qwen3b": "Qwen 2.5 3B"}
 CONDS = ["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given-gemma", "retrieve-given-qwen", "retrieve-given-gemma+qwen", "retrieve-k1", "retrieve-k5", "retrieve-c1800", "retrieve-en", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native", "agentic-en"]
 def load(p): return [json.loads(l) for l in open(p, encoding="utf-8")]
 def atype(a):

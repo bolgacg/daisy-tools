@@ -10,7 +10,7 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 ## The records (all on the 592, exact match by their script unless stated)
 | record | holder now | value | our best | status |
 |---|---|---|---|---|
-| R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 | 5.6 (Q8 llama.cpp, causal) | jobs 011/012 (prefix A/B) pending |
+| R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 (57/592) | 8.4 (50/592) official transformers fp16, prefix attention, their prompt, 100 tokens; 5.6 on the causal-only Q8 port | CLOSED within 1 SE (1.2 pts); causal-t100 arm (012) running for the attention effect |
 | R1 accuracy: best system, any small model (<=4B) | ours: Gemma 3 4B agentic | 40.0 | 40.0 | beaten 70B closed (22.5); next target 50 |
 | R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Qwen queries 38.2 (contains-gold 42.7); reads Gemma queries 36.5; rule query 26.5 | 020 done; 021 cross hybrids + query union queued |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
@@ -68,6 +68,13 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   0.427, F1 0.446), reads Gemma queries 0.365; Qwen alone 0.400, Gemma alone 0.399. Llama 1B reads Gemma queries
   0.250 at 1.1 s/q (rule query 0.152): the cheap reader. 20 to 26 percent of model queries return nothing on Danish
   Wikipedia and fall back to the rule query; the union run (021) and English Wikipedia (040) attack that.
+
+- 04 Sep 14:10 R0 CALIBRATED: Mimir through transformers (fp16, sdpa, token_type_ids=1 prefix attention, dfm-evals
+  prompt, max 100 tokens) scores EM 0.084 (50/592) against the paper's 0.096 (57/592), one standard error apart;
+  the causal-only llama.cpp Q8 port gave 0.056 (33/592). So the port cost Mimir a third of its knowledge score,
+  and every Mimir tool result so far is an undercount. The official path is also faster on this card: 1.9 s per
+  question against 6.0 on llama.cpp. Built scripts/hf_server.py (OpenAI-compatible, prefix attention) and queued
+  job 013: all Mimir conditions rerun through it. Page and letter switch to the official Mimir numbers when 013 lands.
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).

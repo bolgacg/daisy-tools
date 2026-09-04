@@ -3,7 +3,7 @@
 const D = window.DATA;
 const $ = s => document.querySelector(s);
 const MODELS = D.models;                       // key -> display name
-const ORDER = ["mimir","llama1b","llama3b","gemma4b","qwen3b"];
+const ORDER = ["mimir","mimir-hf","llama1b","llama3b","gemma4b","qwen3b"].filter(m => D.models[m] && D.agg.some(a => a.model === m));
 const pct = x => (x*100).toFixed(1) + " %";
 const pct0 = x => Math.round(x*100) + " %";
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
