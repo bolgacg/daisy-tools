@@ -36,7 +36,7 @@ preds = sorted(glob.glob("results/pred_*.jsonl"))
 if preds:
     print("## Our runs: small models, greedy, zero-shot, the group's prompt and scorer\n")
     from daisy_tools.metrics import lenient_match, exact_match_score
-    print("| model | condition | n | EM (SQuAD) | 95% CI | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |\n|---|---|---|---|---|---|---|---|---|---|---|")
+    print("| model | condition | n | EM (SQuAD) | 95% CI | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row | answer in context | EM given present |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for p in preds:
         m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve-rerank[a-z0-9+-]*|retrieve-title[a-z0-9+-]*|retrieve-plus[a-z0-9+-]*|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve-local|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic-local|agentic)\.jsonl", p)
         if not m:
@@ -51,7 +51,15 @@ if preds:
         secs = [r["seconds"] for r in rows if isinstance(r.get("seconds"), (int, float))]
         spr = sum(secs) / len(secs) if secs else float("nan")
         lo, hi = boot_ci([exact_match_score(r["prediction"], r["gold"]) for r in rows])
-        print(f"| {m.group(1)} | {m.group(2)} | {s['n']} | {s['EM']:.3f} | {lo:.3f} to {hi:.3f} | {len_em:.3f} | {s['F1']:.3f} | {s['BLEU']:.3f} | {calls} | {fb} | {spr:.1f} |")
+        withc = [r for r in rows if "ctx_has_gold" in r]
+        if withc:
+            rec_rate = sum(1 for r in withc if r["ctx_has_gold"]) / len(withc)
+            pres = [r for r in withc if r["ctx_has_gold"]]
+            fid = (sum(exact_match_score(r["prediction"], r["gold"]) for r in pres) / len(pres)) if pres else float("nan")
+            extra = f" {rec_rate:.3f} | {fid:.3f} |"
+        else:
+            extra = " | |"
+        print(f"| {m.group(1)} | {m.group(2)} | {s['n']} | {s['EM']:.3f} | {lo:.3f} to {hi:.3f} | {len_em:.3f} | {s['F1']:.3f} | {s['BLEU']:.3f} | {calls} | {fb} | {spr:.1f} |" + extra)
     print()
     print("## By answer type (EM)\n")
     def atype(a):

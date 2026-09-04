@@ -289,6 +289,16 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
         else:
             raise ValueError(condition)
         rec["prediction"] = pred.replace("\n", " ").strip()
+        try:
+            _docs = locals().get("docs")
+            if _docs:
+                from .metrics import normalize_text as _nt
+                _g = re.sub(r"[^a-z0-9æøå]+", " ", r["Answer"].lower()).strip()
+                _c = re.sub(r"[^a-z0-9æøå]+", " ", " ".join(e for _, e in _docs).lower())
+                rec["ctx_has_gold"] = bool(_g) and _g in _c
+                rec["ctx_chars"] = sum(len(e or "") for _, e in _docs)
+        except Exception:
+            pass
         rec["usage"] = usage
         rec["seconds"] = round(time.time() - t_row, 2)
         return rec
