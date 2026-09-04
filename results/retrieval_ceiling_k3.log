@@ -1,0 +1,38 @@
+50/592 question=11 subject=41 either=41 78s
+100/592 question=23 subject=84 either=85 154s
+150/592 question=30 subject=123 either=125 225s
+200/592 question=38 subject=163 either=165 327s
+250/592 question=52 subject=203 either=206 395s
+300/592 question=65 subject=242 either=245 495s
+350/592 question=81 subject=280 either=285 564s
+Traceback (most recent call last):
+  File "/home/bolgac/projects/daisy-tools/scripts/retrieval_ceiling.py", line 20, in <module>
+    docs = lookup(q, limit=limit)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/wiki.py", line 34, in lookup
+    ex = extracts(titles, chars)
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/wiki.py", line 27, in extracts
+    d = _get({"action": "query", "prop": "extracts", "explaintext": 1, "exintro": 1,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/wiki.py", line 13, in _get
+    with urllib.request.urlopen(req, timeout=30) as r:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests

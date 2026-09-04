@@ -1,0 +1,47 @@
+50/592 shaped=18 either=18 46s
+Traceback (most recent call last):
+  File "/home/bolgac/projects/daisy-tools/scripts/retrieval_ceiling2.py", line 23, in <module>
+    docs, used = shaped_lookup(r["Question"], limit=limit)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/query.py", line 37, in shaped_lookup
+    titles, q = shaped_search(question, limit)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/query.py", line 31, in shaped_search
+    titles = search(q, limit)
+             ^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/wiki.py", line 21, in search
+    d = _get({"action": "query", "list": "search", "srsearch": query, "srlimit": limit})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bolgac/projects/daisy-tools/daisy_tools/wiki.py", line 13, in _get
+    with urllib.request.urlopen(req, timeout=30) as r:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+resuming with 54 rows already done
+100/592 shaped=44 either=44 122s
+150/592 shaped=61 either=61 295s
+200/592 shaped=80 either=80 427s
+250/592 shaped=101 either=101 548s
+300/592 shaped=120 either=120 664s
+350/592 shaped=144 either=144 780s
+400/592 shaped=163 either=163 920s
+450/592 shaped=186 either=186 1049s
+500/592 shaped=204 either=204 1177s
+550/592 shaped=222 either=222 1310s
+FINAL {"shaped": 0.404, "either": 0.404} n=592 k=3

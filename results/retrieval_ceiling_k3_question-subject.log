@@ -1,0 +1,13 @@
+resuming with 0 rows already done
+50/592 question=11 subject=41 either=41 107s
+100/592 question=23 subject=84 either=85 136s
+150/592 question=30 subject=123 either=125 159s
+200/592 question=38 subject=163 either=165 179s
+250/592 question=52 subject=203 either=206 204s
+300/592 question=65 subject=242 either=245 225s
+350/592 question=81 subject=280 either=285 249s
+400/592 question=89 subject=318 either=323 274s
+450/592 question=98 subject=357 either=362 297s
+500/592 question=105 subject=397 either=402 313s
+550/592 question=113 subject=437 either=442 339s
+FINAL {"question": 0.215, "subject": 0.787, "either": 0.799} n=592 k=3

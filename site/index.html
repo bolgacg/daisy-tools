@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Does a lookup tool close the gap for a one-billion-parameter Danish model?</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="house-style.css">
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div class="wrap">
+
+<header id="top">
+  <div class="eyebrow">Work sample &middot; for the assessment committee of PhD scholarship 4203, IMADA, SDU &middot; generated <span data-fill="date"></span></div>
+  <h1>Does a lookup tool close the gap for a one-billion-parameter Danish model?</h1>
+  <p class="standfirst">Small open language models know almost none of the Danish Culture Canon: the group's own
+  Mimir answers <span class="num" data-fill="mimir_closed_pct"></span> of the DAISY questions correctly from memory,
+  and three multilingual models of one to four billion parameters do no better. Given one Danish Wikipedia lookup,
+  every model improves by a factor of five or more, and the two models that can write their own search query reach
+  <span class="num" data-fill="best_agentic_pct"></span>. What none of them has is the judgement the call asks about:
+  no model in this study knew when its memory was wrong, and the two that searched did so on nearly every question.</p>
+
+  <div class="headline">
+    <div><div class="k">Mimir, from memory</div><div class="v num" data-fill="mimir_closed_pct"></div><div class="s">exact match on 592 questions; the paper reports 9.6 on 741</div></div>
+    <div><div class="k">Mimir, with one lookup</div><div class="v num" data-fill="mimir_retrieve_pct"></div><div class="s">same prompt, top three Wikipedia intros added</div></div>
+    <div><div class="k">Best small model, asking itself</div><div class="v num" data-fill="best_agentic_pct"></div><div class="s"><span data-fill="best_agentic_name"></span>, writing its own query</div></div>
+    <div><div class="k">Models that knew when to look</div><div class="v num">0 of 5</div><div class="s">two searched always, three almost never</div></div>
+  </div>
+
+  <p class="byline">By Bolga&ccedil; G&uuml;len, Odense, September 2026. Benchmark, prompt, scorer and model are the Odense NLP group's own
+  (<a href="https://github.com/schneiderkamplab/SDU-Daisy">SDU-Daisy</a>, <a href="https://huggingface.co/danish-foundation-models/DFM-Mimir">DFM Mimir</a>).
+  Code and every logged answer: <a href="https://github.com/bolgacg/daisy-tools">github.com/bolgacg/daisy-tools</a>.
+  <button class="tour-open" id="tourbtn">Guided tour</button></p>
+</header>
+
+<section id="primer">
+  <h2>What you need to know to read this page</h2>
+  <ol class="primer">
+    <li><b>DAISY</b> is a quiz of 741 short factual questions about the Danish Culture Canon, written by the group in Odense; 592 of them are public with their answers, and those 592 are used here.</li>
+    <li>A <b>closed-book</b> answer comes from the model's memory alone. Every model here was asked with the group's own Danish prompt, at temperature zero, exactly as in their paper.</li>
+    <li>A <b>lookup</b> means the top three Danish Wikipedia article introductions for a search query are pasted above the question before the model answers.</li>
+    <li><b>Agentic</b> here means the model is told it may search, and decides on its own whether to write a search line or answer directly. That decision, not the score, is what the position's call names.</li>
+    <li>Scores are the group's: <b>exact match</b> (the normalised answer equals the reference) and word-level <b>F1</b>. A <b>lenient match</b> is added beside them: the reference appears somewhere inside the answer.</li>
+  </ol>
+  <dl class="glossary">
+    <dt>Retrieval ceiling</dt><dd>How often the reference answer is literally inside the three retrieved introductions. No model can score above it from the text alone.</dd>
+    <dt>Shaped query</dt><dd>The question with its question words removed, shortened until Wikipedia's search returns something. A rule, not a model.</dd>
+    <dt>Oracle query</dt><dd>The benchmark's own subject field (the name of the canon work) used as the search term. Not available to a model; it marks the best case for asking.</dd>
+    <dt>Reading fidelity</dt><dd>Exact match on the questions where the answer was inside the retrieved text. Separates "could not find it" from "could not read it".</dd>
+    <dt>Quantised</dt><dd>Model weights stored at eight bits (six for Gemma) so they fit a six-gigabyte consumer graphics card. Small accuracy cost, stated in the model card.</dd>
+  </dl>
+</section>
+
+<section id="world">
+  <h2>The call, the benchmark and the group's own numbers</h2>
+  <p>The scholarship call lists three directions: LLM customisation and test-time scaling, agentic behaviour and tool use,
+  multi-modality and interactivity. This page is a small measured study on the second, with one line on the first. It uses the
+  group's assets end to end so that the numbers can be read against their own tables.</p>
+  <div class="callout">
+    <p><strong>Their prompt, verbatim (Prompt Template Version 1 in the DAISY paper).</strong></p>
+    <pre class="prompt">Besvar spørgsmålet med kun det direkte svar, uden forklaring om hvorfor.
+Regelsæt:
+- Svar kun på dansk.
+- Hvis svaret er i højde, svar i meter (m).
+- Hvis svaret er i vægt, svar i kilogram (kg).
+- Hvis svaret er om en størrelse, svar i centimeter (cm). Fx Hvor stort er maleriet Mona Lisa? Svar: 77 cm x 53 cm.
+- Hvis svaret er en person angiv den måde de typisk bliver angivet på i danske tekster.
+
+Spørgsmål: {question}
+Svar:</pre>
+  </div>
+  <h3>Replication: the group's published predictions, rescored here</h3>
+  <p>Before anything new, the five big-model prediction files the group released were rescored with their own script on the 592
+  public answers. The ranking is identical to the paper's; the numbers sit slightly above the paper's because the public subset is
+  a little easier than the full 741. This is the anchor for every table below.</p>
+  <div class="tscroll"><table id="reptable"><thead><tr><th>Model (their run)</th><th>EM</th><th>F1</th><th>BLEU</th><th>F1 in paper</th><th>BLEU in paper</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Their best model, a 70-billion-parameter Llama, answers about one question in four from memory. The Mimir paper reports Mimir's own DAISY exact match as 9.6 on the 741 questions.</p>
+</section>
+
+<section id="act1">
+  <h2>Act one. How much of the canon do small models know?</h2>
+  <p class="lede">This matters because everything after it depends on the starting point: a tool can only help a model that lacks the facts, and a model that answers from memory with confidence will not reach for one.</p>
+  <div class="controls" id="a1controls">
+    <div class="chips" id="a1chips"></div>
+    <p class="hint"><b>Click a model chip</b> to highlight it; the bars show closed-book exact match for all five, the dotted line is the group's 70B result.</p>
+  </div>
+  <figure>
+    <div class="viz-root" id="a1chart"></div>
+    <figcaption><b>What you see:</b> one bar per model, closed-book exact match on the 592 questions, in percent. <b>How to read it:</b> a bar at 5 means the model answered about 30 of 592 questions exactly right from memory. <b>What to take from it:</b> <span data-fill="a1_take"></span></figcaption>
+  </figure>
+  <div class="verdict">
+    <p><strong>Small models hold almost none of this knowledge, and the Danish-trained one holds the most.</strong>
+    <span data-fill="a1_verdict"></span> Sampling five answers and voting, a minimal form of test-time scaling, changed no model by more than one point; there is nothing in memory to vote over.</p>
+  </div>
+  <p class="handover">Memory is thin across the board, so the next question is whether a single lookup can supply what memory lacks, and what limits it.</p>
+</section>
+
+<section id="act2">
+  <h2>Act two. Does looking it up help, and what limits it?</h2>
+  <p class="lede">This matters because a tool's value has two ceilings: how often the right text is fetched at all, and how faithfully the model reads it. Both are measured here separately.</p>
+  <div class="controls" id="a2controls">
+    <div class="chips" id="a2chips"></div>
+    <p class="hint"><b>Click a query formulation</b> to see how often it fetched the answer (the grey ceiling bar) and how much each model then scored with that text in front of it.</p>
+  </div>
+  <figure>
+    <div class="viz-root" id="a2chart"></div>
+    <figcaption><b>What you see:</b> the grey bar is the retrieval ceiling for the chosen query formulation, the coloured bars are each model's exact match when given that retrieval. <b>How to read it:</b> a model bar close to the grey bar reads well; the gap between them is reading failure. <b>What to take from it:</b> <span data-fill="a2_take"></span></figcaption>
+  </figure>
+  <h3>Reading fidelity</h3>
+  <div class="tscroll"><table id="fidtable"><thead><tr><th>Model</th><th>EM when the answer was in the text</th><th>EM when it was not</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Split of the shaped-query run by whether the reference answer was inside the three retrieved introductions (239 questions yes, 353 no).</p>
+  <div class="verdict">
+    <p><strong>One lookup lifts every model by a factor of five or more, and the query is the lever.</strong>
+    <span data-fill="a2_verdict"></span></p>
+  </div>
+  <div class="warnbox">
+    <h3>What the tool cannot fix</h3>
+    <p>With the best query available, the answer is in the fetched text for <span class="num" data-fill="ceil_oracle_pct"></span> of questions; the rest are not in a Wikipedia introduction at all. And when the text does not contain the answer, every model still answers, almost always wrongly: exact match below 5 percent in that half for all five. None wrote "not found" more than a handful of times.</p>
+  </div>
+  <p class="handover">The tool works when the model asks well and reads faithfully. The remaining question, and the one the call asks, is whether a model knows when to ask.</p>
+</section>
+
+<section id="act3">
+  <h2>Act three. Does the model know when it does not know?</h2>
+  <p class="lede">This matters because an agent that searches on every question is a retrieval pipeline with extra steps, and one that never searches is a closed book. The useful behaviour is in between: look up what you do not know, answer what you do.</p>
+  <div class="controls" id="a3controls">
+    <div class="chips" id="a3models"></div>
+    <div class="chips small" id="a3variants"></div>
+    <p class="hint"><b>Click a model, then a variant.</b> The four tiles count the model's decisions against its own closed-book record. <b>Click a tile</b> to list those questions in the browser below.</p>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <p class="note" id="tilenote"></p>
+  <div class="verdict">
+    <p><strong>No model in this study made the decision the call describes.</strong>
+    <span data-fill="a3_verdict"></span></p>
+  </div>
+  <div class="warnbox">
+    <h3>Why this data cannot yet test the decision itself</h3>
+    <p>When a model is right from memory on only 3 to 6 percent of questions, "always search" is close to the best possible policy, so a high rate of "searched when wrong" is not evidence of judgement. The real decision problem only exists for a model that knows a lot; the 70B model in the group's paper knew about a quarter. Testing that needs either a stronger model or a benchmark where small models know half. This page states the gap rather than claiming the result.</p>
+  </div>
+  <h3>Can the model ask?</h3>
+  <div class="tscroll"><table id="asktable"><thead><tr><th>Model</th><th>Variant</th><th>Own queries</th><th>First hit was the subject page</th><th>EM with own query</th><th>EM when it fell back to the rule</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">A model-written query "landed" when Wikipedia's first result was the canon work the question is about. When a model's query returned nothing, the shaped rule query was used instead, marked as a fallback.</p>
+  <p class="handover">The two models that can ask, ask better than a rule. The judgement of when to ask is the open problem, and it is a training problem, which is where the group's reinforcement-learning work on tool use begins.</p>
+</section>
+
+<section id="browser">
+  <h2>Every question, every answer</h2>
+  <p class="lede">This matters because aggregate scores hide how models fail. Here is each of the 592 questions with what every model answered under each condition, the query it wrote, and the page it fetched.</p>
+  <div class="controls" id="bcontrols">
+    <label>Model <select id="bmodel"></select></label>
+    <label>Condition <select id="bcond"></select></label>
+    <label>Show <select id="boutcome"><option value="all">all</option><option value="right">exact match</option><option value="lenient">lenient only</option><option value="wrong">wrong</option><option value="called">searched</option><option value="silent">did not search</option></select></label>
+    <label>Type <select id="btype"><option value="all">all</option><option value="text">names and titles</option><option value="year">years</option><option value="number">other numbers</option></select></label>
+    <input id="bsearch" type="search" placeholder="search question or answer">
+    <p class="hint"><b>Change a filter or click a row</b> to see the full record: prompt query, fetched page, answer and reference. <span id="bcount" class="num"></span></p>
+  </div>
+  <div class="tscroll"><table id="btable"><thead><tr><th>Question</th><th>Reference</th><th>Model answer</th><th>Match</th><th>Query</th><th>Fetched</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="failures">
+  <h2>What goes wrong, counted</h2>
+  <p class="lede">This matters because the DAISY paper describes failures by example; counts say which failure is the common one.</p>
+  <h3>Default answers</h3>
+  <p>A model that does not know tends to name the same famous thing. The three most repeated answers per run and the share of rows they cover:</p>
+  <div class="tscroll"><table id="deftable"><thead><tr><th>Model</th><th>Condition</th><th>Most repeated answers (count)</th><th>Share of rows</th></tr></thead><tbody></tbody></table></div>
+  <h3>By answer type</h3>
+  <div class="tscroll"><table id="typetable"><thead><tr><th>Model</th><th>Condition</th><th>Years (141)</th><th>Other numbers (52)</th><th>Names and titles (399)</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Exact match by the type of the reference answer. Years are where retrieval helps most, because an introduction usually states them.</p>
+</section>
+
+<section id="modelcard">
+  <h2>Model card</h2>
+  <div class="tscroll"><table id="cardtable"><thead><tr><th>Model</th><th>Parameters</th><th>Weights used</th><th>Seconds per question, closed</th><th>Seconds per question, agentic</th></tr></thead><tbody></tbody></table></div>
+  <p><b>Nothing was trained.</b> Five released instruction-tuned models were run as published, quantised to fit a GeForce GTX 1060 with six gigabytes of memory, served with llama.cpp (Mimir through the community pull request that adds its architecture), greedy decoding, at most 48 new tokens, the group's prompt and chat template of each model. Retrieval is the public Danish Wikipedia search and extract API, top three results, introductions cut at 900 characters. Scores are the group's script, run unmodified. The self-consistency row samples five answers at temperature 0.7 and votes.</p>
+  <p><b>Baseline anyone could run without a model:</b> the retrieval ceilings. A system that returned the fetched text verbatim would score zero on exact match but would contain the answer <span class="num" data-fill="ceil_shaped_pct"></span> of the time with the rule query and <span class="num" data-fill="ceil_oracle_pct"></span> with the oracle query. Reading fidelity measures how much of that the models convert.</p>
+  <p><b>Is it any good?</b> As a measurement, yes: it reproduces the group's ranking on their own files and Mimir lands within the expected range of their reported number given the subset and quantisation. As a system, the agentic Gemma and Qwen runs are a working Danish question answerer at 40 percent exact match on this quiz, from models that score 5 percent alone.</p>
+</section>
+
+<section id="limits">
+  <h2>Limits</h2>
+  <ul class="limits">
+    <li>592 public questions, not the 741 the papers report on; the public subset scores slightly higher for the same predictions.</li>
+    <li>Quantised weights (8-bit, 6-bit for Gemma) and a community implementation of Mimir's architecture; the paper's 9.6 was measured on full weights with the group's own harness. The gap to <span class="num" data-fill="mimir_closed_pct"></span> here is not explained on this page.</li>
+    <li>One retrieval source, one query rule, three snippets of 900 characters; no sweep of these was run.</li>
+    <li>One run per condition at temperature zero; no confidence intervals. With 592 questions, a difference of about 3 percentage points between two runs is within noise.</li>
+    <li>The decision-quality table cannot separate judgement from "always search" at this level of closed-book knowledge, as stated in act three.</li>
+    <li>No fine-tuning. The group's method, reinforcement learning on tool calls, is the natural next step and was not attempted.</li>
+  </ul>
+</section>
+
+<section id="coda">
+  <h2>How this was built</h2>
+  <p>Their repository and dataset were pulled on 3 September 2026. A Python harness (about 400 lines) wraps the Wikipedia API with caching and rate limiting, formulates queries, runs each condition against a local llama.cpp server, and logs prompt, output, query, fetched titles and timing for every question. A second script scores every file with the group's metric code and writes the results page data. The runs took one night on a second-hand desktop with a GTX 1060. All code, the logged rows and this page are in the repository linked at the top.</p>
+  <footer>Every number on this page is generated by the build script from the logged runs and the group's published files, as at <span data-fill="date"></span>. Sources: SDU-Daisy repository and dataset (MIT), the DAISY paper (arXiv 2601.19930), the DFM Mimir paper (arXiv 2608.13517), the Danish Wikipedia API.</footer>
+</section>
+
+</div>
+<div id="tour"><div class="tour-hl" id="tour-hl"></div><div class="tour-card" id="tour-card"></div></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
