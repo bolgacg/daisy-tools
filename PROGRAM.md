@@ -174,3 +174,16 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 3. Update the records table and findings above; decide the next 1 to 3 experiments; write them as queue
    jobs (queue/jobs/NNN-name.sh, copy to gene:~/queue/pending); code changes rsynced first.
 4. Commit locally as Bo. If a record moved or something broke, tell Bo in one short message; else stay quiet.
+
+## 2026-09-05 00:35 FULL-SET OFFLINE-INDEX RESULTS (job 015, gemma4b + qwen3b landed; llama3b/1b pending; Mimir-hf in 015b)
+Gemma 3 4B, 592, their prompt and scorer. closed 5.6 | live search box rule query 31.1 | live agentic 39.9 |
+oracle query (live) 67.9 | OFFLINE INDEX plain lookup 65.7 EM (contains 69.3; answer in 3 intros 75.5%; fidelity 85.5%;
+fraction of intro ceiling 87%; 5.6 s/q; 944 prompt tok) | retrieve-plus-local 68.8 (variant) | agentic-local 48.5.
+Qwen2.5 3B: closed 3.0 | live 27.9 / agentic 40.0 | local plain 59.8 | local plus 63.9 | local agentic 56.0 (529/592).
+Findings: (1) main-line full-set number is 65.7, two points under the live oracle ceiling; dev slice (68.7) was 3 points
+optimistic, inside its CI. (2) On the BM25 index the whole question as query beats a model-written query for both
+models (65.7 vs 48.5; 59.8 vs 56.0): the query generator is a cost, not a gain, once the engine ranks properly.
+(3) Target R1=79 not reached; the gap is 24.5% of questions whose answer is not in the three intros plus 14.5%
+reading loss. One lookup of three intros cannot reach 79; the paragraphs variant reaches 68.8. Recommend to Bo: quote
+65.7 (87% of ceiling) as the main line and present the ceiling decomposition, not chase 79 with stacked steps.
+R1 holder: Gemma 3 4B plain lookup offline index 65.7 (full 592). Next: 015 remainder, 015b Mimir-hf local.
