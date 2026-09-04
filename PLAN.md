@@ -117,4 +117,9 @@ See IDEAS.md for the two idea loops (3 Sep).
   calls. Self-consistency: no effect anywhere. Decision quality: at 3-6% closed-book accuracy,
   "always search" is near-optimal, so call precision is inflated; the real decision problem needs a
   model that knows a lot (70B). Say so on the page.
+- 05:05: main run complete (5 models x 6 conditions); scaffold run in progress (mimir slow). Results page
+  built at site/ (index.html, page.css, app.js, data.js from scripts/build_page_data.py), house style,
+  spotlight tour, headless walk clean at 1536 and 390 (0 errors, 0 overflow). Local git repo initialised
+  (author Bo). NOT published: remote repo + Pages wait for Bo's review and OK. Letter artifact block and CV
+  entry filled with the numbers. Remaining: final scaffold numbers, PDFs, Bo review, publish, misc bundle.
 - [ ] Morning: pull results, sanity-check Mimir closed EM vs 9.6, write the page, update letter/CV.
