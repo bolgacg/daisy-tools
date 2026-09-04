@@ -14,7 +14,7 @@ def atype(a):
 gold = {r["id"]: r for r in load("data/daisy.jsonl")}
 runs = {}   # (model, cond) -> {id: row}
 for p in glob.glob("results/pred_*.jsonl"):
-    m = re.match(r"results/pred_(.+?)_(closed-sc|closed|retrieve-oracle|retrieve-rerank[a-z0-9+-]*|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic)\.jsonl", p)
+    m = re.match(r"results/pred_(.+?)_(closed-sc|closed|retrieve-oracle|retrieve-rerank[a-z0-9+-]*|retrieve-title[a-z0-9+-]*|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic)\.jsonl", p)
     if not m or m.group(1) not in MODELS: continue
     runs[(m.group(1), m.group(2))] = {r["id"]: r for r in load(p)}
 

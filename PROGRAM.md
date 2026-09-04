@@ -89,6 +89,17 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   Transcription: large-v3 CPU pass done (285 segments); response to the recording delivered to Bo 16:40
   (lit/CONVERSATION-RESPONSE.md); GPU pass runs after job 013 as the third check.
 
+- 04 Sep 17:40 lit-ceiling report (lit/CEILINGS-AND-READERS.md): the reader is NOT the bottleneck (our 3-4B readers
+  are at ~0.86 EM when the answer is in the shown text, the human EM band); the losses are page finding (~0.5 with
+  model queries) x answer-in-intro (0.79). Published passage-given EM crosses 85 only with a fine-tuned 340M+ encoder,
+  a fine-tuned 7B, or an untuned 70B; Danish passage-given tops at 70.5 at any size. Verdict: 90 is not credible on any
+  path (needs every stage above 0.965; above human EM). Targets: 80 realistic, 85 stretch. Paths: (a) 4B + title match
+  + section rerank 60-70, +LoRA on public Danish train splits 65-75; (b) 8B Q4 reader 70-80 (75-82 with LoRA), 10-20
+  s/q; (c) fine-tuned XLM-R-large extractive reader 55-70 at 0.1-0.3 s/q. Page finding by title/alias reaches 89-96% in
+  the literature vs our 48-57%: that is where the headroom is. Implemented retrieve-title (exact title match on the
+  offline index + section rerank); dev job 014 tests retrieve / rerank / title for Gemma 4B and fixed Mimir.
+- Records: R1 target set to 80 (stretch 85) per the ceiling analysis; "90 without a bigger model" answered: no.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query

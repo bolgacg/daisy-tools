@@ -149,6 +149,24 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
                 samples.append(a.replace("\n", " ").strip())
             rec["samples"] = samples
             pred = _vote(samples)
+        elif condition == "retrieve-title":
+            # find the page by its title (capitalised spans in the question), fall back to the rule query; rerank sections
+            finder = getattr(_wiki, "find_pages_by_title", None)
+            titles = finder(r["Question"], limit=3) if finder else []
+            rec["title_hits"] = list(titles)
+            if len(titles) < 3:
+                docs0, used = shaped_lookup(r["Question"], limit=3, chars=200)
+                for t, _ in docs0:
+                    if t not in titles: titles.append(t)
+                titles = titles[:3]; rec["tool_query"] = used
+            else:
+                rec["tool_query"] = "title:" + titles[0]
+            rec["titles"] = titles
+            docs = rerank_paragraphs(r["Question"], titles, k=k, chars=chars, page_fn=_page_paragraphs)
+            if not docs:
+                docs = [(t, e) for t, e in _wiki.lookup(rec["tool_query"].replace("title:", ""), limit=k, chars=chars)]
+            prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
+            pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
         elif condition == "retrieve-rerank":
             # full pages for the rule query (or a given query), best paragraphs by lexical rank, then read
             qs = (queries or {}).get(r["id"]) if queries else None
@@ -255,7 +273,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
+    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-title", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
     ap.add_argument("--data", default="data/daisy.jsonl")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
     ap.add_argument("--model", default="mimir")
@@ -277,7 +295,7 @@ if __name__ == "__main__":
     if a.wiki_source == "local":
         from . import localwiki as _lw, query as _q
         _wiki.search, _wiki.extracts, _wiki.lookup = _lw.search, _lw.extracts, _lw.lookup
-        _wiki.paragraphs = _lw.paragraphs
+        _wiki.paragraphs = _lw.paragraphs; _wiki.find_pages_by_title = _lw.find_pages_by_title
         _q.search, _q.extracts = _lw.search, _lw.extracts
         globals()["lookup"] = _lw.lookup
         print("wiki source: local index", _lw.DB)

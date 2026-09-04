@@ -39,3 +39,41 @@ def extracts(titles, chars=1200):
 def lookup(query, limit=3, chars=1200):
     titles = search(query, limit)
     return [(t, intro(t, chars)) for t in titles]
+
+
+
+def title_candidates(question, max_len=7):
+    """Quoted spans first, then every n-gram (longest first) that starts at a capitalised token; Danish titles keep
+    lowercase inner words ("De levendes Land", "Et selskab af danske kunstnere i Rom"), so inner words are unrestricted."""
+    cands = []
+    for m in re.finditer(r"[\"“„»«']([^\"”“„»«']{3,80})[\"”“»«']", question):
+        cands.append(m.group(1).strip())
+    words = re.findall(r"[0-9A-Za-zÆØÅæøå'\-\.]+", question.rstrip("?.!"))
+    n = len(words)
+    for L in range(min(max_len, n), 0, -1):
+        for i in range(0, n - L + 1):
+            span = words[i:i + L]
+            if not span[0][:1].isupper():
+                continue
+            if i == 0 and L == 1:
+                continue  # the question word itself
+            cands.append(" ".join(span).rstrip(",;:."))
+    seen = set(); out = []
+    for c in cands:
+        k = c.lower()
+        if k and k not in seen:
+            seen.add(k); out.append(c)
+    return out
+
+def find_pages_by_title(question, limit=3):
+    """Exact (case-insensitive) title matches for the question's spans, longest first, via the indexed titles table."""
+    hits = []
+    cur = con()
+    for c in title_candidates(question):
+        r = cur.execute("SELECT title FROM titles WHERE title_lower = ? LIMIT 1", (c.lower(),)).fetchone()
+        if r and r[0] not in hits:
+            # skip trivially short generic hits when longer ones exist
+            hits.append(r[0])
+        if len(hits) >= limit:
+            break
+    return hits
