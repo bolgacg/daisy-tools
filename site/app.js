@@ -183,8 +183,8 @@ drawBrowser();
 
 /* ---------- model card ---------- */
 {
-  const meta = {mimir:["1.0 B (1.8 B with embeddings)","Q8_0, community GGUF"], llama1b:["1.2 B","Q8_0"], llama3b:["3.2 B","Q8_0"], gemma4b:["4.3 B","Q6_K"], qwen3b:["3.1 B","Q8_0"]};
-  $("#cardtable tbody").innerHTML = ORDER.map(m => { const c = A(m,"closed"), g = A(m,"agentic"); return `<tr><td>${esc(MODELS[m])}</td><td class="n">${meta[m][0]}</td><td>${meta[m][1]}</td><td class="n">${c ? c.sec.toFixed(1) : ""}</td><td class="n">${g ? g.sec.toFixed(1) : ""}</td></tr>`; }).join("");
+  const meta = {mimir:["1.0 B (1.8 B with embeddings)","Q8_0, community GGUF, causal attention"], "mimir-hf":["1.0 B (1.8 B with embeddings)","fp16, official implementation, prefix attention"], llama1b:["1.2 B","Q8_0"], llama3b:["3.2 B","Q8_0"], gemma4b:["4.3 B","Q6_K"], qwen3b:["3.1 B","Q8_0"]};
+  $("#cardtable tbody").innerHTML = ORDER.map(m => { const c = A(m,"closed"), g = A(m,"agentic"); const mm = meta[m] || ["", ""]; return `<tr><td>${esc(MODELS[m])}</td><td class="n">${mm[0]}</td><td>${mm[1]}</td><td class="n">${c ? c.sec.toFixed(1) : ""}</td><td class="n">${g ? g.sec.toFixed(1) : ""}</td></tr>`; }).join("");
 }
 
 /* ---------- guided tour (spotlight; positions computed from document coordinates, then scrolled) ---------- */
