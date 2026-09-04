@@ -12,7 +12,7 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 |---|---|---|---|---|
 | R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 (57/592) | 8.4 (50/592) official transformers fp16, prefix attention, their prompt, 100 tokens; 5.6 on the causal-only Q8 port | CLOSED within 1 SE (1.2 pts); causal-t100 arm (012) running for the attention effect |
 | R1 accuracy: best system, any small model (<=4B), model + one lookup | ours: Gemma 3 4B agentic (live API) | 40.0 | 48.2 partial (fixed Mimir, Qwen queries) | TARGET 79 = answer-recall ceiling of one lookup (Bo, 4 Sep 19:40). Report EM, ceiling, and EM/ceiling ("fraction of ceiling attained"). Realistic landing 65-72 with plain lookup on the offline index; the rest is reader fidelity |
-| R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Qwen queries 38.2 (contains-gold 42.7); reads Gemma queries 36.5; rule query 26.5 | 020 done; 021 cross hybrids + query union queued |
+| R2 Mimir-reader system beats every other small model's best | OURS: fixed Mimir reads Qwen queries | 47.3 | 47.3 (contains 50.3), live API; union of Gemma+Qwen queries 61.8 on first 76 rows | FELL 4 Sep 20:20; union run and offline-index runs next |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
 | R4 decision quality: selective prediction (coverage vs risk), AUROC of confidence | Mimir AUROC 0.91 (sum logprob) | | gate useless on DAISY (base rate 5%) | second benchmark needed |
 | R6 identical-terms record: PopQA long-tail 1,399 with Self-RAG's released passages, acc(contains) | untrained Llama2-7B+ret 38.2, Alpaca-7B 46.7, Llama2-chat-13B 51.8, Ret-ChatGPT 50.8; trained Self-RAG 7B 54.9, CRAG 59.8 | 51.8 (untrained) | not run | data download + runner needed |
@@ -135,6 +135,11 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 - 04 Sep 19:40 Bo: "aim for 79 and claim the theoretical limit"; "you can go on with your objectives, I trust you."
   Decomposition to report on every row: EM = answer recall (ceiling) x reader accuracy given the answer is present.
   Offline plain lookup: recall 0.78; composed variant 0.83. Reader given-present today: 0.86 (4B), Mimir-fixed ~0.87.
+
+- 04 Sep 20:20 R2 FELL. Fixed Mimir (prefix attention, official path) reading Qwen-written queries: EM 0.473 on the full
+  592 (contains-gold 0.503), against 0.399 / 0.400 for Gemma and Qwen doing both jobs themselves and 0.225 for the
+  group's 70B from memory. Still on the live Wikipedia API. Union of Gemma + Qwen queries (two askers, six pages):
+  0.618 on the first 76 rows. Offline-index runs (014 dev, 015 full) follow.
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
