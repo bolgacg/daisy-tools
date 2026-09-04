@@ -85,6 +85,10 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   the rule query 0.328 on the first 341 rows (port 0.265). Expect the Qwen-query reader run to land near or above
   the 4B agentic record (0.40). Bo's 29-minute recording (English) is being transcribed on both machines.
 
+- 04 Sep 16:45 fixed Mimir, oracle query: EM 0.698 on the first 278 rows (old port 0.606). Rule query 0.326 full.
+  Transcription: large-v3 CPU pass done (285 segments); response to the recording delivered to Bo 16:40
+  (lit/CONVERSATION-RESPONSE.md); GPU pass runs after job 013 as the third check.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
