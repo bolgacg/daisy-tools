@@ -16,7 +16,7 @@ if os.path.exists(rep):
     print()
 ceil = sorted(glob.glob("results/retrieval_ceiling_*.jsonl"))
 if ceil:
-    print("## Retrieval ceiling: gold answer literally inside the top-3 Danish Wikipedia intros\n")
+    print("## Answer recall@3 (retrieval ceiling): gold answer literally inside the top-3 Danish Wikipedia intros\n")
     print("| query formulation | n | hit rate |\n|---|---|---|")
     for p in ceil:
         rows = load(p)
@@ -29,7 +29,7 @@ preds = sorted(glob.glob("results/pred_*.jsonl"))
 if preds:
     print("## Our runs: small models, greedy, zero-shot, the group's prompt and scorer\n")
     from daisy_tools.metrics import lenient_match
-    print("| model | condition | n | EM | lenient EM | F1 | BLEU | tool calls | fallback | s/row |\n|---|---|---|---|---|---|---|---|---|---|")
+    print("| model | condition | n | EM (SQuAD) | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |\n|---|---|---|---|---|---|---|---|---|---|")
     for p in preds:
         m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve|agentic-scaffold|agentic-fewshot|agentic)\.jsonl", p)
         if not m:
@@ -66,7 +66,7 @@ if preds:
 from daisy_tools.metrics import exact_match_score as _em
 models = sorted({re.match(r"results/pred_(.+)_closed\.jsonl", p).group(1) for p in glob.glob("results/pred_*_closed.jsonl")})
 if models:
-    print("\n## Did the model know when to look? (agentic call decision vs closed-book correctness, EM)\n")
+    print("\n## Retrieval-necessity confusion matrix: did the model know when to look? (call decision vs closed-book EM)\n")
     print("Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluff, 'called when right' is wasted effort.\n")
     print("| model | agentic variant | called when wrong | silent when wrong | called when right | silent when right | call precision | call recall |\n|---|---|---|---|---|---|---|---|")
     for mname in models:
@@ -89,7 +89,7 @@ if models:
 ceil_path = "results/retrieval_ceiling_k3_shaped.jsonl"
 if os.path.exists(ceil_path):
     hit = {r["id"]: bool(r["shaped"]["hit"]) for r in load(ceil_path)}
-    print("\n## Reading fidelity: EM when the gold answer was inside the retrieved intros vs when it was not (retrieve condition)\n")
+    print("\n## Reader accuracy given retrieval success (reading fidelity) vs distraction: EM when the gold answer was inside the retrieved intros vs not (retrieve condition)\n")
     print("| model | EM given answer present | n | EM given answer absent | n |\n|---|---|---|---|---|")
     for p in sorted(glob.glob("results/pred_*_retrieve.jsonl")):
         mname = re.match(r"results/pred_(.+)_retrieve\.jsonl", p).group(1)
@@ -103,7 +103,7 @@ def _norm_title(t):
     return re.sub(r"[^a-z0-9æøå]+", " ", (t or "").lower()).strip().rstrip(".")
 ag = sorted(glob.glob("results/pred_*_agentic*.jsonl"))
 if ag:
-    print("\n## Can the model ask? Model-written queries whose first Wikipedia hit is the question's own subject page\n")
+    print("\n## Can the model ask? Page-level precision of model-written queries (first Wikipedia hit is the subject page)\n")
     print("| model | variant | calls | first hit = subject | rate | empty results (fell back) |\n|---|---|---|---|---|---|")
     for p in ag:
         m = re.match(r"results/pred_(.+)_(agentic-fewshot|agentic)\.jsonl", p)

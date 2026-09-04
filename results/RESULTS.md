@@ -10,7 +10,7 @@
 | google-gemma-3-27b-it | 592 | 0.171 | 0.203 | 0.132 | 0.193 | 0.123 |
 | openai-gpt-oss-20b | 592 | 0.074 | 0.110 | 0.064 | 0.112 | 0.062 |
 
-## Retrieval ceiling: gold answer literally inside the top-3 Danish Wikipedia intros
+## Answer recall@3 (retrieval ceiling): gold answer literally inside the top-3 Danish Wikipedia intros
 
 | query formulation | n | hit rate |
 |---|---|---|
@@ -18,13 +18,13 @@
 | subject (retrieval_ceiling_k3.jsonl) | 360 | 0.803 |
 | question (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.215 |
 | subject (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.787 |
-| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 116 | 0.155 |
-| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 116 | 0.284 |
+| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 147 | 0.150 |
+| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 147 | 0.272 |
 | shaped (retrieval_ceiling_k3_shaped.jsonl) | 592 | 0.404 |
 
 ## Our runs: small models, greedy, zero-shot, the group's prompt and scorer
 
-| model | condition | n | EM | lenient EM | F1 | BLEU | tool calls | fallback | s/row |
+| model | condition | n | EM (SQuAD) | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |
 |---|---|---|---|---|---|---|---|---|---|
 | gemma4b | agentic-fewshot | 592 | 0.397 | 0.417 | 0.436 | 0.287 | 445 | 51 | 5.2 |
 | gemma4b | agentic-scaffold | 592 | 0.289 | 0.297 | 0.318 | 0.208 | 523 | 0 | 4.7 |
@@ -104,7 +104,7 @@
 | qwen3b | retrieve-oracle | 0.801 (n=141) | 0.462 (n=52) | 0.589 (n=399) |
 | qwen3b | retrieve | 0.326 (n=141) | 0.269 (n=52) | 0.263 (n=399) |
 
-## Did the model know when to look? (agentic call decision vs closed-book correctness, EM)
+## Retrieval-necessity confusion matrix: did the model know when to look? (call decision vs closed-book EM)
 
 Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluff, 'called when right' is wasted effort.
 
@@ -126,7 +126,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | qwen3b | agentic-fewshot | 571 | 3 | 17 | 1 | 0.97 | 0.99 |
 | qwen3b | agentic-scaffold | 566 | 8 | 18 | 0 | 0.97 | 0.99 |
 
-## Reading fidelity: EM when the gold answer was inside the retrieved intros vs when it was not (retrieve condition)
+## Reader accuracy given retrieval success (reading fidelity) vs distraction: EM when the gold answer was inside the retrieved intros vs not (retrieve condition)
 
 | model | EM given answer present | n | EM given answer absent | n |
 |---|---|---|---|---|
@@ -136,7 +136,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | mimir | 0.590 | 239 | 0.045 | 353 |
 | qwen3b | 0.644 | 239 | 0.031 | 353 |
 
-## Can the model ask? Model-written queries whose first Wikipedia hit is the question's own subject page
+## Can the model ask? Page-level precision of model-written queries (first Wikipedia hit is the subject page)
 
 | model | variant | calls | first hit = subject | rate | empty results (fell back) |
 |---|---|---|---|---|---|

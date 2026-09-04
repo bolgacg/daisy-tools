@@ -41,14 +41,14 @@
     <li><b>DAISY</b> is a quiz of 741 short factual questions about the Danish Culture Canon, written by the group in Odense; 592 of them are public with their answers, and those 592 are used here.</li>
     <li>A <b>closed-book</b> answer comes from the model's memory alone. Every model here was asked with the group's own Danish prompt, at temperature zero, exactly as in their paper.</li>
     <li>A <b>lookup</b> means the top three Danish Wikipedia article introductions for a search query are pasted above the question before the model answers.</li>
-    <li><b>Agentic</b> here means the model is told it may search, and decides on its own whether to write a search line or answer directly. That decision, not the score, is what the position's call names.</li>
-    <li>Scores are the group's: <b>exact match</b> (the normalised answer equals the reference) and word-level <b>F1</b>. A <b>lenient match</b> is added beside them: the reference appears somewhere inside the answer.</li>
+    <li><b>Agentic</b> here means a single-round tool decision: the model is told it may search, and decides on its own whether to write one search line or answer directly. (The field also uses "agentic" for multi-turn benchmarks; this page means the single decision.) That decision, not the score, is what the position's call names.</li>
+    <li>Scores are the group's: <b>exact match</b> (SQuAD-style, the normalised answer equals the reference) and word-level <b>F1</b>. A <b>contains-gold accuracy</b> is added beside them, the "accuracy" of the PopQA and Self-RAG papers: the reference appears somewhere inside the answer.</li>
   </ol>
   <dl class="glossary">
-    <dt>Retrieval ceiling</dt><dd>How often the reference answer is literally inside the three retrieved introductions. No model can score above it from the text alone.</dd>
-    <dt>Shaped query</dt><dd>The question with its question words removed, shortened until Wikipedia's search returns something. A rule, not a model.</dd>
+    <dt>Answer recall@3 (retrieval ceiling)</dt><dd>How often the reference answer is literally inside the three retrieved introductions, the "top-k retrieval accuracy" of the DPR paper. No reader can score above it from the text alone.</dd>
+    <dt>Rule query</dt><dd>The question with its question words removed, shortened until Wikipedia's search returns something. A rule-based query rewriter, not a model.</dd>
     <dt>Oracle query</dt><dd>The benchmark's own subject field (the name of the canon work) used as the search term. Not available to a model; it marks the best case for asking.</dd>
-    <dt>Reading fidelity</dt><dd>Exact match on the questions where the answer was inside the retrieved text. Separates "could not find it" from "could not read it".</dd>
+    <dt>Reader accuracy given retrieval success</dt><dd>Exact match on the questions where the answer was inside the retrieved text, called reading fidelity below. Separates "could not find it" from "could not read it". Its complement on the other questions is the distraction rate.</dd><dt>Retrieval-necessity confusion matrix</dt><dd>The four counts of act three: whether the model searched, against whether its closed-book answer was right. In selective-prediction terms the share answered from memory is coverage and the error among those is selective risk.</dd>
     <dt>Quantised</dt><dd>Model weights stored at eight bits (six for Gemma) so they fit a six-gigabyte consumer graphics card. Small accuracy cost, stated in the model card.</dd>
   </dl>
 </section>
@@ -108,7 +108,7 @@ Svar:</pre>
     <div class="viz-root" id="a2chart"></div>
     <figcaption><b>What you see:</b> the grey bar is the retrieval ceiling for the chosen query formulation, the coloured bars are each model's exact match when given that retrieval. <b>How to read it:</b> a model bar close to the grey bar reads well; the gap between them is reading failure. <b>What to take from it:</b> <span data-fill="a2_take"></span></figcaption>
   </figure>
-  <h3>Reading fidelity</h3>
+  <h3>Reader accuracy given retrieval success (reading fidelity)</h3>
   <div class="tscroll"><table id="fidtable"><thead><tr><th>Model</th><th>EM when the answer was in the text</th><th>EM when it was not</th></tr></thead><tbody></tbody></table></div>
   <p class="note">Split of the shaped-query run by whether the reference answer was inside the three retrieved introductions (239 questions yes, 353 no).</p>
   <div class="verdict">
@@ -140,7 +140,7 @@ Svar:</pre>
     <h3>Why this data cannot yet test the decision itself</h3>
     <p>When a model is right from memory on only 3 to 6 percent of questions, "always search" is close to the best possible policy, so a high rate of "searched when wrong" is not evidence of judgement. The real decision problem only exists for a model that knows a lot; the 70B model in the group's paper knew about a quarter. Testing that needs either a stronger model or a benchmark where small models know half. This page states the gap rather than claiming the result.</p>
   </div>
-  <h3>Can the model ask?</h3>
+  <h3>Can the model ask? Query quality as page-level precision</h3>
   <div class="tscroll"><table id="asktable"><thead><tr><th>Model</th><th>Variant</th><th>Own queries</th><th>First hit was the subject page</th><th>EM with own query</th><th>EM when it fell back to the rule</th></tr></thead><tbody></tbody></table></div>
   <p class="note">A model-written query "landed" when Wikipedia's first result was the canon work the question is about. When a model's query returned nothing, the shaped rule query was used instead, marked as a fallback.</p>
   <p class="handover">The two models that can ask, ask better than a rule. The judgement of when to ask is the open problem, and it is a training problem, which is where the group's reinforcement-learning work on tool use begins.</p>
@@ -158,6 +158,17 @@ Svar:</pre>
     <p class="hint"><b>Change a filter or click a row</b> to see the full record: prompt query, fetched page, answer and reference. <span id="bcount" class="num"></span></p>
   </div>
   <div class="tscroll"><table id="btable"><thead><tr><th>Question</th><th>Reference</th><th>Model answer</th><th>Match</th><th>Query</th><th>Fetched</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="field">
+  <h2>How this sits in the field</h2>
+  <p class="lede">This matters because a number means little without the nearest published numbers beside it. Three comparisons are close in shape; every mismatch is stated.</p>
+  <ul class="limits">
+    <li><b>Same model, same shape of task, English.</b> Search-R1 (arXiv 2503.09516) reports Qwen2.5-3B on PopQA, entity questions like ours, at 10.8 percent direct, 38.7 percent with retrieval, 43.5 percent when trained to search, using contains-gold accuracy. Ours for the same model on DAISY, contains-gold: <span class="num" data-fill="qwen_closed_len"></span> direct, <span class="num" data-fill="qwen_retrieve_len"></span> with the rule query, <span class="num" data-fill="qwen_agentic_len"></span> agentic without any training. The shape is the same; Danish culture is the harder starting point.</li>
+    <li><b>Small readers fail to extract and get distracted.</b> A 2026 study of retrieval utilisation (arXiv 2603.11513) finds sub-7B models fail to extract the answer on most questions they cannot answer alone and lose a large share of known answers to distracting passages. Our reader accuracy given retrieval success, 37 to 73 percent, and exact match below 5 percent when the answer is absent, are the same phenomenon measured on Danish.</li>
+    <li><b>Adaptive retrieval saves cost only when memory is worth something.</b> Mallen et al. (arXiv 2212.10511) halve API cost on PopQA by retrieving on 40 percent of questions; Adaptive-RAG (2403.14403) trades steps for accuracy. Here closed-book accuracy is 1 to 6 percent, so always retrieving is the optimal policy and a confidence gate cannot pay, although token log-probabilities predict correctness well (AUROC 0.83 to 0.91).</li>
+    <li><b>No published Danish retrieval-augmented QA number exists</b> as far as the literature sweep found; the DAISY paper and the Mimir paper report closed-book only. These tables are the first, which is a contribution and also a reason for caution.</li>
+  </ul>
 </section>
 
 <section id="failures">

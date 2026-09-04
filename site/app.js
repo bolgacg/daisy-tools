@@ -36,6 +36,8 @@ const l3 = dec("agentic-fewshot").find(d => d.model==="llama3b");
 const sc = dec("agentic-scaffold");
 const scText = sc.length ? " Asked first whether it knew the answer, " + sc.filter(d => d.model==="mimir" || d.model==="llama3b").map(d => { const wrong = d.called_wrong + d.silent_wrong; return `${MODELS[d.model]} claimed to know on ${pct0(d.silent_wrong/Math.max(1,wrong))} of the questions it then got wrong`; }).join(" and ") + "; the two models that always searched kept searching, and Llama 1B said no to every question." : "";
 fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a search line in 592 chances each; ${always.join(" and ")} wrote one on ${always.length===2 ? "nearly every" : "nearly every"} question. ` + (l3 ? `Llama 3B searched only when shown examples, ${l3.called_wrong + l3.called_right} times out of 592, all of them on questions it had wrong from memory, which is the right instinct at the wrong scale. ` : "") + `The two models that ask outscore the rule query because their own queries land on the right page about half the time.` + scText;
+const qc = A("qwen3b","closed"), qr = A("qwen3b","retrieve"), qa = A("qwen3b","agentic");
+if (qc && qr && qa) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_retrieve_len = pct(qr.lenient); fills.qwen_agentic_len = pct(qa.lenient); }
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
 /* ---------- replication table ---------- */
@@ -194,8 +196,9 @@ drawBrowser();
     {sel:"#a1chart", k:"Act one: memory · 4 of 8", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory; the dotted line is the 70B model from their paper. Mimir, trained on Danish, holds the most, and it is still one question in twenty.`},
     {sel:"#a2chart", k:"Act two: the lookup · 5 of 8", html:`<b>Click a query formulation.</b> The grey bar is how often the answer was even fetched; the coloured bars are what each model scored with that text. The query moves the result more than the choice of model does.`},
     {sel:"#tiles", k:"Act three: the decision · 6 of 8", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search against its own closed-book record. Two models always search, three almost never; none decides question by question. The box below the tiles says why this data cannot yet test that judgement.`},
-    {sel:"#bcontrols", k:"Every answer · 7 of 8", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query it wrote and the page it fetched. Aggregates hide how models fail; this does not.`},
-    {sel:"#cardtable", k:"Model card and limits · 8 of 8", html:`What was run, on what hardware, with which weights, and what was not done. The limits list is written before a reader has to find them. That is the whole page; the Guided tour button at the top restarts this walkthrough.`},
+    {sel:"#field", k:"Next to the field · 7 of 9", html:`Three published results with the same shape sit beside ours: the same Qwen model on English entity questions, the finding that small readers fail to extract and get distracted, and the adaptive-retrieval cost results. No Danish retrieval number existed before this page.`},
+    {sel:"#bcontrols", k:"Every answer · 8 of 9", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query it wrote and the page it fetched. Aggregates hide how models fail; this does not.`},
+    {sel:"#cardtable", k:"Model card and limits · 9 of 9", html:`What was run, on what hardware, with which weights, and what was not done. The limits list is written before a reader has to find them. That is the whole page; the Guided tour button at the top restarts this walkthrough.`},
   ];
   const root=$("#tour"), hl=$("#tour-hl"), card=$("#tour-card");
   let idx=0;

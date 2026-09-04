@@ -23,6 +23,14 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   without losing accuracy (Mimir: 7.6% answered from memory costs 1.5 points). Conclusion: the gate is a cost
   tool for benchmarks where memory is worth something; on DAISY always-retrieve is optimal. R4 moves to R5.
 
+- 04 Sep 13:05 lit-metrics report landed (lit/METRICS-AND-TERMS.md): canonical names applied to page and report
+  (EM = SQuAD EM; lenient = contains-gold accuracy as in PopQA/Self-RAG; ceiling = answer recall@3 / DPR top-k
+  retrieval accuracy; query quality = page-level R-precision; fidelity = reader accuracy given retrieval success
+  + distraction rate; 2x2 = retrieval-necessity confusion matrix; coverage/selective risk; "oracle query" never
+  "gold passage"; agentic = single-round tool decision). Closest comparable: Search-R1 Qwen2.5-3B PopQA 10.8 /
+  38.7 / 43.5 (direct / RAG / trained) vs ours on DAISY contains-gold 4.1 / 31.6 / 44.6 untrained. No published
+  Danish RAG number exists: our tables are the first (say so). Page got a "How this sits in the field" section.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
