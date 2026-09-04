@@ -1,0 +1,12 @@
+[Unit]
+Description=daisy-tools sequential job queue
+After=network.target
+
+[Service]
+User=bo
+ExecStart=/bin/bash /home/bo/queue/qrun.sh
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

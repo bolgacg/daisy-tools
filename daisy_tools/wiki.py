@@ -2,6 +2,11 @@
 import hashlib, json, os, time, urllib.error, urllib.parse, urllib.request
 
 API = "https://da.wikipedia.org/w/api.php"
+LANG = "da"
+
+def set_lang(lang):
+    global API, LANG
+    LANG = lang; API = f"https://{lang}.wikipedia.org/w/api.php"
 UA = "daisy-tools/0.1 (research harness; contact: bolgacg1@gmail.com)"
 MIN_INTERVAL = 0.6          # seconds between live requests (Wikimedia asks for serial, polite clients)
 CACHE_DIR = os.environ.get("DAISY_WIKI_CACHE", os.path.join(os.path.dirname(__file__), "..", "cache", "wiki"))

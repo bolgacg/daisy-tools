@@ -4,6 +4,9 @@ import json, re, sys, time
 sys.path.insert(0, ".")
 from daisy_tools.wiki import lookup
 from daisy_tools.query import shaped_lookup
+import os as _os
+if _os.environ.get("DAISY_WIKI_LANG","da") != "da":
+    from daisy_tools import wiki as _w; _w.set_lang(_os.environ["DAISY_WIKI_LANG"])
 
 def norm(s):
     return re.sub(r"[^a-z0-9æøå]+", " ", s.lower()).strip()
@@ -11,7 +14,7 @@ def norm(s):
 rows = [json.loads(l) for l in open("data/daisy.jsonl", encoding="utf-8")]
 limit = int(sys.argv[1]) if len(sys.argv) > 1 else 3
 mode_set = sys.argv[2] if len(sys.argv) > 2 else "question,subject"
-outp = f"results/retrieval_ceiling_k{limit}_{mode_set.replace(',','-')}.jsonl"
+outp = f"results/retrieval_ceiling_k{limit}_{mode_set.replace(',','-')}{'_'+_os.environ['DAISY_WIKI_LANG'] if _os.environ.get('DAISY_WIKI_LANG','da')!='da' else ''}.jsonl"
 done = {}
 if __import__("os").path.exists(outp):
     for l in open(outp, encoding="utf-8"):

@@ -122,4 +122,8 @@ See IDEAS.md for the two idea loops (3 Sep).
   spotlight tour, headless walk clean at 1536 and 390 (0 errors, 0 overflow). Local git repo initialised
   (author Bo). NOT published: remote repo + Pages wait for Bo's review and OK. Letter artifact block and CV
   entry filled with the numbers. Remaining: final scaffold numbers, PDFs, Bo review, publish, misc bundle.
-- [ ] Morning: pull results, sanity-check Mimir closed EM vs 9.6, write the page, update letter/CV.
+- 07:00: scaffold run done. Decide-then-search EM: gemma 0.289, qwen 0.275, llama1b 0.150, mimir 0.120,
+  llama3b 0.066. Calibration of the yes/no self-assessment: of the questions each model then got wrong,
+  Mimir claimed to know 69%, Llama3B 88%, Gemma 11%, Qwen 1%, Llama1B 0% (said no to everything).
+  Page data rebuilt (35 agg rows, 15 decision rows), walk clean, verdict extended, letter sentence updated.
+- [x] Morning: pull results, sanity-check Mimir closed EM vs 9.6, write the page, update letter/CV.

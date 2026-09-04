@@ -37,15 +37,26 @@ def _vote(answers):
             return a
     return answers[0]
 
+LOGPROBS = False   # when True, token log-probabilities of the answer are stored in usage["lp"]
+
 def _chat(base_url, model, messages, max_tokens, temperature, api_key="none", timeout=180):
+    body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature}
+    if LOGPROBS:
+        body["logprobs"] = True; body["top_logprobs"] = 1
     r = requests.post(f"{base_url}/chat/completions", timeout=timeout,
-                      headers={"Authorization": f"Bearer {api_key}"},
-                      json={"model": model, "messages": messages, "max_tokens": max_tokens,
-                            "temperature": temperature})
+                      headers={"Authorization": f"Bearer {api_key}"}, json=body)
     if r.status_code >= 400:
         raise RuntimeError(f"HTTP {r.status_code} from server: {r.text[:300]}")
     j = r.json()
-    return (j["choices"][0]["message"]["content"] or "").strip(), j.get("usage", {})
+    usage = dict(j.get("usage", {}))
+    if LOGPROBS:
+        try:
+            toks = j["choices"][0].get("logprobs", {}).get("content") or []
+            usage["lp"] = [round(t.get("logprob", 0.0), 4) for t in toks]
+            usage["tok"] = [t.get("token", "") for t in toks][:24]
+        except Exception:
+            usage["lp"] = None
+    return (j["choices"][0]["message"]["content"] or "").strip(), usage
 
 def _ctx_block(docs, chars):
     parts = []
@@ -55,7 +66,7 @@ def _ctx_block(docs, chars):
     return "\n".join(parts)
 
 def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=64,
-        temperature=0.0, resume=True, parallel=4):
+        temperature=0.0, resume=True, parallel=4, queries=None):
     done = set()
     if resume and os.path.exists(out_path):
         for l in open(out_path, encoding="utf-8"):
@@ -83,8 +94,13 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
                 samples.append(a.replace("\n", " ").strip())
             rec["samples"] = samples
             pred = _vote(samples)
-        elif condition in ("retrieve", "retrieve-oracle"):
-            if condition == "retrieve":
+        elif condition in ("retrieve", "retrieve-oracle", "retrieve-given"):
+            if condition == "retrieve-given":  # query written by another model (asker/reader split)
+                used = (queries or {}).get(r["id"]) or ""
+                docs = lookup(used, limit=k, chars=chars) if used else []
+                if not docs:
+                    docs, used2 = shaped_lookup(r["Question"], limit=k, chars=chars); rec["fallback"] = True
+            elif condition == "retrieve":
                 docs, used = shaped_lookup(r["Question"], limit=k, chars=chars)
             else:  # oracle query: the benchmark's own subject field, an upper bound on "asking" quality
                 used = r["Subject"].rstrip(".")
@@ -142,7 +158,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-oracle", "agentic", "agentic-fewshot", "agentic-scaffold"])
+    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold"])
     ap.add_argument("--data", default="data/daisy.jsonl")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
     ap.add_argument("--model", default="mimir")
@@ -151,10 +167,26 @@ if __name__ == "__main__":
     ap.add_argument("--max-tokens", type=int, default=64)
     ap.add_argument("--limit", type=int, default=0, help="only the first N rows (smoke test)")
     ap.add_argument("--parallel", type=int, default=4)
+    ap.add_argument("--logprobs", action="store_true")
+    ap.add_argument("--queries-from", default=None, help="jsonl of a previous run; its tool_query per id is used (retrieve-given)")
+    ap.add_argument("--wiki-lang", default="da")
+    ap.add_argument("--chars", type=int, default=900)
     a = ap.parse_args()
+    if a.logprobs:
+        LOGPROBS = True
+    if a.wiki_lang != "da":
+        from . import wiki as _w; _w.set_lang(a.wiki_lang)
+    queries = None
+    if a.queries_from:
+        queries = {}
+        for l in open(a.queries_from, encoding="utf-8"):
+            d = json.loads(l)
+            if d.get("tool_query") and not d.get("fallback"):
+                queries[d["id"]] = d["tool_query"]
+        print("loaded", len(queries), "queries from", a.queries_from)
     rows = [json.loads(l) for l in open(a.data, encoding="utf-8")]
     if a.limit:
         rows = rows[: a.limit]
     out = a.out or f"results/pred_{a.model}_{a.condition}.jsonl"
-    n = run(rows, a.condition, a.base_url, a.model, out, k=a.k, max_tokens=a.max_tokens, parallel=a.parallel)
+    n = run(rows, a.condition, a.base_url, a.model, out, k=a.k, chars=a.chars, max_tokens=a.max_tokens, parallel=a.parallel, queries=queries)
     print("done", n, "rows ->", out)
