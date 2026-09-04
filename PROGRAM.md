@@ -76,6 +76,11 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   question against 6.0 on llama.cpp. Built scripts/hf_server.py (OpenAI-compatible, prefix attention) and queued
   job 013: all Mimir conditions rerun through it. Page and letter switch to the official Mimir numbers when 013 lands.
 
+- 04 Sep 14:30 clean A/B on the official implementation, everything else equal: causal attention EM 0.054 (32/592),
+  prefix attention 0.084 (50/592). The llama.cpp Q8 causal port gave 0.056 (33/592). So the attention mode alone
+  explains the gap; 8-bit quantisation costs nothing measurable. A fact the group would want: the community GGUF
+  port undercounts Mimir by about a third on knowledge QA. Job 013 (prefix Mimir, all conditions) running.
+
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).
 2. R2: hybrids (job 020): Gemma-asks/Mimir-reads, Qwen-asks/Mimir-reads. Then a cheaper asker: the rule query
