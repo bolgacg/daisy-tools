@@ -18,50 +18,52 @@
 | subject (retrieval_ceiling_k3.jsonl) | 360 | 0.803 |
 | question (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.215 |
 | subject (retrieval_ceiling_k3_question-subject.jsonl) | 592 | 0.787 |
-| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 147 | 0.150 |
-| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 147 | 0.272 |
+| shaped (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 557 | 0.151 |
+| subject (retrieval_ceiling_k3_shaped-subject_en.jsonl) | 557 | 0.282 |
 | shaped (retrieval_ceiling_k3_shaped.jsonl) | 592 | 0.404 |
 
 ## Our runs: small models, greedy, zero-shot, the group's prompt and scorer
 
-| model | condition | n | EM (SQuAD) | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |
-|---|---|---|---|---|---|---|---|---|---|
-| gemma4b | agentic-fewshot | 592 | 0.397 | 0.417 | 0.436 | 0.287 | 445 | 51 | 5.2 |
-| gemma4b | agentic-scaffold | 592 | 0.289 | 0.297 | 0.318 | 0.208 | 523 | 0 | 4.7 |
-| gemma4b | agentic | 592 | 0.399 | 0.426 | 0.443 | 0.285 | 553 | 77 | 5.9 |
-| gemma4b | closed-sc | 592 | 0.054 | 0.062 | 0.079 | 0.045 | 0 | 0 | 3.3 |
-| gemma4b | closed | 592 | 0.056 | 0.062 | 0.083 | 0.047 | 0 | 0 | 1.2 |
-| gemma4b | retrieve-oracle | 592 | 0.679 | 0.720 | 0.731 | 0.484 | 592 | 0 | 3.6 |
-| gemma4b | retrieve | 592 | 0.311 | 0.323 | 0.340 | 0.219 | 592 | 0 | 3.7 |
-| llama1b | agentic-fewshot | 592 | 0.014 | 0.027 | 0.034 | 0.015 | 1 | 0 | 0.2 |
-| llama1b | agentic-scaffold | 592 | 0.150 | 0.257 | 0.215 | 0.119 | 592 | 0 | 1.2 |
-| llama1b | agentic | 592 | 0.008 | 0.022 | 0.028 | 0.012 | 0 | 0 | 0.2 |
-| llama1b | closed-sc | 592 | 0.012 | 0.034 | 0.033 | 0.016 | 0 | 0 | 1.0 |
-| llama1b | closed | 592 | 0.008 | 0.029 | 0.031 | 0.012 | 0 | 0 | 0.3 |
-| llama1b | retrieve-oracle | 592 | 0.392 | 0.579 | 0.482 | 0.285 | 592 | 0 | 0.9 |
-| llama1b | retrieve | 592 | 0.152 | 0.257 | 0.214 | 0.118 | 592 | 0 | 1.3 |
-| llama3b | agentic-fewshot | 592 | 0.052 | 0.074 | 0.086 | 0.040 | 13 | 0 | 0.6 |
-| llama3b | agentic-scaffold | 592 | 0.066 | 0.078 | 0.088 | 0.057 | 72 | 0 | 1.0 |
-| llama3b | agentic | 592 | 0.037 | 0.049 | 0.067 | 0.031 | 0 | 0 | 0.5 |
-| llama3b | closed-sc | 592 | 0.039 | 0.042 | 0.058 | 0.032 | 0 | 0 | 1.5 |
-| llama3b | closed | 592 | 0.041 | 0.044 | 0.060 | 0.033 | 0 | 0 | 0.4 |
-| llama3b | retrieve-oracle | 592 | 0.644 | 0.718 | 0.709 | 0.463 | 592 | 0 | 2.2 |
-| llama3b | retrieve | 592 | 0.282 | 0.328 | 0.326 | 0.208 | 592 | 0 | 2.9 |
-| mimir-official | closed | 0 | 0.000 | 0.000 | 0.000 | 0.000 | 0 | 0 | nan |
-| mimir | agentic-fewshot | 592 | 0.030 | 0.059 | 0.063 | 0.030 | 0 | 0 | 7.4 |
-| mimir | agentic-scaffold | 592 | 0.120 | 0.152 | 0.163 | 0.096 | 182 | 0 | 8.3 |
-| mimir | agentic | 592 | 0.049 | 0.076 | 0.076 | 0.045 | 0 | 0 | 7.1 |
-| mimir | closed-sc | 592 | 0.062 | 0.078 | 0.087 | 0.055 | 0 | 0 | 20.2 |
-| mimir | closed | 592 | 0.056 | 0.078 | 0.087 | 0.048 | 0 | 0 | 6.0 |
-| mimir | retrieve-oracle | 592 | 0.606 | 0.650 | 0.669 | 0.441 | 592 | 0 | 8.5 |
-| mimir | retrieve | 592 | 0.265 | 0.301 | 0.316 | 0.202 | 592 | 0 | 9.3 |
-| qwen3b | agentic-fewshot | 592 | 0.390 | 0.443 | 0.452 | 0.268 | 588 | 135 | 3.6 |
-| qwen3b | agentic-scaffold | 592 | 0.275 | 0.304 | 0.318 | 0.208 | 584 | 0 | 2.9 |
-| qwen3b | agentic | 592 | 0.400 | 0.446 | 0.462 | 0.277 | 592 | 155 | 3.7 |
-| qwen3b | closed-sc | 592 | 0.032 | 0.037 | 0.051 | 0.031 | 0 | 0 | 1.5 |
-| qwen3b | closed | 592 | 0.030 | 0.041 | 0.055 | 0.030 | 0 | 0 | 0.4 |
-| qwen3b | retrieve-oracle | 592 | 0.628 | 0.672 | 0.691 | 0.455 | 592 | 0 | 2.2 |
-| qwen3b | retrieve | 592 | 0.279 | 0.316 | 0.323 | 0.209 | 592 | 0 | 2.6 |
+| model | condition | n | EM (SQuAD) | 95% CI | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |
+|---|---|---|---|---|---|---|---|---|---|---|
+| gemma4b | agentic-fewshot | 592 | 0.397 | 0.360 to 0.436 | 0.417 | 0.436 | 0.287 | 445 | 51 | 5.2 |
+| gemma4b | agentic-scaffold | 592 | 0.289 | 0.253 to 0.326 | 0.297 | 0.318 | 0.208 | 523 | 0 | 4.7 |
+| gemma4b | agentic | 592 | 0.399 | 0.361 to 0.436 | 0.426 | 0.443 | 0.285 | 553 | 77 | 5.9 |
+| gemma4b | closed-sc | 592 | 0.054 | 0.035 to 0.074 | 0.062 | 0.079 | 0.045 | 0 | 0 | 3.3 |
+| gemma4b | closed | 592 | 0.056 | 0.037 to 0.074 | 0.062 | 0.083 | 0.047 | 0 | 0 | 1.2 |
+| gemma4b | retrieve-oracle | 592 | 0.679 | 0.642 to 0.718 | 0.720 | 0.731 | 0.484 | 592 | 0 | 3.6 |
+| gemma4b | retrieve | 592 | 0.311 | 0.275 to 0.348 | 0.323 | 0.340 | 0.219 | 592 | 0 | 3.7 |
+| llama1b | agentic-fewshot | 592 | 0.014 | 0.005 to 0.024 | 0.027 | 0.034 | 0.015 | 1 | 0 | 0.2 |
+| llama1b | agentic-scaffold | 592 | 0.150 | 0.123 to 0.179 | 0.257 | 0.215 | 0.119 | 592 | 0 | 1.2 |
+| llama1b | agentic | 592 | 0.008 | 0.002 to 0.017 | 0.022 | 0.028 | 0.012 | 0 | 0 | 0.2 |
+| llama1b | closed-sc | 592 | 0.012 | 0.003 to 0.022 | 0.034 | 0.033 | 0.016 | 0 | 0 | 1.0 |
+| llama1b | closed | 592 | 0.008 | 0.002 to 0.017 | 0.029 | 0.031 | 0.012 | 0 | 0 | 0.3 |
+| llama1b | retrieve-oracle | 592 | 0.392 | 0.353 to 0.431 | 0.579 | 0.482 | 0.285 | 592 | 0 | 0.9 |
+| llama1b | retrieve | 592 | 0.152 | 0.125 to 0.181 | 0.257 | 0.214 | 0.118 | 592 | 0 | 1.3 |
+| llama3b | agentic-fewshot | 592 | 0.052 | 0.035 to 0.071 | 0.074 | 0.086 | 0.040 | 13 | 0 | 0.6 |
+| llama3b | agentic-scaffold | 592 | 0.066 | 0.047 to 0.086 | 0.078 | 0.088 | 0.057 | 72 | 0 | 1.0 |
+| llama3b | agentic | 592 | 0.037 | 0.022 to 0.054 | 0.049 | 0.067 | 0.031 | 0 | 0 | 0.5 |
+| llama3b | closed-sc | 592 | 0.039 | 0.025 to 0.056 | 0.042 | 0.058 | 0.032 | 0 | 0 | 1.5 |
+| llama3b | closed | 592 | 0.041 | 0.025 to 0.057 | 0.044 | 0.060 | 0.033 | 0 | 0 | 0.4 |
+| llama3b | retrieve-oracle | 592 | 0.644 | 0.606 to 0.681 | 0.718 | 0.709 | 0.463 | 592 | 0 | 2.2 |
+| llama3b | retrieve | 592 | 0.282 | 0.247 to 0.318 | 0.328 | 0.326 | 0.208 | 592 | 0 | 2.9 |
+| mimir-official | closed | 0 | 0.000 | nan to nan | 0.000 | 0.000 | 0.000 | 0 | 0 | nan |
+| mimir | agentic-fewshot | 592 | 0.030 | 0.019 to 0.044 | 0.059 | 0.063 | 0.030 | 0 | 0 | 7.4 |
+| mimir | agentic-scaffold | 592 | 0.120 | 0.095 to 0.147 | 0.152 | 0.163 | 0.096 | 182 | 0 | 8.3 |
+| mimir | agentic | 592 | 0.049 | 0.032 to 0.068 | 0.076 | 0.076 | 0.045 | 0 | 0 | 7.1 |
+| mimir | closed-sc | 592 | 0.062 | 0.042 to 0.083 | 0.078 | 0.087 | 0.055 | 0 | 0 | 20.2 |
+| mimir | closed | 592 | 0.056 | 0.037 to 0.074 | 0.078 | 0.087 | 0.048 | 0 | 0 | 6.0 |
+| mimir | retrieve-given-gemma | 592 | 0.365 | 0.328 to 0.402 | 0.402 | 0.415 | 0.263 | 476 | 116 | 9.1 |
+| mimir | retrieve-given-qwen | 105 | 0.400 | 0.295 to 0.505 | 0.467 | 0.478 | 0.293 | 87 | 18 | 9.1 |
+| mimir | retrieve-oracle | 592 | 0.606 | 0.571 to 0.645 | 0.650 | 0.669 | 0.441 | 592 | 0 | 8.5 |
+| mimir | retrieve | 592 | 0.265 | 0.233 to 0.299 | 0.301 | 0.316 | 0.202 | 592 | 0 | 9.3 |
+| qwen3b | agentic-fewshot | 592 | 0.390 | 0.351 to 0.427 | 0.443 | 0.452 | 0.268 | 588 | 135 | 3.6 |
+| qwen3b | agentic-scaffold | 592 | 0.275 | 0.242 to 0.312 | 0.304 | 0.318 | 0.208 | 584 | 0 | 2.9 |
+| qwen3b | agentic | 592 | 0.400 | 0.363 to 0.436 | 0.446 | 0.462 | 0.277 | 592 | 155 | 3.7 |
+| qwen3b | closed-sc | 592 | 0.032 | 0.019 to 0.047 | 0.037 | 0.051 | 0.031 | 0 | 0 | 1.5 |
+| qwen3b | closed | 592 | 0.030 | 0.017 to 0.044 | 0.041 | 0.055 | 0.030 | 0 | 0 | 0.4 |
+| qwen3b | retrieve-oracle | 592 | 0.628 | 0.591 to 0.666 | 0.672 | 0.691 | 0.455 | 592 | 0 | 2.2 |
+| qwen3b | retrieve | 592 | 0.279 | 0.245 to 0.318 | 0.316 | 0.323 | 0.209 | 592 | 0 | 2.6 |
 
 ## By answer type (EM)
 
@@ -94,6 +96,8 @@
 | mimir | agentic | 0.092 (n=141) | 0.000 (n=52) | 0.040 (n=399) |
 | mimir | closed-sc | 0.113 (n=141) | 0.000 (n=52) | 0.053 (n=399) |
 | mimir | closed | 0.078 (n=141) | 0.000 (n=52) | 0.055 (n=399) |
+| mimir | retrieve-given-gemma | 0.489 (n=141) | 0.308 (n=52) | 0.328 (n=399) |
+| mimir | retrieve-given-qwen | 0.536 (n=28) | 0.000 (n=4) | 0.370 (n=73) |
 | mimir | retrieve-oracle | 0.837 (n=141) | 0.365 (n=52) | 0.556 (n=399) |
 | mimir | retrieve | 0.348 (n=141) | 0.192 (n=52) | 0.246 (n=399) |
 | qwen3b | agentic-fewshot | 0.369 (n=141) | 0.327 (n=52) | 0.406 (n=399) |
@@ -182,6 +186,8 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | mimir | agentic | carl nielsen (18); mona lisa (17); 2000 (17) | 0.09 |
 | mimir | closed-sc | carl nielsen (19); mona lisa (18); h c andersen (17) | 0.09 |
 | mimir | closed | carl nielsen (27); hans christian andersen (20); mona lisa (19) | 0.11 |
+| mimir | retrieve-given-gemma | carl nielsen (13); 1973 (8); kai normann andersen (5) | 0.04 |
+| mimir | retrieve-given-qwen | kai normann andersen (4); grundtvig (2); 1967 (2) | 0.08 |
 | mimir | retrieve-oracle | kai normann andersen (11); poul reichhardt (4); 1978 (4) | 0.03 |
 | mimir | retrieve | carl nielsen (11); niels w gade (7); 1973 (6) | 0.04 |
 | qwen3b | agentic-fewshot | kai normann andersen (8); 1988 (4); carl nielsen (4) | 0.03 |

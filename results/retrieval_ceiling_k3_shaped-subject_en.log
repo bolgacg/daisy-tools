@@ -2,3 +2,11 @@ resuming with 0 rows already done
 50/592 shaped=8 subject=11 either=13 270s
 100/592 shaped=18 subject=29 either=31 643s
 150/592 shaped=22 subject=40 either=44 1202s
+200/592 shaped=26 subject=56 either=62 1504s
+250/592 shaped=33 subject=71 either=78 1750s
+300/592 shaped=39 subject=83 either=91 1972s
+350/592 shaped=47 subject=99 either=108 2204s
+400/592 shaped=55 subject=112 either=121 2449s
+450/592 shaped=62 subject=127 either=137 2677s
+500/592 shaped=71 subject=138 either=150 2908s
+550/592 shaped=82 subject=152 either=166 3145s

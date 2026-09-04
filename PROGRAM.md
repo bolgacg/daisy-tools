@@ -12,7 +12,7 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
 |---|---|---|---|---|
 | R0 calibration: Mimir closed-book, official implementation vs paper 9.6 (same 592) | paper | 9.6 | 5.6 (Q8 llama.cpp, causal) | jobs 011/012 (prefix A/B) pending |
 | R1 accuracy: best system, any small model (<=4B) | ours: Gemma 3 4B agentic | 40.0 | 40.0 | beaten 70B closed (22.5); next target 50 |
-| R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir best 26.5 (rule query) | job 020 hybrids pending |
+| R2 Mimir-reader system beats every other small model's best | Gemma 40.0 | 40.0 | Mimir reads Gemma queries 36.5; reads Qwen queries 40.0 (105 rows, running) | job 020 running; 021 cross hybrids + query union queued |
 | R3 cost: EM per second per question, EM per 1k tokens (Pareto) | Gemma agentic 40.0 @ 5.9 s | | build the frontier | needs cost table |
 | R4 decision quality: selective prediction (coverage vs risk), AUROC of confidence | Mimir AUROC 0.91 (sum logprob) | | gate useless on DAISY (base rate 5%) | second benchmark needed |
 | R5 second field: Multi Wiki QA da, their task code verbatim | their paper: Mimir 66.8, Gemma 3 1B 42.6 | 66.8 | not run | jobs 060/061 queued |
@@ -43,6 +43,11 @@ Sun 7 Sep 23:59 stays on track in parallel (letter/CV/bundle exist in sdu-applic
   conventions we now add: stderr/CI (bootstrap CI added to the report), calibration metrics, latency definition.
   Feasible learned decision: SFT Gemma 3 270M on <tool_call>search_web(...)</tool_call> rows (their BADM500 repo).
   Job 010 failed (BatchEncoding bug), fixed; 011/012 carry the calibration.
+
+- 04 Sep 13:35 R2 MOVED: query generator / reader split. Mimir reading Gemma-written queries: EM 0.365 (rule query
+  0.265; Gemma itself 0.399); reading Qwen-written queries 0.400 on the first 105 rows. The query is the lever and
+  Mimir reads as well as the 3-4B models once the page is right. Cost: Mimir 9.1 s/q as reader plus ~1 s asker; not
+  cheaper than Gemma alone (5.9 s). Next: cross hybrids and union of two askers' queries (job 021).
 
 ## Backlog (ranked; pick the top feasible on each wake-up; mark done/failed with the number)
 1. R0: read job 010 result; if official Mimir >> 5.6, switch Mimir runs to transformers path (or fix Q8/PR).

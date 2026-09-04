@@ -38,7 +38,7 @@ if preds:
     from daisy_tools.metrics import lenient_match, exact_match_score
     print("| model | condition | n | EM (SQuAD) | 95% CI | contains-gold acc. | F1 | BLEU | tool calls | fallback | s/row |\n|---|---|---|---|---|---|---|---|---|---|---|")
     for p in preds:
-        m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve|agentic-scaffold|agentic-fewshot|agentic)\.jsonl", p)
+        m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic)\.jsonl", p)
         if not m:
             continue
         rows = load(p)
@@ -62,7 +62,7 @@ if preds:
     print("| model | condition | year | number | text |\n|---|---|---|---|---|")
     from daisy_tools.metrics import exact_match_score
     for p in preds:
-        m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve|agentic-scaffold|agentic-fewshot|agentic)\.jsonl", p)
+        m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic)\.jsonl", p)
         if not m: continue
         by = collections.defaultdict(list)
         for r in load(p):
@@ -126,7 +126,7 @@ if preds:
     print("\n## Default answers: most repeated predictions per run\n")
     print("| model | condition | top repeated predictions (count) | share of rows |\n|---|---|---|---|")
     for p in preds:
-        m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve|agentic-scaffold|agentic-fewshot|agentic)\.jsonl", p)
+        m = re.match(r"results/pred_(.+)_(closed-sc|closed|retrieve-oracle|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic)\.jsonl", p)
         if not m: continue
         rows = load(p)
         c = collections.Counter(re.sub(r"[^a-z0-9æøå]+", " ", r["prediction"].lower()).strip() for r in rows)

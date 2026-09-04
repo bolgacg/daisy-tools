@@ -114,9 +114,15 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
             rec["samples"] = samples
             pred = _vote(samples)
         elif condition in ("retrieve", "retrieve-oracle", "retrieve-given"):
-            if condition == "retrieve-given":  # query written by another model (asker/reader split)
-                used = (queries or {}).get(r["id"]) or ""
-                docs = lookup(used, limit=k, chars=chars) if used else []
+            if condition == "retrieve-given":  # query written by another model (query generator / reader split)
+                qs = (queries or {}).get(r["id"]) or []
+                qs = qs if isinstance(qs, list) else [qs]
+                used = " || ".join(qs); docs = []; seen = set()
+                for q in qs:
+                    for t, e in lookup(q, limit=k, chars=chars):
+                        if t not in seen:
+                            seen.add(t); docs.append((t, e))
+                docs = docs[: max(k, 3) if len(qs) == 1 else 2 * k]
                 if not docs:
                     docs, used2 = shaped_lookup(r["Question"], limit=k, chars=chars); rec["fallback"] = True
             elif condition == "retrieve":
@@ -220,11 +226,12 @@ if __name__ == "__main__":
     queries = None
     if a.queries_from:
         queries = {}
-        for l in open(a.queries_from, encoding="utf-8"):
-            d = json.loads(l)
-            if d.get("tool_query") and not d.get("fallback"):
-                queries[d["id"]] = d["tool_query"]
-        print("loaded", len(queries), "queries from", a.queries_from)
+        for path in a.queries_from.split(","):
+            for l in open(path, encoding="utf-8"):
+                d = json.loads(l)
+                if d.get("tool_query") and not d.get("fallback"):
+                    queries.setdefault(d["id"], []).append(d["tool_query"])
+        print("loaded queries for", len(queries), "ids from", a.queries_from)
     rows = [json.loads(l) for l in open(a.data, encoding="utf-8")]
     if a.limit:
         rows = rows[: a.limit]
