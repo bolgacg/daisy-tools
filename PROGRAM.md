@@ -187,3 +187,10 @@ models (65.7 vs 48.5; 59.8 vs 56.0): the query generator is a cost, not a gain, 
 reading loss. One lookup of three intros cannot reach 79; the paragraphs variant reaches 68.8. Recommend to Bo: quote
 65.7 (87% of ceiling) as the main line and present the ceiling decomposition, not chase 79 with stacked steps.
 R1 holder: Gemma 3 4B plain lookup offline index 65.7 (full 592). Next: 015 remainder, 015b Mimir-hf local.
+
+## 2026-09-05 01:45 job 015 finished (FAIL status = expected Mimir-hf OOM at batch 4; all llama.cpp parts complete)
+Full 592, offline index, plain lookup EM (intro recall 75.5% for all; fidelity in brackets):
+gemma4b 65.7 (85.5) | llama3b 61.3 (79.4) | qwen3b 59.8 (77.6) | llama1b 33.8 (44.5). Plus-paragraphs variant:
+68.8 / 64.4 / 63.9 / 41.2. Agentic (model writes query) on offline index: gemma 48.5, qwen 55.4, llama3b 3.7,
+llama1b 0.7 (the Llamas never emit the SEARCH line; unchanged from live). Reading fidelity separates the readers
+cleanly: 85 > 79 > 78 > 45 with identical retrieved text. 015b (Mimir-hf, batch 2) started 01:41.
