@@ -332,3 +332,9 @@ Their Table: Mimir 66.8; Qwen 3.5 4B 57.1; Gemma 4 E2B 44.1; Gemma 3 1B 42.6. Mi
 venv created, deps installed (incl. openai), server started, upstream daisy + daisy_lookup + daisy_tool ran, table printed,
 "inspect view" hint shown. The one-command path is real. Benchmark-noise table live on the page (leak 11, unknown 2, multi 2,
 no question mark 1, Danish letters in gold 98) with a browser filter and per-question flags. 017e (Mimir, lab protocol) running.
+
+## 2026-09-05 21:10 017e: Mimir under the lab fork's DAISY protocol (dfm7.py sdu-daisy: short prompt, 64 tokens), prefix attention, 592
+lab exact (lowercase, whitespace) 1.0 | ascii EM 1.0 | gold contained in the prediction 11.1 | mean answer length 9.9 words.
+Mimir answers the short prompt in full sentences, so exact match under that protocol is near 1 percent; the published 9.6
+cannot come from it. The library protocol (README prompt with "kun det direkte svar", 100 tokens) is the one that lands near
+9.6 (ours 8.4, SE 1.2). Calibration question closed without emailing. Causal variant of the lab run still finishing (259/592).
