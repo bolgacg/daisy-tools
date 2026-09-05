@@ -233,3 +233,7 @@ gemma4b: 0 calls, EM 5.6 (Gemma 3 has no native tool format in llama.cpp) | qwen
 llama3b: called on 143/143 then the run died on a llama.cpp parse error ("does not match the expected peg-native format").
 Runner patched to log tool_format_error rows and continue; 016b resumes llama3b after the smoke test.
 Reading: the native tool channel does not create judgement either; Qwen's 24% of calls score far below the plain lookup (16.9 vs 59.8).
+
+## 2026-09-05 09:10 Inspect (dfm-evals format) smoke test PASSED, Gemma 3 4B, first 40 questions
+upstream daisy 0.050 | daisy_lookup 0.600 | daisy_tool 0.050 (Gemma never calls the tool natively). Our runner on the same 40 ids:
+closed 0.050, retrieve-local 0.600: identical. 015e queued: both tasks on all 592 (the official-format number for the page coda).
