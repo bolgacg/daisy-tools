@@ -310,3 +310,16 @@ Reading: a second retrieval buys almost nothing here. The wider net lifts the ce
 variant and costs 2 points of fidelity (more text, more distraction). Letting the model decide on a second query lowers
 the score: it asks only 100 times and the extra instruction costs 3 points of reading fidelity on every question.
 Best labelled variant stays "+paragraphs" (Gemma 68.8, Mimir 71.6). Page q_second fill now shows all three. 017c (run.sh test) running.
+
+## 2026-09-05 19:05 GitHub/HF sweep (lit/GITHUB-WEB.md, 9.8k words) changes three things
+1. Their harness attends bidirectionally on both serving paths (vLLM hrm_text.py PrefillPrefixLMAttention; native engine
+   prefixlm mask). Our 8.4 vs 5.4 is a statement about the community port, not about their numbers. Page and comment are correct.
+2. Two DAISY task definitions exist: upstream dfm-evals `daisy` (README prompt, 100 tokens, ASCII normaliser) and the lab fork
+   `sdu-daisy` (dfm7.py: "Besvar spørgsmålet kort og præcist på dansk.", 64 tokens, lowercase+whitespace exact). The published
+   9.6 is not tied to either in public code. Action: run the fork protocol on Mimir prefix (job 017e) and report both; page
+   note added to act one.
+3. Dataset audit: 13 answer-in-question leaks, 2 "Ukendt" golds, 1 hint question, 2 unmatched list golds, 98 golds with Danish
+   letters the official normaliser deletes, count inconsistency 746/741/740/592. Candidate for a friendly SDU-Daisy issue (Bo's call).
+Also: Peter Schneider-Kamp is peter-sk on GitHub/HF and said (HF, 20 Aug) "we will happily provide GGUFs once this is sorted";
+PR 27625 has zero reviews; noctrex is a GGUF hobbyist; quantised Mimir cards (3 Sep) report Daisy 8.8 (FP8) and 7.6 (AWQ).
+Decisions for Bo: ask Jacob/Peter which protocol produced 9.6; open three one-line dfm-evals PRs (CODEOWNERS, suite, authors).
