@@ -393,3 +393,35 @@ the batch splitter can chunk a prompt across ubatches, so validation runs use on
 EM 10.0 = 10.0 on the 60, 1.57 s/q. Remaining 22 percent divergence: testing (T1) tokenisation HF vs GGUF on the 60 prompts,
 (T2) GPU with flash attention off, (T3) CPU (the driver's 94 percent was measured on CPU). Hypothesis: Pascal f16 attention
 precision flips low-margin argmax choices; wording changes, score does not.
+
+## 2026-09-06 01:20 v2 word-identity hunt, 60 questions, reference = official transformers prefix output
+Ruled out one at a time: tokenisation (0 of 60 prompts differ in ids; prompt count 158 = 158), flash attention (off: 47/60,
+same), GPU vs CPU (CPU 48/60), context size (1024: 47/60), explicit greedy sampling params (47/60), prompt cache (off by the
+patch), thinking turn (--reasoning off), sliding window (model has n_swa = 0). Decisive: the standalone driver linked against
+the SAME patched library gives 58/60 (mask-level patch is right; driver at -c 4096 cannot allocate: n_ubatch x 262k vocab logits).
+So the gap is in how llama-server drives the model, not in the mask. Next: first-step top-5 comparison, server /completion
+with the exact HF ids (no chat layer) vs the driver's --dump-top, to see whether the prompt encoding or the generation differs.
+WSL crashed at about 00:45 (session restarted); box unaffected, local edits intact, committed e3f9487.
+
+## 2026-09-06 01:45 word-identity hunt narrowed to the server's chat layer
+First-step top-5 (server /completion with the exact HF ids vs driver --dump-top): identical token and log-probability
+(within 0.05) on 60/60. Full generation through /completion with ids: same token sequence as the driver 60/60, identical to
+the official output 58/60 (also with samplers=[temperature] only). So decode, mask, cache and sampling are all right; the
+/v1/chat/completions path (47/60) differs somewhere between the message and the first token, although its prompt token
+count (158) and /apply-template rendering match HF. Probe h: server verbose echo of the prompt it used, chat-path first-token
+logprobs, /completion with the rendered string. Bo (01:30): understand this academically and note it; it goes on the page.
+
+## 2026-09-06 02:15 word-identity hunt CLOSED: not llama.cpp, not the mask, a whitespace variant of their own prompt
+The SDU-Daisy evaluation script (evaluation/eval.py PROMPT_TEMPLATE) starts with a newline and has a literal \n\n after a
+blank line, so the prompt carries a leading newline and two blank lines before "Spørgsmål:". The dfm-evals daisy task's copy
+has one blank line and no leading newline. Our runner uses the script's version verbatim (metrics.PROMPT_TEMPLATE); the official
+transformers reference run, make_prompts.py and the driver use the dfm-evals version (PROMPT_TEMPLATE_DFM). The blank lines
+tokenise to different tokens (108 = two newlines vs 110 = four), one token per prompt, on 60/60 prompts. Effect: 20 percent of
+exact wordings change, the score does not (patched server vs official, same template: 56/60 identical, EM 10.0 vs 11.7 on 60;
+across templates 47/60). Driver vs official, same template: 58/60. So the port with the v2 patch reproduces the official
+implementation; llama.cpp has no second defect. Lesson for the page (Bo: note it academically): two copies of "the" prompt in
+two of their repos differ in whitespace; a 592-question exact-match quiz cannot see it, an exact-wording comparison can.
+Consequence for our numbers: every runner-based row used the script's variant; the Inspect path used dfm-evals' (Gemma lookup
+66.0 vs 65.7); Mimir from memory 8.3 vs 8.4. Nothing to rerun; the page note names which variant each number used.
+Queue released 01:14: 021c (closed + lookup 592, patched server, compare vs dfm reference with --template dfm), 022b (Mimir MWQA
+through the patched server), 024 (k-sweep), 025 (PopQA Llama 3B).

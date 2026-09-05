@@ -15,5 +15,5 @@ T1=$(date +%s); echo "closed wall ${T1}-${T0} = $((T1-T0)) s"
 python -m daisy_tools.runner retrieve --model mimir-prefix --wiki-source local --out results/pred_mimir-prefix_retrieve-local.jsonl --max-tokens 64 --parallel 2 2>&1 | grep -v "^\[" | tail -2
 T2=$(date +%s); echo "lookup wall $((T2-T1)) s"
 echo "prefix-LM split warnings in server log: $(grep -c 'prefix-LM: a batch' logs/server_prefix_v2.log)"
-python tools/prefix-run/compare_server.py --ref results/pred_mimir-official-prefix-t100_closed.jsonl --model mimir-prefix --n 592 --config default --out results/dev/compare592_v2.jsonl 2>&1 | grep -v Warning | tail -n 4
+python tools/prefix-run/compare_server.py --ref results/pred_mimir-official-prefix-t100_closed.jsonl --template dfm --model mimir-prefix --n 592 --config default --out results/dev/compare592_v2_dfm.jsonl 2>&1 | grep -v Warning | tail -n 4
 kill $SPID; wait $SPID 2>/dev/null; true

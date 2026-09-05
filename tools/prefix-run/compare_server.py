@@ -18,9 +18,9 @@ import requests
 
 sys.path.insert(0, ".")
 try:
-    from daisy_tools.metrics import PROMPT_TEMPLATE, exact_match_score as em_fn, normalize_text as norm
+    from daisy_tools.metrics import PROMPT_TEMPLATE, PROMPT_TEMPLATE_DFM, exact_match_score as em_fn, normalize_text as norm
 except Exception:  # standalone use: same normaliser as dfm-evals daisy.py
-    PROMPT_TEMPLATE = None
+    PROMPT_TEMPLATE = PROMPT_TEMPLATE_DFM = None
     def norm(s):
         s = (s or "").lower().strip()
         s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
@@ -45,11 +45,12 @@ def main():
     ap.add_argument("--max-tokens", type=int, default=100)
     ap.add_argument("--config", default="default", choices=list(CONFIGS) + ["all"])
     ap.add_argument("--prompt-template", default=None, help="python format string with {question}; default: daisy_tools PROMPT_TEMPLATE")
+    ap.add_argument("--template", default="sdu", choices=["sdu", "dfm"], help="sdu = the SDU-Daisy evaluation script's template (leading newline, two blank lines before the question; what the runner uses); dfm = the dfm-evals daisy task's copy (one blank line). The reference run must use the same one.")
     ap.add_argument("--out", default=None)
     ap.add_argument("--erase-slot", action="store_true", help="POST /slots/0?action=erase before every request (needs the slots endpoint)")
     ap.add_argument("--extra-body", default=None, help="JSON merged into every request body, e.g. '{\"top_k\": 1}'")
     a = ap.parse_args()
-    tpl = a.prompt_template or PROMPT_TEMPLATE
+    tpl = a.prompt_template or (PROMPT_TEMPLATE_DFM if a.template == "dfm" else PROMPT_TEMPLATE)
     if tpl is None:
         sys.exit("no prompt template: pass --prompt-template or run from the daisy-tools root")
     ref = [json.loads(l) for l in open(a.ref)][: a.n]
