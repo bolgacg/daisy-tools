@@ -425,3 +425,12 @@ Consequence for our numbers: every runner-based row used the script's variant; t
 66.0 vs 65.7); Mimir from memory 8.3 vs 8.4. Nothing to rerun; the page note names which variant each number used.
 Queue released 01:14: 021c (closed + lookup 592, patched server, compare vs dfm reference with --template dfm), 022b (Mimir MWQA
 through the patched server), 024 (k-sweep), 025 (PopQA Llama 3B).
+
+## 2026-09-06 02:55 fourth contribution prepared (Bo, 01:30: "I really want to be the applicant whose code they merge"):
+dfm-evals task `daisy_lookup` on branch daisy-lookup-task of bolgacg/dfm-evals: dfm_evals/tasks/daisy_lookup.py (index built on
+first use from wikimedia/wikipedia 20231101.da into ~/.cache/dfm_evals, FTS5 BM25 title weight 10, question as query, top-3
+introductions, same block format as the harness), tests/test_daisy_lookup.py (6 tests, tiny in-memory index), one registry line.
+ruff clean, 17 tests pass on the box. Job 026 queued: the PR file itself on all 592 with Gemma against the real index (harness 65.7,
+our earlier Inspect copy 66.0). PR text drafted in lit/DAISY-LOOKUP-PR-TEXT.md; opening waits for Bo. llama.cpp branch
+hrm-text-prefix-lm pushed to the (new) fork bolgacg/llama.cpp, commit 66c7c5ed; PR onto noctrex:hrm-text-support waits for Bo.
+021c at 286/592 closed rows (01:35); 022b, 024, 025, 026 queued behind it.
