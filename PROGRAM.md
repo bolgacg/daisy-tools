@@ -242,3 +242,6 @@ closed 0.050, retrieve-local 0.600: identical. 015e queued: both tasks on all 59
 Finding for act three: the same Llama 3B never searched when told in text (3.7, 0 calls) and always searches when the tool is offered
 in its native format (52.5, 100% calls). Whether a small model "decides" to search is set by the interface, not by what it knows.
 Its own tool queries still lose to the plain question (52.5 vs 61.3). 015e (Inspect full 592, Gemma) running.
+
+## 2026-09-05 09:45 015e DONE: their Inspect format, all 592, Gemma 3 4B: daisy 5.4 (se 0.9) | daisy_lookup 66.0 (se 1.9), f1 0.705.
+Harness: 5.6 / 65.7. The two paths agree within half a point; the page coda now states this check. Queue: 017 PopQA long-tail (a) running.

@@ -104,6 +104,7 @@ mimir_paths = [
     {"label": "Community llama.cpp port (causal only), 8-bit, 64 tokens", **(_em_file("results/pred_mimir_closed.jsonl") or {})},
 ]
 mimir_paths = [m for m in mimir_paths if "em" in m]
+inspect_full = json.load(open("results/inspect_full_gemma4b.json")) if os.path.exists("results/inspect_full_gemma4b.json") else None
 # replication rows
 rep = json.load(open("results/replication_big_models_public592.json")) if os.path.exists("results/replication_big_models_public592.json") else {}
 
@@ -121,7 +122,7 @@ for i, g in gold.items():
     qrows.append(q)
 
 out = {"models": MODELS, "conds": CONDS, "agg": agg, "ceilings": {k: {"hit": v["hit"], "n": v["n"]} for k, v in ceil.items()},
-       "decision": decision, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "questions": qrows,
+       "decision": decision, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "questions": qrows,
        "paper": {"mimir_daisy_em_741": 9.6, "llama70b_f1_741": 0.268, "llama70b_bleu_741": 0.166}}
 json.dump(out, open("site/data.json", "w", encoding="utf-8"), ensure_ascii=False)
 open("site/data.js", "w", encoding="utf-8").write("window.DATA=" + json.dumps(out, ensure_ascii=False) + ";")

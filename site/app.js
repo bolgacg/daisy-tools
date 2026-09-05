@@ -68,6 +68,10 @@ fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a sear
 fills.ask_note = `A model-written query "landed" when the first result was the canon work the question is about. When a query returned nothing, the question itself was used instead, marked as a fallback. On the ranked index the question as written is the better query.`;
 const qc = A("qwen3b","closed"), ql = A("qwen3b","retrieve-local");
 if (qc && ql) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_local_len = pct(ql.lenient); }
+if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
+  const I = D.inspect_full, ic = A("gemma4b","closed");
+  fills.inspect_check = `Checked: run through this task on all 592 questions, Gemma 3 4B scores ${pct(I.daisy_lookup.scores.exact_match.mean)} with the lookup (standard error ${(I.daisy_lookup.scores.exact_match.stderr*100).toFixed(1)}) and ${pct(I.daisy.scores.exact_match.mean)} from memory, against ${pct(gl.em)} and ${pct(ic.em)} from the harness behind this page. The two paths agree to within half a point; the harness allows 64 new tokens, their task 100.`;
+}
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
 /* ---------- replication and ruler tables ---------- */
