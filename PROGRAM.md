@@ -237,3 +237,8 @@ Reading: the native tool channel does not create judgement either; Qwen's 24% of
 ## 2026-09-05 09:10 Inspect (dfm-evals format) smoke test PASSED, Gemma 3 4B, first 40 questions
 upstream daisy 0.050 | daisy_lookup 0.600 | daisy_tool 0.050 (Gemma never calls the tool natively). Our runner on the same 40 ids:
 closed 0.050, retrieve-local 0.600: identical. 015e queued: both tasks on all 592 (the official-format number for the page coda).
+
+## 2026-09-05 09:20 016b done. Llama 3.2 3B, native tool call, offline index, full 592: EM 52.5, called on 589/592 (3 parse errors).
+Finding for act three: the same Llama 3B never searched when told in text (3.7, 0 calls) and always searches when the tool is offered
+in its native format (52.5, 100% calls). Whether a small model "decides" to search is set by the interface, not by what it knows.
+Its own tool queries still lose to the plain question (52.5 vs 61.3). 015e (Inspect full 592, Gemma) running.

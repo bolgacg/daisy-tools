@@ -327,7 +327,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | qwen3b | retrieve-local | 592 | 0.598 | 1055 | 6.5 | 1.00 | 4.2 | 0.56 | 0.144 |
 | qwen3b | agentic-local | 592 | 0.554 | 267 | 13.3 | 1.00 | 4.5 | 1.97 | 0.124 |
 | mimir-hf | retrieve-given-gemma+qwen | 592 | 0.534 | 869 | 6.0 | 0.92 | 12.3 | 0.61 | 0.043 |
-| llama3b | agentic-native-local | 143 | 0.490 | 1192 | 6.8 | 1.00 | 6.5 | 0.41 | 0.076 |
+| llama3b | agentic-native-local | 592 | 0.525 | 1168 | 6.4 | 0.99 | 6.3 | 0.45 | 0.083 |
 | gemma4b | agentic-local | 592 | 0.485 | 222 | 13.5 | 0.93 | 6.6 | 2.06 | 0.074 |
 | mimir-hf | retrieve-given-qwen | 592 | 0.473 | 675 | 5.9 | 0.74 | 8.3 | 0.69 | 0.057 |
 | llama1b | retrieve-plus-local | 592 | 0.412 | 1411 | 10.2 | 1.00 | 3.4 | 0.29 | 0.121 |
