@@ -215,3 +215,8 @@ R1 holder: Mimir-hf 65.9 = Gemma 65.7 (tie within noise). R2 (Mimir best) moved 
 Page rewritten in the answer-bo voice: three acts (ruler / one lookup, two engines / decision), run-it-yourself coda with the
 dfm-evals task, model card with cost columns; headless walk clean at 1536 and 390 (0 errors, 0 overflow, 0 empty fills).
 Letter and CV still to update (they cite 40 percent and factor of five).
+
+## 2026-09-05 07:30 Mimir-hf paragraphs variant (retrieve-plus-local, labelled, NOT main line), full 592: EM 71.6
+(contains 75.7; answer in context 81.2%; fidelity 87.1%; 43 s/q). Gemma same variant 68.8. Job 015b now runs Mimir agentic-local
+(expected: never searches), then the superseded qwenq condition, which the skip watcher (~/queue/skip-qwenq.sh) kills on start.
+Headline stays the main line: Mimir 65.9 / Gemma 65.7 with one plain lookup.

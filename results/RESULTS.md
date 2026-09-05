@@ -57,7 +57,7 @@
 | llama3b | retrieve-oracle | 592 | 0.644 | 0.606 to 0.681 | 0.718 | 0.709 | 0.463 | 592 | 0 | 2.2 | | |
 | llama3b | retrieve-plus-local | 592 | 0.644 | 0.605 to 0.682 | 0.736 | 0.724 | 0.461 | 592 | 0 | 6.8 | 0.812 | 0.780 |
 | llama3b | retrieve | 592 | 0.282 | 0.247 to 0.318 | 0.328 | 0.326 | 0.208 | 592 | 0 | 2.9 | | |
-| mimir-hf | agentic-local | 9 | 0.000 | 0.000 to 0.000 | 0.000 | 0.056 | 0.008 | 0 | 0 | 16.6 | | |
+| mimir-hf | agentic-local | 39 | 0.231 | 0.103 to 0.359 | 0.256 | 0.255 | 0.171 | 5 | 0 | 12.4 | 0.800 | 1.000 |
 | mimir-hf | agentic-scaffold | 592 | 0.123 | 0.098 to 0.150 | 0.137 | 0.154 | 0.111 | 94 | 0 | 4.2 | | |
 | mimir-hf | agentic | 592 | 0.123 | 0.096 to 0.150 | 0.139 | 0.145 | 0.096 | 56 | 1 | 3.3 | | |
 | mimir-hf | closed | 592 | 0.084 | 0.062 to 0.108 | 0.096 | 0.115 | 0.076 | 0 | 0 | 1.9 | | |
@@ -65,7 +65,7 @@
 | mimir-hf | retrieve-given-qwen | 592 | 0.473 | 0.434 to 0.514 | 0.503 | 0.525 | 0.328 | 437 | 155 | 8.3 | | |
 | mimir-hf | retrieve-local | 592 | 0.659 | 0.620 to 0.698 | 0.703 | 0.715 | 0.469 | 592 | 0 | 26.2 | 0.755 | 0.861 |
 | mimir-hf | retrieve-oracle | 592 | 0.694 | 0.660 to 0.730 | 0.736 | 0.748 | 0.498 | 592 | 0 | 8.6 | | |
-| mimir-hf | retrieve-plus-local | 10 | 0.800 | 0.500 to 1.000 | 0.800 | 0.850 | 0.644 | 10 | 0 | 46.8 | 0.900 | 0.889 |
+| mimir-hf | retrieve-plus-local | 592 | 0.716 | 0.681 to 0.758 | 0.757 | 0.772 | 0.508 | 592 | 0 | 43.5 | 0.812 | 0.871 |
 | mimir-hf | retrieve-plus-qwenq-local | 1 | 1.000 | 1.000 to 1.000 | 1.000 | 1.000 | 1.000 | 1 | 0 | 79.1 | 1.000 | 1.000 |
 | mimir-hf | retrieve | 592 | 0.326 | 0.289 to 0.365 | 0.351 | 0.365 | 0.237 | 592 | 0 | 8.1 | | |
 | mimir-official-prefix-t100 | closed | 592 | 0.084 | 0.061 to 0.108 | 0.096 | 0.115 | 0.077 | 0 | 0 | 576.7 | | |
@@ -126,7 +126,7 @@
 | llama3b | retrieve-oracle | 0.816 (n=141) | 0.423 (n=52) | 0.612 (n=399) |
 | llama3b | retrieve-plus-local | 0.830 (n=141) | 0.365 (n=52) | 0.614 (n=399) |
 | llama3b | retrieve | 0.305 (n=141) | 0.231 (n=52) | 0.281 (n=399) |
-| mimir-hf | agentic-local | 0.000 (n=4) | 0.000 (n=1) | 0.000 (n=4) |
+| mimir-hf | agentic-local | 0.250 (n=12) | 0.000 (n=1) | 0.231 (n=26) |
 | mimir-hf | agentic-scaffold | 0.248 (n=141) | 0.058 (n=52) | 0.088 (n=399) |
 | mimir-hf | agentic | 0.106 (n=141) | 0.038 (n=52) | 0.140 (n=399) |
 | mimir-hf | closed | 0.113 (n=141) | 0.019 (n=52) | 0.083 (n=399) |
@@ -134,7 +134,7 @@
 | mimir-hf | retrieve-given-qwen | 0.454 (n=141) | 0.346 (n=52) | 0.496 (n=399) |
 | mimir-hf | retrieve-local | 0.809 (n=141) | 0.442 (n=52) | 0.634 (n=399) |
 | mimir-hf | retrieve-oracle | 0.823 (n=141) | 0.481 (n=52) | 0.677 (n=399) |
-| mimir-hf | retrieve-plus-local | 1.000 (n=4) | 0.000 (n=1) | 0.800 (n=5) |
+| mimir-hf | retrieve-plus-local | 0.837 (n=141) | 0.462 (n=52) | 0.707 (n=399) |
 | mimir-hf | retrieve-plus-qwenq-local | - | - | 1.000 (n=1) |
 | mimir-hf | retrieve | 0.369 (n=141) | 0.288 (n=52) | 0.316 (n=399) |
 | mimir-official-prefix-t100 | closed | 0.113 (n=141) | 0.019 (n=52) | 0.083 (n=399) |
@@ -246,7 +246,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | llama3b | retrieve-oracle | kai normann andersen (12); 1838 (4); h c lumbye (4) | 0.03 |
 | llama3b | retrieve-plus-local | kai normann andersen (10); 1987 (4); 1838 (4) | 0.03 |
 | llama3b | retrieve | jeg er ikke klar over spørgs (9); jeg er ukendt (8); carl nielsen (7) | 0.04 |
-| mimir-hf | agentic-local | sangen de levendes land blev (1); 1930 (1); søren gyldmark (1) | 0.33 |
+| mimir-hf | agentic-local | søren gyldmark (4); præcis (2); kai normann andersen (2) | 0.21 |
 | mimir-hf | agentic-scaffold | carl nielsen (24); hans christian andersen (14); johannes v jensen (13) | 0.09 |
 | mimir-hf | agentic | præcis (47); søren kierkegaard (46); 2005 (18) | 0.19 |
 | mimir-hf | closed | carl nielsen (25); hans christian andersen (14); johannes v jensen (13) | 0.09 |
@@ -254,7 +254,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | mimir-hf | retrieve-given-qwen | kai normann andersen (7); ikke nævnt (6); niels w gade (5) | 0.03 |
 | mimir-hf | retrieve-local | kai normann andersen (12); 1838 (4); h c lumbye (4) | 0.03 |
 | mimir-hf | retrieve-oracle | kai normann andersen (12); 1838 (4); h c lumbye (4) | 0.03 |
-| mimir-hf | retrieve-plus-local | n f s grundtvig (1); 1824 (1); l m lindeman (1) | 0.30 |
+| mimir-hf | retrieve-plus-local | kai normann andersen (12); 1987 (4); 1838 (4) | 0.03 |
 | mimir-hf | retrieve-plus-qwenq-local | n f s grundtvig (1) | 1.00 |
 | mimir-hf | retrieve | niels w gade (10); carl nielsen (9); ikke nævnt (8) | 0.05 |
 | mimir-official-prefix-t100 | closed | carl nielsen (26); hans christian andersen (15); johannes v jensen (13) | 0.09 |
@@ -312,7 +312,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | model | condition | n | EM | prompt tok/q | completion tok/q | lookups/q | s/q | EM per 1k tok | EM per s |
 |---|---|---|---|---|---|---|---|---|---|
 | mimir-hf | retrieve-plus-qwenq-local | 1 | 1.000 | 1248 | 10.0 | 1.00 | 79.1 | 0.79 | 0.013 |
-| mimir-hf | retrieve-plus-local | 10 | 0.800 | 1382 | 5.9 | 1.00 | 46.8 | 0.58 | 0.017 |
+| mimir-hf | retrieve-plus-local | 592 | 0.716 | 1302 | 6.0 | 1.00 | 43.5 | 0.55 | 0.016 |
 | mimir-hf | retrieve-oracle | 592 | 0.694 | 708 | 5.8 | 1.00 | 8.6 | 0.97 | 0.081 |
 | gemma4b | retrieve-plus-local | 592 | 0.688 | 1302 | 6.3 | 1.00 | 8.4 | 0.53 | 0.082 |
 | gemma4b | retrieve-oracle | 592 | 0.679 | 708 | 6.2 | 1.00 | 3.6 | 0.95 | 0.188 |
@@ -346,6 +346,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | qwen3b | agentic-scaffold | 592 | 0.275 | 738 | 6.7 | 0.99 | 2.9 | 0.37 | 0.094 |
 | mimir | retrieve | 592 | 0.265 | 665 | 7.8 | 1.00 | 9.3 | 0.39 | 0.029 |
 | llama1b | retrieve-given-gemma | 592 | 0.250 | 747 | 11.8 | 0.80 | 1.1 | 0.33 | 0.232 |
+| mimir-hf | agentic-local | 39 | 0.231 | 221 | 8.0 | 0.13 | 12.4 | 1.01 | 0.019 |
 | llama1b | retrieve | 592 | 0.152 | 727 | 12.0 | 1.00 | 1.3 | 0.21 | 0.117 |
 | llama1b | agentic-scaffold | 592 | 0.150 | 727 | 12.0 | 1.00 | 1.2 | 0.20 | 0.123 |
 | mimir-hf | agentic-scaffold | 592 | 0.123 | 247 | 5.9 | 0.16 | 4.2 | 0.49 | 0.029 |
@@ -373,5 +374,4 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | llama1b | agentic | 592 | 0.008 | 271 | 10.5 | 0.00 | 0.2 | 0.03 | 0.036 |
 | llama1b | closed | 592 | 0.008 | 206 | 12.6 | 0.00 | 0.3 | 0.04 | 0.033 |
 | llama1b | agentic-local | 592 | 0.007 | 271 | 10.5 | 0.00 | 0.2 | 0.02 | 0.029 |
-| mimir-hf | agentic-local | 9 | 0.000 | 221 | 6.7 | 0.00 | 16.6 | 0.00 | 0.000 |
 
