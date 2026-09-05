@@ -266,3 +266,9 @@ reader at 55.4 is level with the trained Self-RAG rows. ret10 and the agentic-en
 ## 2026-09-05 12:35 R6 PopQA long-tail interim (contains-gold, 1,399 q, Self-RAG passages): gemma4b closed 19.0 | ret5 55.4 | ret10 54.9 |
 agentic-en 32.8; qwen3b closed 21.4 | ret5 54.0 (ret10, agentic-en running). Published: Self-RAG 7B 54.9 / 13B 55.8; Llama2-7B+ret 38.2;
 ChatGPT+ret 50.8. Both untrained small readers land on the trained Self-RAG rows. Page field section to get this table when 017 closes.
+
+## 2026-09-05 13:10 R6 CLOSED (job 017): PopQA long-tail, Self-RAG passages, contains-gold, 1,399 q
+gemma4b: closed 19.0 | top5 55.4 | top10 54.9 | own query on live English Wikipedia 32.8 (always searched)
+qwen3b:  closed 21.4 | top5 54.0 | top10 55.6 | own query 31.9 (searched 1396/1399)
+Self-RAG paper Table 2: Llama2-7B 14.7 -> 38.2; Llama2-13B 14.7 -> 45.7; Self-RAG 7B 54.9; 13B 55.8. Untrained 3B/4B readers on
+identical passages match the trained 7B/13B rows. On the page: field section table + text. 017b (second retrieval, Gemma) running.

@@ -90,6 +90,15 @@ if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
   if (!wide || !two2) parts.push(`Two further variants, a ten-page net and a model-written second query, are running and will appear here.`);
   fills.q_second = `Every variant below is labelled, not the main line, because each adds a selection step beyond one lookup. ` + parts.join(" ") + ` The honest reading: the remaining misses are pages the ranker does not put in the top three and facts below the introduction, and each extra step buys a few points at roughly double the tokens.`;
 }
+/* PopQA long-tail on the Self-RAG passages */
+if (D.popqa) {
+  const PUB = [["Llama 2 7B (their baseline, untrained)", 0.147, 0.382, null], ["Llama 2 13B (their baseline, untrained)", 0.147, 0.457, null], ["Self-RAG 7B (trained to retrieve and critique)", null, 0.549, null], ["Self-RAG 13B (trained)", null, 0.558, null]];
+  const ours = Object.entries(D.popqa).map(([m, v]) => [MODELS[m] + " (this page, untrained)", v.closed ? v.closed.match : null, v.ret5 ? v.ret5.match : null, v.ret10 ? v.ret10.match : null]);
+  const cell = v => v == null ? "" : pct(v);
+  $("#popqatable tbody").innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${cell(r[1])}</td><td class="n">${cell(r[2])}</td><td class="n">${cell(r[3])}</td></tr>`).join("");
+  const best = ours.map(r => Math.max(r[2] || 0, r[3] || 0));
+  fills.popqa_text = `With five passages the two untrained 3B and 4B readers score ${ours.map(r => pct(r[2])).join(" and ")}, level with the trained Self-RAG rows; the paper's untrained 7B baseline with the same passages scores 38.2. Published rows are from Table 2 of the Self-RAG paper.`;
+}
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
 /* ---------- replication and ruler tables ---------- */
