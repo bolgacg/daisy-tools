@@ -338,3 +338,16 @@ lab exact (lowercase, whitespace) 1.0 | ascii EM 1.0 | gold contained in the pre
 Mimir answers the short prompt in full sentences, so exact match under that protocol is near 1 percent; the published 9.6
 cannot come from it. The library protocol (README prompt with "kun det direkte svar", 100 tokens) is the one that lands near
 9.6 (ours 8.4, SE 1.2). Calibration question closed without emailing. Causal variant of the lab run still finishing (259/592).
+
+## 2026-09-05 22:45 prefix-LM fix for the llama.cpp port (Bo: build it, then offer it; no asking)
+George (noctrex) replied 19:54: limitation known, prefix mode "a much larger change ... later". Our comment had not credited
+his limitations note (partial whoops; recovery = the patch). Built tonight:
+1. tools/prefix-run/prefix-run.cpp: driver using the public llama_set_causal_attn API (off for the prompt batch, on for
+   generation). No llama.cpp change. Smoke on 3 questions (CPU): identical answers to the official transformers prefix path,
+   different from the causal port. Full 592 closed-book running on CPU (GPU busy with 022), both modes, resume-by-id.
+2. tools/prefix-run/patch/apply_prefixlm.py + 0001 patch: 15-line in-tree change in llama_context::decode (multi-token
+   ubatch = prompt, causal off; single-token = generation, causal on; warning if the prompt exceeds n_ubatch). Applied on
+   the box tree; CPU-only build in ~/src/llama.cpp/build-cpu running. Branch hrm-text-prefix-lm on top of noctrex's
+   hrm-text-support in a local shallow clone, committed as Bo; fork bolgacg/llama.cpp exists; push after validation.
+Also today: PRs opened on Bo's approval: dfm-evals #8 (CODEOWNERS), SDU-Daisy #2 (scorer fixes + tests). Four demo repos
+rewritten to describe themselves without addressee lines. GitHub profile: name/bio pending the device flow (code issued twice).
