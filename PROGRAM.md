@@ -286,3 +286,14 @@ prompt in a collapsible, "Where the 592 questions go" two-row segmented chart wi
 1 intro and +paragraphs ticks appear when 031 lands), generated sentences shortened to the two-numbers rule, tour step 6 now the
 chart. Walk clean; master pushed; gh-pages republished via scripts/publish_pages.sh; live check 200, 0 errors.
 Box still unreachable after the power loss (14:35); Bo asked to reconnect the phone.
+
+## 2026-09-05 18:05 POWER-CUT INCIDENT closed (13:20 to 18:03, about 4 h 40 min of GPU lost)
+Chain: mains cut -> box off (BIOS "Restore AC Power Loss" default = stay off) -> flat CMOS cell wiped BIOS -> cold start halted
+at the "press F1" prompt (Q-code d7, no keyboard attached, no picture on the TV until a reset) -> Secure Boot came back on
+with the CMOS defaults -> the DKMS-signed NVIDIA module was refused ("Key was rejected by service") -> the requeued job ran
+on CPU until I stopped the queue. MOK enrolment via mokutil staged four times; the MokManager screen timed out each time.
+Fix applied by Bo in the BIOS (18:00): Secure Boot OS Type = Other OS (driver loads), Wait For F1 If Error = Disabled,
+Boot Option 1 = Ubuntu (P1 Kingston), Restore AC Power Loss = Power On. Driver back (nvidia-smi OK), queue re-enabled,
+017b requeued from row 461 (460 rows salvaged, 0 corrupt). Root cause still open: the CMOS battery (CR2032) must be replaced
+or every cold start repeats this. Tether watchdog fired at boot as designed; adb devices empty -> investigate (setFunctions
+rndis drops the adb function; should be rndis,adb).
