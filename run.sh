@@ -14,7 +14,7 @@ LIM=${LIMIT:+--limit $LIMIT}
 
 [ -d .venv-inspect ] || python3 -m venv .venv-inspect
 .venv-inspect/bin/pip install -q --upgrade pip
-.venv-inspect/bin/pip install -q inspect-ai datasets requests pyarrow
+.venv-inspect/bin/pip install -q inspect-ai openai datasets requests pyarrow
 
 if [ ! -f "$INDEX" ]; then
   echo "== building the Danish Wikipedia index at $INDEX (dump of 1 Nov 2023, about 20 minutes, 0.9 GB)"

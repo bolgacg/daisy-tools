@@ -23,7 +23,7 @@ INSPECT_MODEL=vllm/google/gemma-3-4b-it bash run.sh   # on a cluster, through In
 ## Run, step by step
 
 ```
-pip install inspect-ai datasets
+pip install inspect-ai openai datasets
 python scripts/build_localwiki.py            # about 20 minutes, writes ~/data/dawiki/dawiki.sqlite (0.9 GB)
 OPENAI_API_KEY=none inspect eval dfm_evals_task/daisy_lookup.py@daisy_lookup \
     --model openai/<served model name> --model-base-url http://127.0.0.1:8080/v1

@@ -10,8 +10,8 @@ const pct0 = x => Math.round(x*100) + " %";
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const CONDN = {closed:"from memory", "closed-sc":"from memory, 5-sample vote", retrieve:"one lookup, search box", "retrieve-oracle":"one lookup, oracle query (search box)",
-  "retrieve-local":"one lookup, ranked index", "retrieve-plus-local":"lookup plus two paragraphs, ranked index (variant)", "retrieve-k1-local":"one lookup, ranked index, 1 page", "retrieve-k5-local":"one lookup, ranked index, 5 pages", "retrieve-c1800-local":"one lookup, ranked index, 1800 characters", "retrieve-wide-local":"second stage: ten pages, best paragraphs (variant)", "retrieve-tworound-local":"second stage: model writes a follow-up query (variant)",
-  "retrieve-given-qwen":"Mimir reads, Qwen asks (search box)", "retrieve-given-gemma":"reads Gemma's queries (search box)", "retrieve-given-gemma+qwen":"reads Gemma's and Qwen's queries (search box)",
+  "retrieve-local":"one lookup, ranked index", "retrieve-plus-local":"lookup + two paragraphs (variant)", "retrieve-k1-local":"one lookup, ranked index, 1 page", "retrieve-k5-local":"one lookup, ranked index, 5 pages", "retrieve-c1800-local":"one lookup, ranked index, 1800 characters", "retrieve-wide-local":"ten pages + paragraphs (variant)", "retrieve-tworound-local":"follow-up query (variant)",
+  "retrieve-given-qwen":"Mimir reads, Qwen asks (search box)", "retrieve-given-gemma":"reads Gemma's queries (search box)", "retrieve-given-gemma+qwen":"reads Gemma and Qwen queries (search box)",
   agentic:"model decides and writes the query, search box", "agentic-local":"model decides and writes the query, ranked index", "agentic-native":"native tool call, search box", "agentic-native-local":"native tool call, ranked index",
   "agentic-fewshot":"model decides, with examples", "agentic-scaffold":"asked first whether it knows"};
 

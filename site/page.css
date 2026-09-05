@@ -34,6 +34,7 @@ figcaption{font-size:13px;color:var(--soft);margin-top:8px;line-height:1.5}
 .tile.good .v{color:var(--pos)} .tile.bad .v{color:var(--neg)}
 #bcontrols{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
 #bcontrols label{font:500 12px/1.2 var(--mono);color:var(--soft);display:flex;flex-direction:column;gap:4px}
+#bcontrols label,#bcontrols select,#bcontrols input{max-width:100%;box-sizing:border-box;}
 #bcontrols select,#bcontrols input{font:14px var(--sans);padding:6px 8px;border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:4px}
 #bcontrols .hint{flex-basis:100%}
 #btable td{vertical-align:top;font-size:13px} #btable tr.row{cursor:pointer} #btable tr.row:hover td{background:var(--panel)}
