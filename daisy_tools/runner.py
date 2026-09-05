@@ -272,6 +272,37 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
                     pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
             else:
                 pred = first
+        elif condition == "retrieve-wide":
+            # SECOND RETRIEVAL STAGE, rule based (labelled variant): top-10 pages for the question, then the three intros
+            # plus the four best paragraphs across all ten pages by lexical rank. Two selection steps, no model in the loop.
+            titles = _wiki.search(r["Question"], limit=10)
+            rec["tool_query"] = r["Question"]; rec["titles"] = titles[:10]
+            docs = compose_plus(r["Question"], titles, k_intro=3, k_para=4, chars_intro=chars, chars_para=chars,
+                                page_fn=_page_paragraphs, intro_fn=getattr(_wiki, "intro", None))
+            prompt = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
+            pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt}], max_tokens, temperature)
+        elif condition == "retrieve-tworound":
+            # SECOND RETRIEVAL, model driven (labelled variant): plain lookup first; if the model says the text lacks the
+            # answer it writes one more query, the new pages are added, and it answers with the plain prompt.
+            docs, used = shaped_lookup(r["Question"], limit=k, chars=chars)
+            rec["tool_query"] = used; rec["titles"] = [t for t, _ in docs]
+            prompt1 = ("Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) +
+                       "\n\nHvis svaret på spørgsmålet ikke står i teksten ovenfor, skriv PRÆCIS én linje af formen\n"
+                       "SEARCH: <søgeord>\nog intet andet. Ellers besvar spørgsmålet efter reglerne nedenfor.\n\n" + base_prompt)
+            first, usage = _chat(base_url, model, [{"role": "user", "content": prompt1}], max_tokens, temperature)
+            rec["first_output"] = first
+            m = re.search(r"SEARCH:\s*(.+)", first)
+            if m:
+                q2 = m.group(1).strip().splitlines()[0][:200]; rec["round2_query"] = q2
+                seen = {t for t, _ in docs}
+                for t, e in lookup(q2, limit=k, chars=chars):
+                    if t not in seen:
+                        docs.append((t, e)); seen.add(t)
+                rec["titles"] = [t for t, _ in docs]
+                prompt2 = "Baggrundsviden fra dansk Wikipedia:\n" + _ctx_block(docs, chars) + "\n\n" + base_prompt
+                pred, usage = _chat(base_url, model, [{"role": "user", "content": prompt2}], max_tokens, temperature)
+            else:
+                pred = first
         elif condition in ("agentic", "agentic-fewshot"):
             pre = AGENT_PREAMBLE if condition == "agentic" else AGENT_FEWSHOT
             first, usage = _chat(base_url, model, [{"role": "user", "content": pre + base_prompt}],
@@ -320,7 +351,7 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-title", "retrieve-plus", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
+    ap.add_argument("condition", choices=["closed", "closed-sc", "retrieve", "retrieve-rerank", "retrieve-title", "retrieve-plus", "retrieve-wide", "retrieve-tworound", "retrieve-oracle", "retrieve-given", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native"])
     ap.add_argument("--data", default="data/daisy.jsonl")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
     ap.add_argument("--model", default="mimir")

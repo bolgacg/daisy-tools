@@ -5,7 +5,7 @@ sys.path.insert(0, ".")
 from daisy_tools.metrics import exact_match_score as em, f1_score, lenient_match
 
 MODELS = {"mimir": "DFM Mimir 1B (llama.cpp, causal)", "mimir-hf": "DFM Mimir 1B (official, prefix attention)", "llama1b": "Llama 3.2 1B", "llama3b": "Llama 3.2 3B", "gemma4b": "Gemma 3 4B", "qwen3b": "Qwen 2.5 3B"}
-CONDS = ["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given-gemma", "retrieve-given-qwen", "retrieve-given-gemma+qwen", "retrieve-k1", "retrieve-k5", "retrieve-c1800", "retrieve-en", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native", "agentic-en", "retrieve-local", "retrieve-plus-local", "agentic-local", "agentic-native-local", "retrieve-k1-local", "retrieve-k5-local", "retrieve-c1800-local"]
+CONDS = ["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given-gemma", "retrieve-given-qwen", "retrieve-given-gemma+qwen", "retrieve-k1", "retrieve-k5", "retrieve-c1800", "retrieve-en", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native", "agentic-en", "retrieve-local", "retrieve-plus-local", "agentic-local", "agentic-native-local", "retrieve-k1-local", "retrieve-k5-local", "retrieve-c1800-local", "retrieve-wide-local", "retrieve-tworound-local"]
 def load(p): return [json.loads(l) for l in open(p, encoding="utf-8")]
 def atype(a):
     a = a.strip()
@@ -14,7 +14,7 @@ def atype(a):
 gold = {r["id"]: r for r in load("data/daisy.jsonl")}
 runs = {}   # (model, cond) -> {id: row}
 for p in glob.glob("results/pred_*.jsonl"):
-    m = re.match(r"results/pred_(.+?)_(closed-sc|closed|retrieve-oracle|retrieve-rerank[a-z0-9+-]*|retrieve-title[a-z0-9+-]*|retrieve-plus[a-z0-9+-]*|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve-local|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic-local|agentic)(-local)?\.jsonl", p)
+    m = re.match(r"results/pred_(.+?)_(closed-sc|closed|retrieve-oracle|retrieve-rerank[a-z0-9+-]*|retrieve-title[a-z0-9+-]*|retrieve-plus[a-z0-9+-]*|retrieve-given-[a-z0-9+]+|retrieve-k[0-9]+|retrieve-c[0-9]+|retrieve-en|retrieve-wide|retrieve-tworound|retrieve-local|retrieve|agentic-scaffold|agentic-fewshot|agentic-native|agentic-en|agentic-local|agentic)(-local)?\.jsonl", p)
     if not m or m.group(1) not in MODELS: continue
     runs[(m.group(1), m.group(2) + (m.group(3) or ""))] = {r["id"]: r for r in load(p)}
 

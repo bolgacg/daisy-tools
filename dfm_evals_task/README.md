@@ -11,7 +11,16 @@ Two Inspect AI tasks that keep everything from `dfm_evals.tasks.daisy` (dataset,
 The index is a BM25 index (SQLite FTS5, title weighted 10) over the full Danish Wikipedia dump of
 1 November 2023, older than the benchmark. No field of the benchmark other than the question is used.
 
-## Run
+## Run, one command
+
+```
+bash run.sh              # environment, index (20 min the first time), model server, both tasks, the table
+LIMIT=40 bash run.sh     # quick check
+INSPECT_MODEL=vllm/google/gemma-3-4b-it bash run.sh   # on a cluster, through Inspect's own providers
+.venv-inspect/bin/inspect view --log-dir results/inspect   # every question, fetched text, answer and score
+```
+
+## Run, step by step
 
 ```
 pip install inspect-ai datasets

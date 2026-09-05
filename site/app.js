@@ -10,7 +10,7 @@ const pct0 = x => Math.round(x*100) + " %";
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const CONDN = {closed:"from memory", "closed-sc":"from memory, 5-sample vote", retrieve:"one lookup, search box", "retrieve-oracle":"one lookup, oracle query (search box)",
-  "retrieve-local":"one lookup, ranked index", "retrieve-plus-local":"lookup plus two paragraphs, ranked index (variant)", "retrieve-k1-local":"one lookup, ranked index, 1 page", "retrieve-k5-local":"one lookup, ranked index, 5 pages", "retrieve-c1800-local":"one lookup, ranked index, 1800 characters",
+  "retrieve-local":"one lookup, ranked index", "retrieve-plus-local":"lookup plus two paragraphs, ranked index (variant)", "retrieve-k1-local":"one lookup, ranked index, 1 page", "retrieve-k5-local":"one lookup, ranked index, 5 pages", "retrieve-c1800-local":"one lookup, ranked index, 1800 characters", "retrieve-wide-local":"second stage: ten pages, best paragraphs (variant)", "retrieve-tworound-local":"second stage: model writes a follow-up query (variant)",
   "retrieve-given-qwen":"Mimir reads, Qwen asks (search box)", "retrieve-given-gemma":"reads Gemma's queries (search box)", "retrieve-given-gemma+qwen":"reads Gemma's and Qwen's queries (search box)",
   agentic:"model decides and writes the query, search box", "agentic-local":"model decides and writes the query, ranked index", "agentic-native":"native tool call, search box", "agentic-native-local":"native tool call, ranked index",
   "agentic-fewshot":"model decides, with examples", "agentic-scaffold":"asked first whether it knows"};
@@ -71,6 +71,24 @@ if (qc && ql) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_local_len = 
 if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
   const I = D.inspect_full, ic = A("gemma4b","closed");
   fills.inspect_check = `Checked: run through this task on all 592 questions, Gemma 3 4B scores ${pct(I.daisy_lookup.scores.exact_match.mean)} with the lookup (standard error ${(I.daisy_lookup.scores.exact_match.stderr*100).toFixed(1)}) and ${pct(I.daisy.scores.exact_match.mean)} from memory, against ${pct(gl.em)} and ${pct(ic.em)} from the harness behind this page. The two paths agree to within half a point; the harness allows 64 new tokens, their task 100.`;
+}
+/* questions asked along the way */
+{
+  const causal = (D.mimir_paths || []).find(m => /causal attention, fp16/.test(m.label));
+  fills.q_causal = causal ? pct(causal.em) : (port ? pct(port.em) : "");
+  fills.q_how_good = `Good enough to say the search side is solved, with two caveats. The group's best model from memory, a 70-billion-parameter Llama, scores ${pct(l70)} on these questions, and no Danish number with a lookup has been published, so the nearest comparison is English: systems trained for the task with far larger models score 44 to 64 exact match on Natural Questions. The caveats: with 592 questions the interval is about plus or minus 4 points, and the questions were written from Wikipedia pages, so once the right page is found the answer is almost always in it. The score says how well pages are found and read.`;
+  const two = A("mimir-hf","retrieve-given-gemma+qwen") || A("mimir-hf","retrieve-given-qwen");
+  fills.q_two_models = `Yes, two models in a row, not one combined model: Qwen 2.5 3B reads the question and writes the search words, Wikipedia's search box returns three pages, and Mimir reads them and answers${two ? `, which scored ${pct(two.em)} through the search box` : ""}. It was built because Mimir never writes a search when asked to and reads Danish better than the others. The ranked index made it unnecessary: Mimir alone, with the question as the query, scores ${mhl ? pct(mhl.em) : ""}. The pipeline stays in the browser below as a side row.`;
+  let same = 0, tot = 0; D.questions.forEach(q => { const r = q.runs["gemma4b|retrieve-local"]; if (r) { tot++; if ((r.tq||"").trim() === q.q.trim().slice(0,80)) same++; } });
+  let sameBox = 0, totBox = 0; D.questions.forEach(q => { const r = q.runs["gemma4b|retrieve"]; if (r) { totBox++; if ((r.tq||"").trim() === q.q.trim().slice(0,80)) sameBox++; } });
+  fills.q_query = `No. The benchmark has no tool; its prompt is the question alone, and the lookup is this page's addition. The least engineered choice is to send the question as written, and that is the main line: on the ranked index the query was the question itself on ${same} of ${tot} questions. The rule that shortens the query exists only because Wikipedia's search box needs every word to match; through the search box it had to shorten ${totBox - sameBox} of ${totBox} queries. No model wrote a query in the main line.`;
+  const plusM = A("mimir-hf","retrieve-plus-local"), plusG = A("gemma4b","retrieve-plus-local"), wide = A("gemma4b","retrieve-wide-local"), two2 = A("gemma4b","retrieve-tworound-local");
+  const parts = [];
+  if (plusM || plusG) parts.push(`Fetching the two best paragraphs of the same three pages in addition to their introductions${plusM ? ` takes Mimir from ${pct(mhl.em)} to ${pct(plusM.em)}` : ""}${plusG ? ` and Gemma from ${pct(gl.em)} to ${pct(plusG.em)}` : ""}; the ceiling rises from ${pct(D.ceilings.local.hit)} to ${pct0(0.812)}.`);
+  if (wide && wide.n >= 500) parts.push(`Casting a wider net, ten pages and the four best paragraphs across them, gives Gemma ${pct(wide.em)}.`);
+  if (two2 && two2.n >= 500) parts.push(`Letting Gemma write one follow-up query when it says the text lacks the answer gives ${pct(two2.em)}.`);
+  if (!wide || !two2) parts.push(`Two further variants, a ten-page net and a model-written second query, are running and will appear here.`);
+  fills.q_second = `Every variant below is labelled, not the main line, because each adds a selection step beyond one lookup. ` + parts.join(" ") + ` The honest reading: the remaining misses are pages the ranker does not put in the top three and facts below the introduction, and each extra step buys a few points at roughly double the tokens.`;
 }
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
@@ -221,15 +239,16 @@ drawBrowser();
 /* ---------- guided tour (spotlight; positions computed from document coordinates, then scrolled) ---------- */
 (function(){
   const STEPS = [
-    {sel:"#top h1", k:"Welcome · 1 of 9", html:`This page takes the group's own Danish quiz and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first.</b> They are Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
-    {sel:"#primer .primer", k:"Five things to know · 2 of 9", html:`Every term used below is defined here: the quiz, from memory, one lookup, the two search engines, and the two scores. The glossary under it stays open.`},
-    {sel:"#mimirtable", k:"Act one: the ruler · 3 of 9", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
-    {sel:"#a1chart", k:"Act one: memory · 4 of 9", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
-    {sel:"#a2chart", k:"Act two: the lookup · 5 of 9", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
-    {sel:"#fidtable", k:"Act two: reading · 6 of 9", html:`Every model read the same fetched text, so this table is a clean reading test. The one-billion-parameter Mimir reads as well as the four-billion Gemma.`},
-    {sel:"#tiles", k:"Act three: the decision · 7 of 9", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
-    {sel:"#bcontrols", k:"Every answer · 8 of 9", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the page fetched.`},
-    {sel:"#coda pre", k:"Run it yourself · 9 of 9", html:`Three commands reproduce the main table on any machine with a served model, in the group's own evaluation format. The Guided tour button at the top restarts this walkthrough.`},
+    {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page takes the group's own Danish quiz and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first.</b> They are Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
+    {sel:"#primer .primer", k:"Five things to know · 2 of 10", html:`Every term used below is defined here: the quiz, from memory, one lookup, the two search engines, and the two scores. The glossary under it stays open.`},
+    {sel:"#mimirtable", k:"Act one: the ruler · 3 of 10", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
+    {sel:"#a1chart", k:"Act one: memory · 4 of 10", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
+    {sel:"#a2chart", k:"Act two: the lookup · 5 of 10", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
+    {sel:"#fidtable", k:"Act two: reading · 6 of 10", html:`Every model read the same fetched text, so this table is a clean reading test. The one-billion-parameter Mimir reads as well as the four-billion Gemma.`},
+    {sel:"#tiles", k:"Act three: the decision · 7 of 10", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
+    {sel:"#asked-first", k:"Questions asked · 8 of 10", html:`Six questions the author was asked while building this, answered in order: what the attention modes mean, how good the score is, whether the two-model pipeline is a trick, why 150 and 592, whether writing the query was part of the test, and what a second retrieval would do.`},
+    {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the page fetched.`},
+    {sel:"#coda pre", k:"Run it yourself · 10 of 10", html:`Three commands reproduce the main table on any machine with a served model, in the group's own evaluation format. The Guided tour button at the top restarts this walkthrough.`},
   ];
   const root=$("#tour"), hl=$("#tour-hl"), card=$("#tour-card");
   let idx=0;

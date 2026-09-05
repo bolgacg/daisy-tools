@@ -147,6 +147,25 @@ Svar:</pre>
   <p class="handover">Finding is solved by the index, reading is solved by the model. Knowing when to look is not solved by anything on this page, and that is the training problem the position is about.</p>
 </section>
 
+<section id="asked">
+  <h2>Questions asked along the way</h2>
+  <p class="lede">These are the questions the author of this page was asked while it was built, in the order they came. A reader will have the same ones.</p>
+  <div id="asked-first">
+  <h3>What do you mean by reading the prompt one way versus both ways?</h3>
+  <p>A language model normally reads a prompt one token at a time, and each token can only use the tokens before it, because that is how the model writes. Mimir was trained differently for the prompt: while reading the question, every token may also use the tokens after it, and only the answer is written left to right. The common laptop port only supports the first mode, so it feeds Mimir the question in a way it was never trained to read. Same weights, same questions: <span class="num" data-fill="q_causal"></span> read the wrong way, <span class="num" data-fill="mimirhf_closed_pct"></span> read the right way.</p>
+  </div>
+  <h3>How good is <span data-fill="mimirhf_local_pct"></span>?</h3>
+  <p><span data-fill="q_how_good"></span></p>
+  <h3>Is "Mimir reads, another model asks" two models combined?</h3>
+  <p><span data-fill="q_two_models"></span></p>
+  <h3>Why a development slice of 150, and why 592 rather than the paper's 741?</h3>
+  <p>Every idea was tried on a fixed slice of 150 questions, and only final numbers were run on all 592, so that ideas could not be tuned on the test set. The slice ran about three points above the full set, inside its own error bar. 592 is the whole public benchmark: the paper counts 741 questions, but 149 were withheld without public answers, so nobody outside the group can score them, and the group's own Mimir number was computed on the 592 as well.</p>
+  <h3>Was writing the search query part of the test?</h3>
+  <p><span data-fill="q_query"></span></p>
+  <h3>What would a second retrieval step do?</h3>
+  <p><span data-fill="q_second"></span></p>
+</section>
+
 <section id="browser">
   <h2>Every question, every answer</h2>
   <p class="lede">Aggregate scores hide how models fail. Here is each of the 592 questions with what every model answered under each condition, the query used and the page fetched.</p>

@@ -249,3 +249,16 @@ Harness: 5.6 / 65.7. The two paths agree within half a point; the page coda now 
 ## 2026-09-05 10:30 R6 PopQA long-tail (Self-RAG's 1,399 questions and passages, contains-gold), Gemma 3 4B: closed 19.0 | top-5 passages 55.4
 Published on the same set: Self-RAG 7B 54.9, 13B 55.8 (trained); Llama2-7B + retrieval 38.2; ChatGPT + retrieval 50.8. An untrained 4B
 reader at 55.4 is level with the trained Self-RAG rows. ret10 and the agentic-en condition still running (job 017), then 023 for Qwen.
+
+## 2026-09-05 12:10 Bo's six points (5 Sep morning) acted on
+1. Second retrieval "for the heck of it", labelled: two new runner conditions, retrieve-wide (10 pages, 3 intros + 4 best paragraphs,
+   rule based) and retrieve-tworound (model writes one follow-up query when the text lacks the answer); job 017b, Gemma, full 592.
+2. Query writing was never part of the test: benchmark has no tool; on the ranked index the query was the whole question 592/592
+   (search box: rule shortened 199/592). Stated on the page.
+3. Page section "Questions asked along the way": his six questions in order, answer-bo voice; tour step 8; walk clean.
+4. Dev-slice numbers acceptable when labelled (memory feedback_demo_follows_bos_questions).
+5. One-click: run.sh (venv, index, weights, server, both Inspect tasks, table; INSPECT_MODEL=hf/vllm path for clusters),
+   colab/daisy_lookup_colab.ipynb (untested until public), README; 017c tests run.sh end to end on the box (LIMIT=20).
+   Their usual UI is `inspect view`; run.sh prints the command.
+6. Recommendations status: dfm-evals task DONE and verified (66.0 vs 65.7); Mimir in the reader seat DONE (65.9);
+   public issue on the attention finding DRAFTED (lit/ISSUE-DRAFT-mimir-prefix-attention.md), waits for Bo's text approval.
