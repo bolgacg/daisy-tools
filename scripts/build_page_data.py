@@ -21,6 +21,7 @@ for p in glob.glob("results/pred_*.jsonl"):
 agg = []
 for (mdl, cond), rows in sorted(runs.items()):
     vals = list(rows.values()); n = len(vals)
+    if n < 100: continue   # skip empty or barely started runs (partial files from a running job)
     calls = sum(1 for r in vals if r.get("tool_query")); fb = sum(1 for r in vals if r.get("fallback"))
     by = collections.defaultdict(list)
     for r in vals: by[atype(r["gold"])].append(em(r["prediction"], r["gold"]))
