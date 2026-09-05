@@ -62,6 +62,8 @@ const agLoc = MAIN.map(m => ({m, a: A(m,"agentic-local"), r: A(m,"retrieve-local
 fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a search line in 592 chances each; ${always.join(" and ")} wrote one on nearly every question. ` +
   (l3 ? `Llama 3B searched only when shown examples, ${l3.called_wrong + l3.called_right} times out of 592, all on questions it had wrong from memory: the right instinct at the wrong scale. ` : "") +
   (scaff ? `Asked first whether it knew the answer, Mimir said yes on ${fills.mimir_bluff_pct} of the questions it then got wrong. ` : "") +
+  (function(){ const t = D.decision.find(d => d.model==="llama3b" && d.variant==="agentic"), n = D.decision.find(d => d.model==="llama3b" && d.variant==="agentic-native-local");
+    return (t && n && rate(t) < 0.05 && rate(n) > 0.9) ? `Llama 3B never searched when told in text that it could, and searched on ${pct0(rate(n))} of the questions when the same search was offered in its native tool format: whether a small model "decides" to search is set by the interface, not by what it knows. ` : ""; })() +
   (agLoc.length ? `On the ranked index the models that write their own query score below the plain question: ${agLoc.map(x => `${MODELS[x.m]} ${pct(x.a.em)} against ${pct(x.r.em)}`).join(", ")}. Once the engine ranks properly, rewriting the question costs points.` : "");
 fills.ask_note = `A model-written query "landed" when the first result was the canon work the question is about. When a query returned nothing, the question itself was used instead, marked as a fallback. On the ranked index the question as written is the better query.`;
 const qc = A("qwen3b","closed"), ql = A("qwen3b","retrieve-local");
