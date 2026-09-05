@@ -59,3 +59,115 @@
 {"gold":"Frederiks Kirke","id":"54d8ef40-4867-455c-89f2-34ed0a341eb8","mode":"prefix","n_gen":5,"n_prompt":175,"prediction":"Frederiks Kirke"}
 {"gold":"1771","id":"8d03a63a-dcce-4d3e-b90e-92c3498e3518","mode":"prefix","n_gen":4,"n_prompt":168,"prediction":"1749"}
 {"gold":"1902","id":"c4bd0915-8b74-4e7e-b97c-5993b96cfe71","mode":"prefix","n_gen":4,"n_prompt":159,"prediction":"1900"}
+{"gold":"Trundholm Mose","id":"5faafffe-364e-4311-a8c6-6602b8311c5e","mode":"prefix","n_gen":4,"n_prompt":158,"prediction":"I Egypten."}
+{"gold":"Bronze og guld","id":"89fdce02-eb41-4a1a-a69f-0d4b2be3197c","mode":"prefix","n_gen":2,"n_prompt":159,"prediction":"Guld"}
+{"gold":"Nationalmuseet","id":"3c6214c8-381f-411b-b577-73ae98cfeda2","mode":"prefix","n_gen":10,"n_prompt":158,"prediction":"Solvognen er i dag i Danmark."}
+{"gold":"1941","id":"33936e6e-2c59-4dc1-80dc-94cb0ae9585e","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"1912"}
+{"gold":"Kai Normann Andersen","id":"79626b50-24af-4d7c-a4bc-63cfa6f30f6a","mode":"prefix","n_gen":2,"n_prompt":161,"prediction":"Carl Nielsen"}
+{"gold":"Poul Henningsen","id":"2db8aaf2-c89b-4b59-83ad-6e1b6400f609","mode":"prefix","n_gen":5,"n_prompt":161,"prediction":"Jens August Schade"}
+{"gold":"Liva Weel","id":"bbe9bc26-7723-4c3c-9dd8-cc4e6eb4d214","mode":"prefix","n_gen":8,"n_prompt":169,"prediction":"Børge Roger-Henrichsen"}
+{"gold":"Trine Dyrholm & Moonlighters","id":"83ea1851-afe9-4ee9-9cf9-f222e366b7d5","mode":"prefix","n_gen":4,"n_prompt":172,"prediction":"Søren Huss"}
+{"gold":"Danse i måneskin","id":"32425358-8800-4dcd-b4ab-fb0f2a20c770","mode":"prefix","n_gen":6,"n_prompt":170,"prediction":"Danse i måneskin"}
+{"gold":"Frans Bak","id":"0b9cf87a-08b8-4cf6-a9df-da39cc4d7324","mode":"prefix","n_gen":2,"n_prompt":164,"prediction":"Carl Nielsen"}
+{"gold":"1987","id":"8ba1ec8c-de35-4ea8-acc9-2d2f03c446e7","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"1979"}
+{"gold":"1977","id":"cbcab26c-6ca5-44a0-862f-aac2ecf47f66","mode":"prefix","n_gen":4,"n_prompt":163,"prediction":"1900"}
+{"gold":"Pelle Gudmundsen-Holmgreen","id":"281ee6c5-92c3-48e0-9734-37009e2157ef","mode":"prefix","n_gen":4,"n_prompt":165,"prediction":"Ludwig van Beethoven"}
+{"gold":"2","id":"05b36ce1-436b-4f3c-99d9-2a896dc8edb8","mode":"prefix","n_gen":1,"n_prompt":163,"prediction":"4"}
+{"gold":"Nordisk Råds Musikpris","id":"b53f490e-5cdb-415a-a362-7c2c14ce89ed","mode":"prefix","n_gen":7,"n_prompt":172,"prediction":"Nordisk Råds Musikpris"}
+{"gold":"Edvard Eriksen","id":"6eeffad3-77bc-4552-8a9c-d85722677e70","mode":"prefix","n_gen":5,"n_prompt":165,"prediction":"H.C. Andersen"}
+{"gold":"Langelinie","id":"b7237cc9-d3c3-4095-aacf-d8dcbb1f1ed8","mode":"prefix","n_gen":3,"n_prompt":173,"prediction":"Langelinie"}
+{"gold":"1913","id":"c28b0645-af03-4e6a-a4b7-97acf2ceb804","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"1886"}
+{"gold":"Carl Jacobsen","id":"3debd91d-127e-4e34-b29d-5f202947db36","mode":"prefix","n_gen":5,"n_prompt":168,"prediction":"H.C. Andersen"}
+{"gold":"Carlsberg Byen","id":"e602b42c-4757-4d78-afae-776af8a3d5ed","mode":"prefix","n_gen":5,"n_prompt":161,"prediction":"Frederikshavn"}
+{"gold":"Halmlageret","id":"b5415e18-43ab-4cd2-a6f3-3212c1c57bb8","mode":"prefix","n_gen":8,"n_prompt":174,"prediction":"Thorvald Bindesbølls Hus"}
+{"gold":"Vesten for humlen","id":"7b237665-a280-4cc9-bceb-274285dd2cda","mode":"prefix","n_gen":5,"n_prompt":167,"prediction":"Frederiksberg Have"}
+{"gold":"København","id":"a74430b1-a715-4537-9257-d2a8502c2066","mode":"prefix","n_gen":4,"n_prompt":163,"prediction":"København"}
+{"gold":"Kjeld Abell","id":"2472e8e8-11bf-4f76-85ce-cffafbfcfa08","mode":"prefix","n_gen":4,"n_prompt":164,"prediction":"Ludvig Holberg"}
+{"gold":"1938","id":"51c70b49-458d-43b4-ae14-63419039078a","mode":"prefix","n_gen":4,"n_prompt":169,"prediction":"1748"}
+{"gold":"Clara Pontoppidan","id":"b803a7ba-60ac-4cb7-bb39-50fcf0680190","mode":"prefix","n_gen":6,"n_prompt":167,"prediction":"Johanne Luise Heiberg"}
+{"gold":"Poul Reumert og Ebbe Rode","id":"ad57052a-ca45-4f57-a1b6-02eedb588a7d","mode":"prefix","n_gen":31,"n_prompt":174,"prediction":"Johan Ludvig Heiberg, Christiane Bjørnson, Frederik Høedt, Christiane Bjørnson, Christiane Bjørnson"}
+{"gold":"Poul Henningsen","id":"510980a5-f7bd-4dba-acf3-d0744cf1c163","mode":"prefix","n_gen":3,"n_prompt":166,"prediction":"Hans Christian Andersen"}
+{"gold":"Dyveke","id":"7a65a307-2236-4845-a706-bac70426725c","mode":"prefix","n_gen":10,"n_prompt":179,"prediction":"Revyen hedder 'Revyen'."}
+{"gold":"Kai Normann Andersen","id":"1966d2e2-4172-4dff-b383-c1d097c258ef","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"Hans Christian Lumbye"}
+{"gold":"1940","id":"c0c90a85-14d1-427d-9cbf-54693b655481","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"1940"}
+{"gold":"1838","id":"523b6fe3-32c8-4733-ad53-8812b5ff0621","mode":"prefix","n_gen":4,"n_prompt":160,"prediction":"1978"}
+{"gold":"Emil Aarestrup","id":"2f78d29c-9c17-4341-a684-11af403f5a02","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"Johannes V. Jensen"}
+{"gold":"Digte","id":"43ec76ea-d327-4a6f-b370-acd60903484a","mode":"prefix","n_gen":6,"n_prompt":167,"prediction":"Sange fra en rejse"}
+{"gold":"Ti strofer","id":"e2bcccaf-96d8-49d8-a880-3d4a829f992c","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"10 strofer"}
+{"gold":"Pigens Sang","id":"37810809-3e26-426d-a6d9-89def9a2a386","mode":"prefix","n_gen":5,"n_prompt":167,"prediction":"Sommerfugledalen"}
+{"gold":"1895","id":"7ed728eb-83b0-4f1f-be31-9681578ea4a4","mode":"prefix","n_gen":4,"n_prompt":164,"prediction":"1877"}
+{"gold":"Det var en lørdag aften","id":"4c887d4c-b497-4eab-b3ec-f62a6c410407","mode":"prefix","n_gen":7,"n_prompt":179,"prediction":"Der er et yndigt land"}
+{"gold":"2018","id":"d98afd97-5d2a-4f3f-bd29-8dd6d161bf90","mode":"prefix","n_gen":4,"n_prompt":191,"prediction":"1999"}
+{"gold":"Bertel Thorvaldsen","id":"33264022-ef44-4db1-bdfd-8e7ee8f5d4d2","mode":"prefix","n_gen":7,"n_prompt":165,"prediction":"J.M.W. Turner"}
+{"gold":"1828","id":"769fec84-bb6b-4f78-b2f1-0f5125978b19","mode":"prefix","n_gen":4,"n_prompt":171,"prediction":"1886"}
+{"gold":"Sir Thomas Hope","id":"f01a1a47-f3e4-4450-9146-fc52cea3e6b1","mode":"prefix","n_gen":4,"n_prompt":167,"prediction":"Den danske konge"}
+{"gold":"242 cm","id":"92d8ed93-9749-48d7-b61e-112218e9cdb1","mode":"prefix","n_gen":4,"n_prompt":164,"prediction":"1,5 m"}
+{"gold":"1949","id":"69f8fa7c-e0f6-42b8-9b60-6c5391e4aa5f","mode":"prefix","n_gen":4,"n_prompt":163,"prediction":"1945"}
+{"gold":"Alex Garff","id":"6e33d2c9-8bcd-47ae-a1f1-88b740403a93","mode":"prefix","n_gen":3,"n_prompt":162,"prediction":"Hans Christian Andersen"}
+{"gold":"Otto Mortensen","id":"6b36f4e1-3c26-45a6-9a03-b3442858a3f5","mode":"prefix","n_gen":2,"n_prompt":163,"prediction":"Carl Nielsen"}
+{"gold":"Ry Højskole","id":"18689be2-e227-44f0-9a57-f121ddd55674","mode":"prefix","n_gen":11,"n_prompt":162,"prediction":"I en bog kaldet \"The Book of Songs\"."}
+{"gold":"Jørgen Rasmussen","id":"b69bfefe-2446-421a-beb7-45fa2290a1c5","mode":"prefix","n_gen":24,"n_prompt":157,"prediction":"Kevihjulet blev designet af den amerikanske ingeniør og opfinder Robert K. Kevoh."}
+{"gold":"1965","id":"4ad13d6a-048c-40a6-b6cd-67b71e20849f","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"1958"}
+{"gold":"Kevi-Knollkontorstol","id":"04aa6ab3-75d9-4cf7-a302-06c61231ad91","mode":"prefix","n_gen":2,"n_prompt":173,"prediction":"Egg Chair"}
+{"gold":"To spor og hjulakslens midterpunkt","id":"fe941530-74a2-422d-8c88-37596ab9e20a","mode":"prefix","n_gen":59,"n_prompt":161,"prediction":"Det revolutionerende ved Kevihjulets design var dets evne til at skabe en kraftig og stabil rotation ved hjælp af en kombination af en stiv aksel og en fleksibel skive, hvilket gjorde det muligt for det at dreje hurtigt og effektivt."}
+{"gold":"Ludvig Brandstrup og Mogens Dam","id":"d905ec36-6eb5-4563-80a7-f008b7d06777","mode":"prefix","n_gen":5,"n_prompt":163,"prediction":"Jens August Schade"}
+{"gold":"Kai Normann Andersen","id":"69118887-d1bf-42c4-bf13-2ca5db09650e","mode":"prefix","n_gen":2,"n_prompt":164,"prediction":"Carl Nielsen"}
+{"gold":"1926","id":"aacf3f71-998d-43d6-8fa9-af0382d4e8f8","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"1972"}
+{"gold":"Karina Bell","id":"48b5124b-ac75-4638-af5a-0b2facb28694","mode":"prefix","n_gen":4,"n_prompt":184,"prediction":"Liva Weel"}
+{"gold":"H.C. Lumbye","id":"2e4c0ebc-a975-4081-a9ed-2d1e5fd954ed","mode":"prefix","n_gen":2,"n_prompt":167,"prediction":"Carl Nielsen"}
+{"gold":"1847","id":"0cd60e17-f5a9-41cc-a43f-ea682800f333","mode":"prefix","n_gen":4,"n_prompt":176,"prediction":"1847"}
+{"gold":"Indvielsen af jernbanestrækningen København-Roskilde","id":"a66c6e17-de36-4a38-924d-2aa883c12b42","mode":"prefix","n_gen":13,"n_prompt":174,"prediction":"Jernbanens åbning i 1847"}
+{"gold":"Jernbanegaloppen","id":"ad591f4e-20c6-4048-bd4a-dc2c0d032655","mode":"prefix","n_gen":13,"n_prompt":170,"prediction":"Kjøbenhavns Jernbane-Damp-Galop"}
+{"gold":"Liva Weel","id":"f658e527-1a8e-42ac-bd0a-361f1843efa7","mode":"prefix","n_gen":9,"n_prompt":174,"prediction":"Aage Winther-Jørgensen"}
+{"gold":"Børge og Arvid Müller","id":"1266b27b-de3b-42f1-acf2-7d07b75ef9ce","mode":"prefix","n_gen":3,"n_prompt":165,"prediction":"Hans Christian Andersen"}
+{"gold":"Kai Normann Andersen","id":"b86e3da2-2cb9-4a5c-8db2-a4e5195705f4","mode":"prefix","n_gen":4,"n_prompt":165,"prediction":"Hans Christian Lumbye"}
+{"gold":"Anne Linnet","id":"e3de6f97-df3f-4d0c-87d8-129f87391db0","mode":"prefix","n_gen":4,"n_prompt":178,"prediction":"Mette Lindberg"}
+{"gold":"Nærmest lykkelig","id":"45113071-e891-4187-99ef-5654ba6df6a7","mode":"prefix","n_gen":4,"n_prompt":169,"prediction":"Kærlighed"}
+{"gold":"1988","id":"0f26bab6-723b-4ba1-8535-e62c368b5a5f","mode":"prefix","n_gen":4,"n_prompt":167,"prediction":"2007"}
+{"gold":"Michael Bruun, Mats Ronander, tv·2, Per Leth-Nissen, Billy Cross, Hilmer Hassig, Søren Wolff","id":"8a145a8c-a9ca-4f7b-b15d-59060626c358","mode":"prefix","n_gen":8,"n_prompt":165,"prediction":"Peter Belli og Morten Breum"}
+{"gold":"Nærmest lykkelig / En sommerdag for alt for længe siden","id":"9ded86f1-ab5a-4ca5-9c84-487751942e2c","mode":"prefix","n_gen":42,"n_prompt":174,"prediction":"Det er ikke muligt at give et præcist svar på dette spørgsmål, da der ikke findes en officiel single fra tv·2's album 'Nærmest lykkelig'."}
+{"gold":"Under bøgen","id":"252cc51b-f320-413c-9979-675f9971a5c7","mode":"prefix","n_gen":6,"n_prompt":166,"prediction":"\"The Night We Met\""}
+{"gold":"Gnags","id":"ef0db4bf-f339-4a7f-82ff-c25a2756f3ad","mode":"prefix","n_gen":15,"n_prompt":161,"prediction":"Sangen 'Under bøgen' er skrevet af Kim Larsen."}
+{"gold":"1978","id":"bcda21a9-997e-4924-a6eb-4c76f0a933d7","mode":"prefix","n_gen":4,"n_prompt":163,"prediction":"1973"}
+{"gold":"Er du hjemme i aften","id":"58ff02c8-15d4-4d31-afc9-19c775be4f32","mode":"prefix","n_gen":3,"n_prompt":169,"prediction":"Under bøgen"}
+{"gold":"1933","id":"3b740f36-aae4-4763-83cc-778aec506b52","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"1969"}
+{"gold":"Gustaf Munch-Petersen","id":"5c5bcaa8-4d9b-4984-901c-0f14aa7dc67f","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"Johannes V. Jensen"}
+{"gold":"til fannie hurst","id":"8e84980a-0f2f-4cae-a9cd-513b6c0da995","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"Det underste land"}
+{"gold":"Liniens","id":"e308719b-7539-4771-ab4c-7e2cceb11e5a","mode":"prefix","n_gen":2,"n_prompt":167,"prediction":"Politiken"}
+{"gold":"1669","id":"7687f36b-8f7c-424a-8e5f-623c715d8ace","mode":"prefix","n_gen":4,"n_prompt":159,"prediction":"1876"}
+{"gold":"Peter Lieps Hus","id":"2d3335cb-2e1d-4645-8986-2dceb56097b9","mode":"prefix","n_gen":4,"n_prompt":174,"prediction":"Restaurant Dyrehaven"}
+{"gold":"Kirsten Piils Kilde","id":"700a12fa-b91f-49c2-911f-58c398624fc3","mode":"prefix","n_gen":5,"n_prompt":175,"prediction":"Sankt Hans Kilde"}
+{"gold":"1730","id":"66e64cf1-ff69-4eb1-b7c0-35965ce485bb","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"1721"}
+{"gold":"Rued Langgaard","id":"01c682cb-3193-4d68-b2f7-b448b4c007c3","mode":"prefix","n_gen":5,"n_prompt":159,"prediction":"Wolfgang Amadeus Mozart"}
+{"gold":"Tiroler Landestheater","id":"5a819d6b-7c48-48a0-b3e4-fc467b36b490","mode":"prefix","n_gen":5,"n_prompt":175,"prediction":"Det Kongelige Teater"}
+{"gold":"1926-30","id":"e14d398f-f435-49ae-84b8-d9ff015acf23","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"2019"}
+{"gold":"Niels Muus","id":"6617f89c-6a3d-41fb-aec6-f9dc4b46da1a","mode":"prefix","n_gen":4,"n_prompt":182,"prediction":"Peter Schramm"}
+{"gold":"1900-1901","id":"2a4982ba-7440-4fb5-92bb-92a9021c79e3","mode":"prefix","n_gen":4,"n_prompt":160,"prediction":"1992"}
+{"gold":"Johannes V. Jensen","id":"97883f83-3740-41bd-9c5a-d536722702e9","mode":"prefix","n_gen":5,"n_prompt":160,"prediction":"Adam Oehlenschläger"}
+{"gold":"Susanna","id":"e8fe0af3-0027-49e2-9308-f96ba59b4bf4","mode":"prefix","n_gen":2,"n_prompt":178,"prediction":"Mette"}
+{"gold":"1532","id":"7dee3943-e4b3-45eb-8934-f7fa0e5e3217","mode":"prefix","n_gen":4,"n_prompt":166,"prediction":"1523"}
+{"gold":"Dansk","id":"84ecef4c-0deb-449a-adc3-eec15bd31fc4","mode":"prefix","n_gen":2,"n_prompt":159,"prediction":"dansk"}
+{"gold":"5. oktober 1895","id":"08f9c14e-7af1-4a54-a766-49c4d46af5d6","mode":"prefix","n_gen":4,"n_prompt":159,"prediction":"1972"}
+{"gold":"Kunstakademiets Designskole","id":"f8fafa52-2ae8-41a2-9bc7-033ad0796846","mode":"prefix","n_gen":4,"n_prompt":159,"prediction":"Kunstakademiet"}
+{"gold":"Dansk Kattuntrykkeri","id":"a061eb70-573a-4073-894d-f60ed355aa93","mode":"prefix","n_gen":20,"n_prompt":164,"prediction":"Marie Gudme Leths eget værksted hedder Marie Gudme Leths Værksted."}
+{"gold":"1973","id":"ea65fa46-9d4c-4f73-851c-4f956a243c07","mode":"prefix","n_gen":4,"n_prompt":161,"prediction":"1975"}
+{"gold":"Peter Abrahamsen","id":"4fe04392-7588-4aa8-8919-2a6d3c08c6c8","mode":"prefix","n_gen":3,"n_prompt":160,"prediction":"Peter Belli"}
+{"gold":"Svante Svendsen","id":"87fd0e80-f4c4-469e-ae6c-c4772c0cc6d5","mode":"prefix","n_gen":2,"n_prompt":183,"prediction":"Svend"}
+{"gold":"Klaver","id":"aa5cb09b-e8dc-4d1a-ab2c-db713b06f080","mode":"prefix","n_gen":2,"n_prompt":163,"prediction":"klaver"}
+{"gold":"Brumleby","id":"04abb2b9-4090-4052-939b-4ed4671e8bb4","mode":"prefix","n_gen":4,"n_prompt":177,"prediction":"Bydelsbro"}
+{"gold":"Michael Gottlieb Bindesbøll","id":"ca1c3212-2ff1-4803-9952-768cc4b6ff48","mode":"prefix","n_gen":4,"n_prompt":158,"prediction":"Jørn Utzon"}
+{"gold":"Østerbro Husholdnings Forening","id":"dbc5a995-a29a-4de6-b5ad-6757ed82353f","mode":"prefix","n_gen":8,"n_prompt":179,"prediction":"Brumleby Brugsforening"}
+{"gold":"Martin Andersen Nexø","id":"42b78001-fea0-4c58-8875-ce7cac47b6cd","mode":"prefix","n_gen":5,"n_prompt":170,"prediction":"H.C. Andersen"}
+{"gold":"Adam Oehlenschläger","id":"44d6150c-20a0-4f2b-9ef8-caea12b0fe3d","mode":"prefix","n_gen":6,"n_prompt":170,"prediction":"Niels W. Gade"}
+{"gold":"1802","id":"b2b9af04-04f0-415e-bf02-1b6551b347df","mode":"prefix","n_gen":4,"n_prompt":167,"prediction":"1803"}
+{"gold":"Romantikken","id":"c24e510a-1458-4f03-922a-4df9ca87efbb","mode":"prefix","n_gen":3,"n_prompt":170,"prediction":"Romantikken"}
+{"gold":"Harald Blåtand","id":"63d724d5-9ba8-4f5f-8bac-8173555a9cc1","mode":"prefix","n_gen":6,"n_prompt":171,"prediction":"Harald Hårfager"}
+{"gold":"Holger Drachmann","id":"57e76560-4b3e-42ee-b238-a011a88f04b0","mode":"prefix","n_gen":5,"n_prompt":170,"prediction":"Adam Oehlenschläger"}
+{"gold":"1876","id":"81d9f51c-2729-49c4-aef5-e5a78159a917","mode":"prefix","n_gen":4,"n_prompt":170,"prediction":"1840"}
+{"gold":"Vilhelmine Erichsen","id":"af1979ca-7be2-4c5b-8ad1-85b0ea407b64","mode":"prefix","n_gen":2,"n_prompt":178,"prediction":"Hanne"}
+{"gold":"3","id":"c1cd9409-ce4e-4753-b7ca-59852b471d73","mode":"prefix","n_gen":3,"n_prompt":170,"prediction":"1 strofe"}
+{"gold":"1932","id":"75f10214-4e85-4aaa-b413-2715af6527af","mode":"prefix","n_gen":4,"n_prompt":163,"prediction":"1975"}
+{"gold":"Marguerite Viby og Hans W. Petersen","id":"2eb52355-912e-402a-b5c6-1c45b2f30f39","mode":"prefix","n_gen":10,"n_prompt":167,"prediction":"Søren Spanning og Anne Marie Helger"}
+{"gold":"Kai Normann Andersen","id":"dd8e3bd7-5b67-4821-89a5-2e52381358d2","mode":"prefix","n_gen":2,"n_prompt":161,"prediction":"Carl Nielsen"}
+{"gold":"Skal vi vædde en million?","id":"2846d2e2-a939-42e9-ac90-96e014f73f28","mode":"prefix","n_gen":7,"n_prompt":167,"prediction":"Kærlighedens smerte"}
+{"gold":"1928","id":"3563c24c-f1e4-4b91-a6cb-c1d05a4ca518","mode":"prefix","n_gen":4,"n_prompt":176,"prediction":"1969"}
