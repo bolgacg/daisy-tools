@@ -200,3 +200,10 @@ cleanly: 85 > 79 > 78 > 45 with identical retrieved text. 015b (Mimir-hf, batch 
 as the runner for the first question. Smoke job 015c (40 q, Gemma, closed vs lookup vs tool) queued after 015b.
 Mimir-hf on the offline index, first 134 rows: EM 67.9, fidelity 85.6, Gemma on the same ids 67.2 (NOT a record until 592).
 Letter and CV still cite the live-API numbers ("40 percent", "factor of five"); update once Mimir lands, in one pass.
+
+## 2026-09-05 02:55 where the plain lookup's misses go (full 592, top-3 pages for the question itself)
+Answer in the 3 intros 75.5% | in a top-3 page but below the intro 9.1% | not in the top-3 pages 15.4% (of these, 28 questions
+= 4.7% sit in ranks 4 to 10; 63 = 10.6% are not in the top 10 at all). So the intro-only fetch caps at 75.5, whole pages at 84.6,
+and 79 (Bo's target) needs the paragraphs variant or a second fetch. Queue changes: 021 cross-hybrids and 030 k-sweep (live API,
+causal Mimir) dropped as superseded; 016 native tools switched to the offline index; 031 k-sweep-local (Gemma, k=1/5, chars 1800) added.
+Mimir-hf offline interim 311 rows: 63.3 vs Gemma 62.1 on the same ids.
