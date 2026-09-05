@@ -356,3 +356,29 @@ rewritten to describe themselves without addressee lines. GitHub profile: name/b
 gemma-3-4b-it Q6: EM 53.1 / F1 74.6 | qwen2.5-3b-instruct Q8: EM 58.2 / F1 75.3. (dfm-evals protocol on 2,048: 45.6 / 53.6.)
 022 (Mimir MWQA official) FAILED at start: CUDA OOM while loading, the GPU still held the previous job's server; multiwikiqa.py
 now retries a failed request three times instead of dying. Requeue 022 after the prefix-mode validation runs on the GPU.
+
+## 2026-09-06 00:10 021b closed half DONE: patched llama.cpp server (Mimir Q8_0, prefix attention, -np 1), DAISY closed 592, their scorer
+patched server 8.3 | official transformers prefix 8.4 | causal port 5.6. 1829 s for 592 = 3.1 s/q one request at a time.
+Word-identical (normalised) to the official output: patched server 41.6% vs causal port 30.7%; the standalone driver had 94% (n=173).
+Two causes found (40-question probe against the same server): (1) the server's prompt cache reuses the shared start of the prompt
+from the previous question; in a prefix-LM that start must be recomputed with every new question (cache off: 23/40 identical,
+cache on: 14/40). (2) llama-server's --jinja renders Mimir's template with a system turn containing <|think|> (enable_thinking
+defaults to true); HF apply_chat_template renders no system turn. The runs so far (causal 5.6, patched 8.3) used that prompt.
+Lookup half of 021b stopped at 55 rows (cache on; discarded). Queue held (022, 023, 031 moved to ~/queue/hold) while the patch
+is finished: mask-level prefix rule in llama-kv-cache (no per-ubatch toggle), llama_model_is_prefix_lm() API, server disables
+prompt caching for prefix-LM models. Validation next: 40-question probe with cache off + enable_thinking false, then 021c
+(closed + lookup 592, --no-cache-prompt, --reasoning-budget 0 or chat_template_kwargs), then 022 on the patched server.
+Texts for the offer drafted in lit/PREFIX-PR-TEXTS.md (Bo's review; nothing sent).
+
+## 2026-09-06 01:05 prefix-LM patch redesigned (v2, principled): 35 lines in 6 files
+1. llama-kv-cache.cpp set_input_kq_mask: for hparams.hrm_prefix_lm the mask is not causal (a token sees every token of
+   its own sequence in the cache or the current ubatch; generation appends one token per step, so generated tokens still
+   see only the past). Replaces v1's per-ubatch toggle of cparams.causal_attn inside decode.
+2. llama-context.cpp: warning when a batch is split into ubatches (prompt tokens in different ubatches cannot see each other).
+3. llama.h + llama-model.cpp: llama_model_is_prefix_lm(), same shape as llama_model_is_diffusion().
+4. llama-server: prompt caching disabled for prefix-LM models (default and per request); the cached prefix was computed
+   without the tokens that follow it, which is the 41.6 percent word-identity defect found tonight.
+5. Thinking: llama-server renders Mimir's template with a <|think|> system turn because llama.cpp defaults enable_thinking
+   to true; the HF template defaults to none. Benchmarks must run with thinking off (server flag) to match the official prompt.
+Build-prefix (CUDA) rebuilding on the box (llama.h changed, full lib recompile). Scratch clone commit as Bo, patch regenerated
+(tools/prefix-run/patch/). Next: 40-question probe with the new build (target: about 94 percent word-identical), then 021c.
