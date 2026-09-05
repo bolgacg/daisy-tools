@@ -32,9 +32,9 @@ const closedSorted = MAIN.map(m => A(m,"closed")).filter(Boolean).sort((a,b) => 
 const l70 = D.replication["meta-llama-Llama-3.3-70B-Instruct"].EM;
 fills.a1_take = `the best small model from memory, ${MODELS[closedSorted[0].model]}, scores ${pct(closedSorted[0].em)}; the group's 70B model scores ${pct(l70)} on the same questions.`;
 const port = A("mimir","closed");
-fills.a1_verdict = `Rescoring their files gives their ranking, and Mimir on its official path gives ${pct(mhc.em)} against the paper's 9.6, inside one standard error. ` +
-  (port ? `The same weights through the llama.cpp port score ${pct(port.em)}, because the port can only read the prompt left to right. ` : "") +
-  `From memory the small models range from ${pct(closedSorted[closedSorted.length-1].em)} to ${pct(closedSorted[0].em)}; Mimir, trained on Danish, holds the most. Sampling five answers and voting changed no model by more than one point.`;
+fills.a1_verdict = `Their files give their ranking, and Mimir on its official path gives ${pct(mhc.em)} against the paper's 9.6. ` +
+  (port ? `The same weights through the llama.cpp port score ${pct(port.em)}, because the port reads the prompt left to right only. ` : "") +
+  `Mimir, trained on Danish, holds the most from memory, and the whole field is thin.`;
 /* act two */
 const ENG = [
   {k:"box", label:"Wikipedia search box", cond:"retrieve", ceil:D.ceilings.shaped.hit},
@@ -42,14 +42,14 @@ const ENG = [
   {k:"oracle", label:"oracle query, search box", cond:"retrieve-oracle", ceil:D.ceilings.subject.hit}];
 const boxRows = MAIN.map(m => A(m,"retrieve")).filter(Boolean), locRows = MAIN.map(m => A(m,"retrieve-local")).filter(a => a && a.n >= 500), orRows = MAIN.map(m => A(m,"retrieve-oracle")).filter(Boolean);
 const rng = rows => `${pct0(Math.min(...rows.map(a=>a.em)))} to ${pct0(Math.max(...rows.map(a=>a.em)))}`;
-fills.a2_take = `through the search box the answer is fetched ${pct0(D.ceilings.shaped.hit)} of the time and the models score ${rng(boxRows)}; through the ranked index it is fetched ${pct0(D.ceilings.local.hit)} of the time and they score ${rng(locRows)}, with the oracle query at ${pct0(D.ceilings.subject.hit)} and ${rng(orRows)}.`;
+fills.a2_take = `the search box fetches the answer ${pct0(D.ceilings.shaped.hit)} of the time, the ranked index ${pct0(D.ceilings.local.hit)}, and the models follow their engine.`;
 const locBest = [...locRows].sort((a,b)=>b.em-a.em)[0];
 const orBest = orRows.find(a => a.model===locBest.model);
-fills.a2_verdict = `Same models, same prompt, same questions; only the search behind the tool changed, and the best result moved from ${pct(boxRows.find(a=>a.model===locBest.model).em)} to ${pct(locBest.em)} for ${MODELS[locBest.model]}, ${orBest ? (orBest.em > locBest.em ? `${((orBest.em-locBest.em)*100).toFixed(1)} points under` : `${((locBest.em-orBest.em)*100).toFixed(1)} points above`) : "close to"} the oracle query that a model never sees. ` +
-  `The search box needs every word of the question to appear in the page; a ranked index does not, and that is the whole difference. ` +
-  (mhl && mhl.n >= 500 ? `Mimir, one billion parameters, scores ${pct(mhl.em)} on the same text as Gemma 3 4B at ${pct(gl.em)}.` : "");
+fills.a2_verdict = `Same models, same prompt, same questions; only the search behind the tool changed, and ${MODELS[locBest.model]} moved from ${pct(boxRows.find(a=>a.model===locBest.model).em)} to ${pct(locBest.em)}, ${orBest ? `${Math.abs((orBest.em-locBest.em)*100).toFixed(1)} points from` : "close to"} the oracle query a model never sees. ` +
+  `The search box needs every word to appear in the page; a ranked index does not.` +
+  (mhl && mhl.n >= 500 ? ` Mimir at one billion parameters reads the same text as well as Gemma 3 4B.` : "");
 const fl = [...D.fidelity_local].sort((a,b)=>b.em_present-a.em_present);
-fills.fid_note = fl.length ? `${MODELS[fl[0].model]} converts ${pct0(fl[0].em_present)} of the fetched answers and ${MODELS[fl[fl.length-1].model]} ${pct0(fl[fl.length-1].em_present)}. When the answer is absent every model still answers, almost always wrongly.` : "";
+fills.fid_note = fl.length ? `${MODELS[fl[0].model]} converts ${pct0(fl[0].em_present)} of the fetched answers, ${MODELS[fl[fl.length-1].model]} ${pct0(fl[fl.length-1].em_present)}. When the answer is absent, every model still answers, almost always wrongly.` : "";
 const dc = D.decomp;
 fills.decomp_text = dc ? `Of the ${dc.n} questions, the answer was inside the three fetched introductions for ${dc.in_intros} (${pct0(dc.in_intros/dc.n)}), further down one of those three pages for ${dc.below_intro} (${pct0(dc.below_intro/dc.n)}), and not in the top three pages at all for ${dc.not_in_top3} (${pct0(dc.not_in_top3/dc.n)}), of which ${dc.in_ranks_4_to_10} sat in ranks four to ten.` : "";
 /* act three */
@@ -59,13 +59,12 @@ const never = dec("agentic").filter(d => rate(d) < 0.02).map(d => MODELS[d.model
 const always = dec("agentic").filter(d => rate(d) > 0.9).map(d => MODELS[d.model]);
 const l3 = dec("agentic-fewshot").find(d => d.model==="llama3b");
 const agLoc = MAIN.map(m => ({m, a: A(m,"agentic-local"), r: A(m,"retrieve-local")})).filter(x => x.a && x.r && x.a.n >= 500 && rate(D.decision.find(d=>d.model===x.m && d.variant==="agentic-local") || {called_wrong:0,called_right:0,silent_wrong:1,silent_right:0}) > 0.5);
-fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a search line in 592 chances each; ${always.join(" and ")} wrote one on nearly every question. ` +
-  (l3 ? `Llama 3B searched only when shown examples, ${l3.called_wrong + l3.called_right} times out of 592, all on questions it had wrong from memory: the right instinct at the wrong scale. ` : "") +
+fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a search line; ${always.join(" and ")} wrote one on nearly every question. ` +
   (scaff ? `Asked first whether it knew the answer, Mimir said yes on ${fills.mimir_bluff_pct} of the questions it then got wrong. ` : "") +
   (function(){ const t = D.decision.find(d => d.model==="llama3b" && d.variant==="agentic"), n = D.decision.find(d => d.model==="llama3b" && d.variant==="agentic-native-local");
-    return (t && n && rate(t) < 0.05 && rate(n) > 0.9) ? `Llama 3B never searched when told in text that it could, and searched on ${pct0(rate(n))} of the questions when the same search was offered in its native tool format: whether a small model "decides" to search is set by the interface, not by what it knows. ` : ""; })() +
-  (agLoc.length ? `On the ranked index the models that write their own query score below the plain question: ${agLoc.map(x => `${MODELS[x.m]} ${pct(x.a.em)} against ${pct(x.r.em)}`).join(", ")}. Once the engine ranks properly, rewriting the question costs points.` : "");
-fills.ask_note = `A model-written query "landed" when the first result was the canon work the question is about. When a query returned nothing, the question itself was used instead, marked as a fallback. On the ranked index the question as written is the better query.`;
+    return (t && n && rate(t) < 0.05 && rate(n) > 0.9) ? `Llama 3B never searched when told in text and searched on ${pct0(rate(n))} of questions when the same search came in its native tool format: the interface sets the decision, not knowledge. ` : ""; })() +
+  (agLoc.length ? `Models that write their own query score below the plain question on the ranked index (${agLoc.map(x => `${MODELS[x.m]} ${pct(x.a.em)} against ${pct(x.r.em)}`).join(", ")}).` : "");
+fills.ask_note = `A query "landed" when the first result was the canon work the question is about; when it returned nothing, the question itself was used (fallback). The question as written is the better query.`;
 const qc = A("qwen3b","closed"), ql = A("qwen3b","retrieve-local");
 if (qc && ql) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_local_len = pct(ql.lenient); }
 if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
@@ -76,19 +75,19 @@ if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
 {
   const causal = (D.mimir_paths || []).find(m => /causal attention, fp16/.test(m.label));
   fills.q_causal = causal ? pct(causal.em) : (port ? pct(port.em) : "");
-  fills.q_how_good = `Good enough to say the search side is solved, with two caveats. The group's best model from memory, a 70-billion-parameter Llama, scores ${pct(l70)} on these questions, and no Danish number with a lookup has been published, so the nearest comparison is English: systems trained for the task with far larger models score 44 to 64 exact match on Natural Questions. The caveats: with 592 questions the interval is about plus or minus 4 points, and the questions were written from Wikipedia pages, so once the right page is found the answer is almost always in it. The score says how well pages are found and read.`;
+  fills.q_how_good = `Good enough to say the search side is solved. The group's best model from memory, a 70B Llama, scores ${pct(l70)} on these questions, and the nearest published numbers, English systems trained for the task with far larger models, sit at 44 to 64. Two caveats: the interval is about plus or minus 4 points, and the questions were written from Wikipedia pages, so the score says how well pages are found and read.`;
   const two = A("mimir-hf","retrieve-given-gemma+qwen") || A("mimir-hf","retrieve-given-qwen");
-  fills.q_two_models = `Yes, two models in a row, not one combined model: Qwen 2.5 3B reads the question and writes the search words, Wikipedia's search box returns three pages, and Mimir reads them and answers${two ? `, which scored ${pct(two.em)} through the search box` : ""}. It was built because Mimir never writes a search when asked to and reads Danish better than the others. The ranked index made it unnecessary: Mimir alone, with the question as the query, scores ${mhl ? pct(mhl.em) : ""}. The pipeline stays in the browser below as a side row.`;
+  fills.q_two_models = `Yes, two models in a row, not one combined model: Qwen 2.5 3B writes the search words, Mimir reads the pages and answers${two ? ` (${pct(two.em)} through the search box)` : ""}. It existed because Mimir never writes a search when asked to. The ranked index made it unnecessary: Mimir alone, with the question as the query, scores ${mhl ? pct(mhl.em) : ""}.`;
   let same = 0, tot = 0; D.questions.forEach(q => { const r = q.runs["gemma4b|retrieve-local"]; if (r) { tot++; if ((r.tq||"").trim() === q.q.trim().slice(0,80)) same++; } });
   let sameBox = 0, totBox = 0; D.questions.forEach(q => { const r = q.runs["gemma4b|retrieve"]; if (r) { totBox++; if ((r.tq||"").trim() === q.q.trim().slice(0,80)) sameBox++; } });
-  fills.q_query = `No. The benchmark has no tool; its prompt is the question alone, and the lookup is this page's addition. The least engineered choice is to send the question as written, and that is the main line: on the ranked index the query was the question itself on ${same} of ${tot} questions. The rule that shortens the query exists only because Wikipedia's search box needs every word to match; through the search box it had to shorten ${totBox - sameBox} of ${totBox} queries. No model wrote a query in the main line.`;
+  fills.q_query = `No. The benchmark has no tool; the lookup is this page's addition, and the least engineered choice is to send the question as written. On the ranked index the query was the question itself on ${same} of ${tot} questions. The shortening rule exists only for the search box, which needs every word to match; there it fired on ${totBox - sameBox} of ${totBox} queries.`;
   const plusM = A("mimir-hf","retrieve-plus-local"), plusG = A("gemma4b","retrieve-plus-local"), wide = A("gemma4b","retrieve-wide-local"), two2 = A("gemma4b","retrieve-tworound-local");
   const parts = [];
   if (plusM || plusG) parts.push(`Fetching the two best paragraphs of the same three pages in addition to their introductions${plusM ? ` takes Mimir from ${pct(mhl.em)} to ${pct(plusM.em)}` : ""}${plusG ? ` and Gemma from ${pct(gl.em)} to ${pct(plusG.em)}` : ""}; the ceiling rises from ${pct(D.ceilings.local.hit)} to ${pct0(0.812)}.`);
   if (wide && wide.n >= 500) parts.push(`Casting a wider net, ten pages and the four best paragraphs across them, gives Gemma ${pct(wide.em)}.`);
   if (two2 && two2.n >= 500) parts.push(`Letting Gemma write one follow-up query when it says the text lacks the answer gives ${pct(two2.em)}.`);
   if (!wide || !two2) parts.push(`Two further variants, a ten-page net and a model-written second query, are running and will appear here.`);
-  fills.q_second = `Every variant below is labelled, not the main line, because each adds a selection step beyond one lookup. ` + parts.join(" ") + ` The honest reading: the remaining misses are pages the ranker does not put in the top three and facts below the introduction, and each extra step buys a few points at roughly double the tokens.`;
+  fills.q_second = `Each variant adds a selection step beyond one lookup, so none is the main line. ` + parts.join(" ") + ` Each extra step buys a few points at roughly double the tokens.`;
 }
 /* PopQA long-tail on the Self-RAG passages */
 if (D.popqa) {
@@ -152,6 +151,45 @@ function drawA2(){
 drawA2();
 $("#fidtable tbody").innerHTML = MAIN.map(m => D.fidelity_local.find(f=>f.model===m)).filter(Boolean)
   .map(f => `<tr><td>${esc(MODELS[f.model])}${f.n < 592 ? ` <span class="lab">(${f.n} of 592 so far)</span>` : ""}</td><td class="n">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span></td><td class="n">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span></td></tr>`).join("");
+
+/* ---------- where the 592 questions go (two rows, same scale) ---------- */
+let decSel = "mimir-hf";
+function drawDecomp(){
+  const avail = MAIN.filter(m => { const a = A(m,"retrieve-local"); return a && a.n >= 500; });
+  if (!avail.includes(decSel)) decSel = avail[0];
+  $("#decchips").innerHTML = avail.map(m => `<button class="chip ${m===decSel?"on":""}" data-m="${m}">${esc(MODELS[m])}</button>`).join("");
+  $("#decchips").querySelectorAll(".chip").forEach(b => b.onclick = () => { decSel = b.dataset.m; drawDecomp(); });
+  const rows = D.questions.map(q => ({q, r: q.runs[decSel+"|retrieve-local"]})).filter(x => x.r);
+  const n = rows.length, dc = D.decomp || {n, in_intros: Math.round(D.ceilings.local.hit*n), below_intro: 0, not_in_top3: n - Math.round(D.ceilings.local.hit*n), in_ranks_4_to_10: 0};
+  const inT = rows.filter(x => x.q.hit_local === true), outT = rows.filter(x => x.q.hit_local !== true);
+  const rightIn = inT.filter(x => x.r.em >= 1).length, wrongIn = inT.length - rightIn, rightOut = outT.filter(x => x.r.em >= 1).length, wrongOut = outT.length - rightOut;
+  const SHORT = {"mimir-hf":"Mimir 1B", gemma4b:"Gemma 3 4B", llama3b:"Llama 3B", qwen3b:"Qwen 3B", llama1b:"Llama 1B"};
+  const W = 640, left = 150, right = 16, bw = W - left - right, x = v => left + bw * v / n;
+  const rowA = [["seg-in", dc.in_intros, "in the 3 intros"], ["seg-below", dc.below_intro, "further down"], ["seg-r410", dc.in_ranks_4_to_10, "ranks 4 to 10"], ["seg-beyond", dc.not_in_top3 - dc.in_ranks_4_to_10, "not in top 10"]];
+  const rowB = [["seg-right", rightIn, "read right", true], ["seg-misread", wrongIn, "misread", true], ["seg-memory", rightOut, "from memory", true], ["seg-wrong", wrongOut, "wrong", false]];
+  const ticks = [[dc.in_intros, "3 intros"], [dc.in_intros + dc.below_intro, "whole pages"], [dc.in_intros + dc.below_intro + dc.in_ranks_4_to_10, "top 10"]];
+  const k1 = D.ceil_by_cond && D.ceil_by_cond["retrieve-k1-local"]; if (k1) ticks.unshift([Math.round(k1.hit*n), "1 intro"]);
+  const plus = D.ceil_by_cond && D.ceil_by_cond["retrieve-plus-local"]; if (plus) ticks.push([Math.round(plus.hit*n), "+paragraphs"]);
+  const tk = ticks.sort((a,b)=>a[0]-b[0]); const top = 8 + tk.length * 11; const H = top + 4 + 50 + 30 + 24;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="where the 592 questions go for ${esc(MODELS[decSel])}">`;
+  const row = (segs, y, label) => {
+    s += `<text class="rowlab" x="${left-8}" y="${y+19}" text-anchor="end">${esc(label)}</text>`;
+    let acc = 0;
+    segs.forEach(([cls, v, lab, light]) => { const x0 = x(acc), w = x(acc+v) - x0; acc += v;
+      s += `<rect class="${cls}" x="${x0}" y="${y}" width="${Math.max(0,w)}" height="30"></rect>`;
+      if (w > 64) s += `<text class="seglab ${light?"light":""}" x="${x0+6}" y="${y+19}">${esc(lab)} ${v}</text>`;
+      else if (w > 26) s += `<text class="seglab ${light?"light":""}" x="${x0+4}" y="${y+19}">${v}</text>`; });
+  };
+  tk.forEach(([v, lab], i) => { const xt = x(v); const yy = 11 + i * 11; const anchor = xt > W - 118 ? "end" : "start"; const dx = anchor === "end" ? -3 : 3;
+    s += `<line class="tick" x1="${xt}" y1="${yy+3}" x2="${xt}" y2="${top+2}"></line><text class="ticklab" x="${xt+dx}" y="${yy}" text-anchor="${anchor}">${esc(lab)} ${pct0(v/n)}</text>`; });
+  row(rowA, top + 4, "the answer was");
+  row(rowB, top + 50, SHORT[decSel] || MODELS[decSel]);
+  s += `<text class="rowlab" x="${left}" y="${H-6}">0</text><text class="rowlab" x="${x(n)}" y="${H-6}" text-anchor="end">${n} questions</text></svg>`;
+  $("#decchart").innerHTML = s;
+  fills.dec_take = `for ${MODELS[decSel]}, ${rightIn} of the ${inT.length} fetched answers were read right and ${wrongIn} misread; of the ${outT.length} questions the lookup missed, ${rightOut} were still answered from memory. ${dc.below_intro} answers sat further down a fetched page and ${dc.in_ranks_4_to_10} in pages ranked four to ten, which is what the second-retrieval variants recover.`;
+  const el = document.querySelector("[data-fill=dec_take]"); if (el) el.textContent = fills.dec_take;
+}
+drawDecomp();
 
 /* ---------- act 3: decision tiles ---------- */
 const VARS = [["agentic","writes its own query, search box"],["agentic-local","writes its own query, ranked index"],["agentic-native-local","native tool call, ranked index"],["agentic-fewshot","with examples, search box"],["agentic-scaffold","asked first whether it knows"]];
@@ -253,7 +291,7 @@ drawBrowser();
     {sel:"#mimirtable", k:"Act one: the ruler · 3 of 10", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
     {sel:"#a1chart", k:"Act one: memory · 4 of 10", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
     {sel:"#a2chart", k:"Act two: the lookup · 5 of 10", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
-    {sel:"#fidtable", k:"Act two: reading · 6 of 10", html:`Every model read the same fetched text, so this table is a clean reading test. The one-billion-parameter Mimir reads as well as the four-billion Gemma.`},
+    {sel:"#decchart", k:"Act two: where the questions go · 6 of 10", html:`<b>Click a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks are the ceilings of narrower and wider lookups.`},
     {sel:"#tiles", k:"Act three: the decision · 7 of 10", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
     {sel:"#asked-first", k:"Questions asked · 8 of 10", html:`Six questions the author was asked while building this, answered in order: what the attention modes mean, how good the score is, whether the two-model pipeline is a trick, why 150 and 592, whether writing the query was part of the test, and what a second retrieval would do.`},
     {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the page fetched.`},

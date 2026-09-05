@@ -49,6 +49,12 @@ hit_local = {}
 if loc_rows:
     hit_local = {i: bool(r.get("ctx_has_gold")) for i, r in loc_rows.items()}
     ceil["local"] = {"hit": sum(hit_local.values()) / len(hit_local), "n": len(hit_local), "by_id": hit_local}
+# answer recall of every offline-index condition (for ceiling ticks: k=1, k=5, plus paragraphs, ten pages)
+ceil_by_cond = {}
+for (mdl, cond), rows in runs.items():
+    if cond.endswith("-local") and rows and len(rows) >= 100 and any(r.get("ctx_has_gold") is not None for r in rows.values()):
+        v = [bool(r.get("ctx_has_gold")) for r in rows.values()]
+        ceil_by_cond.setdefault(cond, {"hit": sum(v) / len(v), "n": len(v)})
 decomp = json.load(open("results/ceiling_decomp.json")) if os.path.exists("results/ceiling_decomp.json") else None
 if decomp:
     ceil["local_pages"] = {"hit": (decomp["in_intros"] + decomp["below_intro"]) / decomp["n"], "n": decomp["n"], "by_id": {}}
@@ -123,7 +129,7 @@ for i, g in gold.items():
     qrows.append(q)
 
 out = {"models": MODELS, "conds": CONDS, "agg": agg, "ceilings": {k: {"hit": v["hit"], "n": v["n"]} for k, v in ceil.items()},
-       "decision": decision, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "questions": qrows,
+       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "questions": qrows,
        "paper": {"mimir_daisy_em_741": 9.6, "llama70b_f1_741": 0.268, "llama70b_bleu_741": 0.166}}
 json.dump(out, open("site/data.json", "w", encoding="utf-8"), ensure_ascii=False)
 open("site/data.js", "w", encoding="utf-8").write("window.DATA=" + json.dumps(out, ensure_ascii=False) + ";")

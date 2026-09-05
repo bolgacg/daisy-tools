@@ -60,3 +60,23 @@ table td.n,table th.n{text-align:right;font-family:var(--mono);font-variant-nume
 .tour-open{font-family:var(--mono);font-size:12px;padding:6px 14px;border-radius:4px;border:1px solid var(--accent);background:var(--card);color:var(--accent);cursor:pointer;margin-left:12px}
 .tour-open:hover{background:var(--accent);color:#fff}
 @media (max-width:600px){ dl.glossary{grid-template-columns:1fr} .tiles{grid-template-columns:1fr 1fr} .headline{gap:14px} }
+/* light mode only (Bo, 5 Sep 2026: dark mode impossible to read); page.css loads after house-style.css so these win */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#faf9f7; --ink:#1a1d21; --soft:#5b6470; --faint:#8b95a1; --rule:#e2e0dc;
+    --pos:#2f7d54; --neg:#b03a3a; --accent:#2c4a6b; --panel:#f3f1ed;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s-real:#9a2d2d; --s-model:#2a78d6;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#faf9f7; --ink:#1a1d21; --soft:#5b6470; --faint:#8b95a1; --rule:#e2e0dc;
+  --pos:#2f7d54; --neg:#b03a3a; --accent:#2c4a6b; --panel:#f3f1ed;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s-real:#9a2d2d; --s-model:#2a78d6;
+}
+html{color-scheme:light}
+/* score decomposition (charity-dollar pattern) */
+.viz-root .seg-in{fill:#cfe0f5} .viz-root .seg-below{fill:#c9c5bf} .viz-root .seg-r410{fill:#dcd8d2} .viz-root .seg-beyond{fill:#eeece8}
+.viz-root .seg-right{fill:var(--s1)} .viz-root .seg-misread{fill:var(--s2)} .viz-root .seg-memory{fill:var(--s3)} .viz-root .seg-wrong{fill:#d9d5cf}
+.viz-root .seglab{font-size:11px;fill:var(--ink)} .viz-root .seglab.light{fill:#fff} .viz-root .rowlab{font-size:12px;fill:var(--soft)}
+.viz-root .tick{stroke:var(--ink);stroke-width:1} .viz-root .ticklab{font-size:11px;fill:var(--soft)}
+details.prompt{border:1px solid var(--rule);padding:8px 14px;margin:8px 0 12px} details.prompt summary{cursor:pointer;font-weight:500}
