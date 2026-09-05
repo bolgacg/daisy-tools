@@ -1,0 +1,3 @@
+[submodule "vendor/SDU-Daisy"]
+	path = vendor/SDU-Daisy
+	url = https://github.com/schneiderkamplab/SDU-Daisy.git
