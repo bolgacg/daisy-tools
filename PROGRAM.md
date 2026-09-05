@@ -272,3 +272,11 @@ gemma4b: closed 19.0 | top5 55.4 | top10 54.9 | own query on live English Wikipe
 qwen3b:  closed 21.4 | top5 54.0 | top10 55.6 | own query 31.9 (searched 1396/1399)
 Self-RAG paper Table 2: Llama2-7B 14.7 -> 38.2; Llama2-13B 14.7 -> 45.7; Self-RAG 7B 54.9; 13B 55.8. Untrained 3B/4B readers on
 identical passages match the trained 7B/13B rows. On the page: field section table + text. 017b (second retrieval, Gemma) running.
+
+## 2026-09-05 13:50 PUBLISHED on Bo's greenlight ("greenlight for all things you wanna do", "gimme the demo link")
+github.com/bolgacg/daisy-tools (public, branch master, MIT, README, SDU-Daisy as submodule pointer), GitHub Pages from gh-pages
+(site/ contents + .nojekyll): https://bolgacg.github.io/daisy-tools/ serving 200. History checked: no Claude trailers.
+From now on the cycle pushes master after each commit (git log check first) and republishes gh-pages when site/ changes.
+Box gene unreachable since about 13:20 (Tailscale timeout; tether). Queue runs on locally (017b second retrieval was running).
+Bo's new asks (13:30): score decomposition bar (charity-dollar pattern), real-life relevance write-up, intuitive-design skill
+(written: ~/.claude/skills/intuitive-design/), issue text to show before filing.
