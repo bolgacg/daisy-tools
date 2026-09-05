@@ -224,3 +224,6 @@ Headline stays the main line: Mimir 65.9 / Gemma 65.7 with one plain lookup.
 ## 2026-09-05 08:15 job 015b DONE. Mimir-hf agentic-local (writes its own search line, offline index): EM 12.0, searched 56 of 592.
 Confirms: Mimir does not act as a tool user without training; as a reader it is the best small model. The qwenq condition was
 killed on start by the skip watcher (superseded). 015c Inspect smoke test running.
+
+## 2026-09-05 08:25 015c smoke test failed in 18 s: Inspect needs openai>=3.1, the daisy venv pins 2.54 (litellm). Fix: separate
+~/inspect-venv on the box (inspect-ai 0.3.263, openai 3.8.0), task import-checked there; 015d re-queued after 016 (native tools, local).
