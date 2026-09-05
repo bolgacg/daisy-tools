@@ -1,0 +1,61 @@
+{"gold":"N.F.S. Grundtvig","id":"c70d140c-3320-49ba-8336-988b6e5a0941","mode":"prefix","n_gen":9,"n_prompt":158,"prediction":"N.F.S. Grundtvig"}
+{"gold":"1824","id":"f7e4294e-103a-421c-ad49-5de46f758ce1","mode":"prefix","n_gen":4,"n_prompt":160,"prediction":"1937"}
+{"gold":"L.M. Lindeman","id":"5b2a92b2-aab7-4a15-9124-360859b99070","mode":"prefix","n_gen":2,"n_prompt":166,"prediction":"Carl Nielsen"}
+{"gold":"1883","id":"864e666a-e8da-4176-91f5-512460898193","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"1922"}
+{"gold":"1997","id":"7ceb5bbb-e723-477a-b7d2-ddee11db034f","mode":"prefix","n_gen":4,"n_prompt":167,"prediction":"1998"}
+{"gold":"Østbroen","id":"d223c5d8-f64d-47e8-9e26-d60ac13d0846","mode":"prefix","n_gen":5,"n_prompt":168,"prediction":"Sprogøbroen"}
+{"gold":"Dronning Margrethe","id":"1cec3111-62c0-4e8e-a410-16d18afa0a00","mode":"prefix","n_gen":7,"n_prompt":169,"prediction":"Dronning Margrethe II"}
+{"gold":"254 meter","id":"689700d6-5ab7-4562-bc0f-ed4ebdc1a6ea","mode":"prefix","n_gen":6,"n_prompt":170,"prediction":"1.000 meter"}
+{"gold":"1937","id":"fa2743de-ae80-4454-a87e-a19880986035","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"1973"}
+{"gold":"Kai Normann Andersen","id":"8c49a4ec-50c5-40d2-87a4-1153b3b7f6f0","mode":"prefix","n_gen":2,"n_prompt":161,"prediction":"Carl Nielsen"}
+{"gold":"Aage Steffensen","id":"464b894d-b7b3-4346-8ce7-5667edf58915","mode":"prefix","n_gen":6,"n_prompt":163,"prediction":"Peter Belli og Kim Larsen"}
+{"gold":"Cocktail","id":"40f7ec14-b22f-41ae-8ff5-e627c2765800","mode":"prefix","n_gen":7,"n_prompt":166,"prediction":"Kærlighedens smerte"}
+{"gold":"Ekbatana","id":"e6da6b9c-e458-4313-ac4b-dbdbea0e8778","mode":"prefix","n_gen":2,"n_prompt":171,"prediction":"Digte"}
+{"gold":"1896","id":"8c6d8333-49fe-4f7e-b825-de025314dc4a","mode":"prefix","n_gen":4,"n_prompt":161,"prediction":"1981"}
+{"gold":"Tony Vejslev","id":"b1fc13ae-abf0-41bb-bfcd-b4d412741ecb","mode":"prefix","n_gen":4,"n_prompt":184,"prediction":"Hans Christian Lumbye"}
+{"gold":"Kurt Ravn","id":"1803a75e-c6e4-4819-bd2d-9173ab3ac95c","mode":"prefix","n_gen":5,"n_prompt":176,"prediction":"Eksploderende"}
+{"gold":"Søren Kierkegaard","id":"f9b894f6-2eee-46b8-bec9-1780b9e787d8","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"Jens Peter Jacobsen"}
+{"gold":"1843","id":"e4d3d1da-20c2-4c98-94e0-a48dd4c90c41","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"1843"}
+{"gold":"Søren Kierkegaard","id":"9413b5fa-d763-4272-a44e-59057ac2daa3","mode":"prefix","n_gen":4,"n_prompt":161,"prediction":"Jens Peter Jacobsen"}
+{"gold":"Om Valget af det Gode","id":"5e684def-3e55-413c-94e0-f84234c653e2","mode":"prefix","n_gen":2,"n_prompt":172,"prediction":"Til A"}
+{"gold":"1987","id":"179ad967-e0a7-4953-8de2-ce925d123733","mode":"prefix","n_gen":4,"n_prompt":165,"prediction":"1987"}
+{"gold":"Stéphane Audran","id":"620880a6-abeb-43ea-a937-1bd8253fda82","mode":"prefix","n_gen":4,"n_prompt":168,"prediction":"Bodil Kjer"}
+{"gold":"La Cocotte","id":"cdb800f1-e66f-40ed-80bb-df6aff8cb149","mode":"prefix","n_gen":6,"n_prompt":177,"prediction":"Le Grand Vingtième"}
+{"gold":"Gabriel Axel","id":"575f30f5-d3e4-4d3a-b9fa-d5bd329ed293","mode":"prefix","n_gen":18,"n_prompt":169,"prediction":"Babette Gæstebud blev instrueret og skrevet af Gabriel Axel."}
+{"gold":"Jeppe Aakjær","id":"57cfe2ef-ddd8-4c1a-b9ec-3b65f1c96471","mode":"prefix","n_gen":4,"n_prompt":160,"prediction":"Johannes V. Jensen"}
+{"gold":"1912","id":"26dce655-0362-47a5-a5e3-ab92201a8e29","mode":"prefix","n_gen":4,"n_prompt":164,"prediction":"1840"}
+{"gold":"Thomas Laub","id":"3c33b60e-3e68-4877-b630-6411bef8ea86","mode":"prefix","n_gen":2,"n_prompt":164,"prediction":"Carl Nielsen"}
+{"gold":"1987","id":"6b0b9363-0fa9-46d0-abee-32f95551a598","mode":"prefix","n_gen":4,"n_prompt":173,"prediction":"2000"}
+{"gold":"1951","id":"f9471b72-46dc-474f-ad3b-1d586a33cba6","mode":"prefix","n_gen":4,"n_prompt":159,"prediction":"1973"}
+{"gold":"Børge Müller","id":"91f4701c-bdc3-457c-b0c2-208866bd449f","mode":"prefix","n_gen":3,"n_prompt":158,"prediction":"Hans Christian Andersen"}
+{"gold":"Kai Normann Andersen","id":"74371a2d-36df-4478-ad64-30ca431b2fbf","mode":"prefix","n_gen":2,"n_prompt":159,"prediction":"Carl Nielsen"}
+{"gold":"Bodil Kjer","id":"511385b8-d63b-4b07-bf59-cd854398ed1a","mode":"prefix","n_gen":4,"n_prompt":167,"prediction":"Lise Ringheim"}
+{"gold":"N.F.S. Grundtvig","id":"c0fe15cb-db31-469a-bf61-ab9bcdc7cbfd","mode":"prefix","n_gen":5,"n_prompt":159,"prediction":"Hans Adolph Brorson"}
+{"gold":"C.E.F. Weyse","id":"5915c734-4287-477a-b5e6-ac8c867a5298","mode":"prefix","n_gen":2,"n_prompt":161,"prediction":"Carl Nielsen"}
+{"gold":"1826","id":"a8da24e0-c225-4176-93c1-ee91615f8928","mode":"prefix","n_gen":4,"n_prompt":164,"prediction":"1940"}
+{"gold":"Højskolesangbogen","id":"42ab5b7a-7e02-4f66-972f-06cc1aa11b57","mode":"prefix","n_gen":5,"n_prompt":165,"prediction":"Den danske salmebog"}
+{"gold":"1978","id":"1b606e9e-acdf-46e4-8b32-8e7df106a737","mode":"prefix","n_gen":4,"n_prompt":158,"prediction":"1978"}
+{"gold":"Jørgen Buckhøj","id":"0239a491-fc87-405e-a4b1-2b0de54b1867","mode":"prefix","n_gen":5,"n_prompt":164,"prediction":"Lars Knutzon"}
+{"gold":"Lise Nørgaard","id":"4e2207ee-cf1f-43ee-b87d-c40d5ad8af64","mode":"prefix","n_gen":4,"n_prompt":158,"prediction":"Lars von Trier"}
+{"gold":"Korsbæk","id":"1c79a685-24eb-478e-85df-eecfaa2aae9b","mode":"prefix","n_gen":3,"n_prompt":162,"prediction":"New York City"}
+{"gold":"Poul Reichhardt og Bodil Kjer","id":"3f91b52e-3d96-4654-b28b-1f1fcd6570e5","mode":"prefix","n_gen":10,"n_prompt":178,"prediction":"Sangen blev sunget af Poul Reichhardt."}
+{"gold":"Kai Normann Andersen","id":"0fb68440-d47a-4a7b-bceb-cb151845fb40","mode":"prefix","n_gen":2,"n_prompt":162,"prediction":"Carl Nielsen"}
+{"gold":"1989","id":"aff700f7-0b3e-4065-b45f-d8554fd2a7ec","mode":"prefix","n_gen":4,"n_prompt":170,"prediction":"1997"}
+{"gold":"Kai Normann Andersen","id":"d01f7204-7e39-4904-aee9-ef2553104902","mode":"prefix","n_gen":2,"n_prompt":176,"prediction":"Carl Nielsen"}
+{"gold":"Elga Olga","id":"fc189902-0903-4046-994b-b533b6b2cd2f","mode":"prefix","n_gen":4,"n_prompt":172,"prediction":"Ib Schønberg"}
+{"gold":"Poeten","id":"e835c0af-d308-4c3e-8e4d-e5c507388c13","mode":"prefix","n_gen":4,"n_prompt":162,"prediction":"Anders Østergaard"}
+{"gold":"Solitudevej","id":"0faccf91-cbd3-4552-ba5d-79ff8b20cb85","mode":"prefix","n_gen":3,"n_prompt":171,"prediction":"Solitudevej"}
+{"gold":"Sven Gyldmark","id":"9ffa9d10-8c69-4fe0-a6ee-ea7aa99b8bc3","mode":"prefix","n_gen":3,"n_prompt":162,"prediction":"Peter Aude"}
+{"gold":"Otto Francker og Sejr Volmer-Sørensen","id":"ad28e7aa-9b66-4f13-a0a4-2386e425dc97","mode":"prefix","n_gen":3,"n_prompt":157,"prediction":"Hans Christian Andersen"}
+{"gold":"1963","id":"5750fc6e-6d06-4fa2-92b7-1f9651f0124b","mode":"prefix","n_gen":4,"n_prompt":160,"prediction":"1994"}
+{"gold":"Grethe Ingmann","id":"43235af1-0f65-4e58-9643-21a15734bdf8","mode":"prefix","n_gen":5,"n_prompt":166,"prediction":"Søren Berlev"}
+{"gold":"Jørgen Ingmann","id":"556778e9-26b1-4e18-9e02-5bd9e7c03adb","mode":"prefix","n_gen":5,"n_prompt":172,"prediction":"Jørgen Thorup"}
+{"gold":"Per Nørgård","id":"c622e68a-b422-4dc1-9c6f-88f90ad6e130","mode":"prefix","n_gen":4,"n_prompt":160,"prediction":"Ludwig van Beethoven"}
+{"gold":"DR SymfoniOrkestret","id":"77718aaa-129b-4229-b7ef-3487f7bc30bf","mode":"prefix","n_gen":3,"n_prompt":178,"prediction":"New York Philharmonic"}
+{"gold":"2","id":"5daf3cd0-9669-4f28-844e-bdbea57084fe","mode":"prefix","n_gen":3,"n_prompt":167,"prediction":"4 satser"}
+{"gold":"Herbert Blomstedt","id":"d4f08f15-0332-4a40-8134-2ec65016583d","mode":"prefix","n_gen":6,"n_prompt":176,"prediction":"Jørgen Jersild"}
+{"gold":"1749","id":"f9524833-83aa-4dca-b533-4e514c4961fb","mode":"prefix","n_gen":4,"n_prompt":161,"prediction":"1700"}
+{"gold":"Nicolai Eigtved","id":"d275a73a-0582-4773-a8f6-5545900fcf43","mode":"prefix","n_gen":5,"n_prompt":160,"prediction":"C.F. Hansen"}
+{"gold":"Frederiks Kirke","id":"54d8ef40-4867-455c-89f2-34ed0a341eb8","mode":"prefix","n_gen":5,"n_prompt":175,"prediction":"Frederiks Kirke"}
+{"gold":"1771","id":"8d03a63a-dcce-4d3e-b90e-92c3498e3518","mode":"prefix","n_gen":4,"n_prompt":168,"prediction":"1749"}
+{"gold":"1902","id":"c4bd0915-8b74-4e7e-b97c-5993b96cfe71","mode":"prefix","n_gen":4,"n_prompt":159,"prediction":"1900"}

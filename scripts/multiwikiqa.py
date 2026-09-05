@@ -3,7 +3,7 @@ same source dataset, same filters, same seeded mini split (val 256, test 2048, t
 32 new tokens, greedy, same scorer (casefold, strip punctuation, strip a/an/the, max over references).
 Backends: --backend server (llama-server OpenAI chat, one user message) or --backend hf (transformers, for Mimir).
 """
-import argparse, json, os, random, re, string, sys, time
+import time, argparse, json, os, random, re, string, sys, time
 from collections import Counter
 sys.path.insert(0, ".")
 
@@ -75,8 +75,15 @@ def main():
         def work(r):
             prompt = PROMPT.format(context=r["context"], question=r["question"], max_words=3)
             t1 = time.time()
-            j = requests.post(f"{a.base_url}/chat/completions", timeout=300, json={"model": a.model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 32, "temperature": 0}).json()
-            pred = (j["choices"][0]["message"]["content"] or "").strip()
+            pred = None
+            for attempt in range(3):  # a transient server error (e.g. CUDA OOM at start-up) must not kill the run
+                try:
+                    j = requests.post(f"{a.base_url}/chat/completions", timeout=300, json={"model": a.model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 32, "temperature": 0}).json()
+                    pred = (j["choices"][0]["message"]["content"] or "").strip(); break
+                except Exception as e:  # noqa: BLE001
+                    err = str(e)[:120]; time.sleep(20)
+            if pred is None:
+                pred = ""; print("row failed after 3 attempts:", err, file=sys.stderr)
             return {"id": r["id"], "prediction": pred, "refs": r["refs"], "em": em(pred, r["refs"]), "f1": maxf1(pred, r["refs"]), "usage": j.get("usage", {}), "seconds": round(time.time() - t1, 2)}
         with ThreadPoolExecutor(max_workers=a.parallel) as ex:
             for n, rec in enumerate(ex.map(work, todo), 1):

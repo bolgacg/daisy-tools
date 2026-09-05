@@ -351,3 +351,8 @@ his limitations note (partial whoops; recovery = the patch). Built tonight:
    hrm-text-support in a local shallow clone, committed as Bo; fork bolgacg/llama.cpp exists; push after validation.
 Also today: PRs opened on Bo's approval: dfm-evals #8 (CODEOWNERS), SDU-Daisy #2 (scorer fixes + tests). Four demo repos
 rewritten to describe themselves without addressee lines. GitHub profile: name/bio pending the device flow (code issued twice).
+
+## 2026-09-05 23:00 R7 EuroEval multi-wiki-qa-da (their public harness, default test split, our llama-server models):
+gemma-3-4b-it Q6: EM 53.1 / F1 74.6 | qwen2.5-3b-instruct Q8: EM 58.2 / F1 75.3. (dfm-evals protocol on 2,048: 45.6 / 53.6.)
+022 (Mimir MWQA official) FAILED at start: CUDA OOM while loading, the GPU still held the previous job's server; multiwikiqa.py
+now retries a failed request three times instead of dying. Requeue 022 after the prefix-mode validation runs on the GPU.
