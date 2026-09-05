@@ -162,7 +162,7 @@ Svar:</pre>
     <label>Model <select id="bmodel"></select></label>
     <label>Condition <select id="bcond"></select></label>
     <label>Show <select id="boutcome"><option value="all">all</option><option value="right">exact match</option><option value="lenient">lenient only</option><option value="wrong">wrong</option><option value="called">searched</option><option value="silent">did not search</option></select></label>
-    <label>Type <select id="btype"><option value="all">all</option><option value="text">names and titles</option><option value="year">years</option><option value="number">other numbers</option></select></label>
+    <label>Type <select id="btype"><option value="all">all</option><option value="text">names and titles</option><option value="year">years</option><option value="number">other numbers</option><option value="flagged">benchmark noise only</option></select></label>
     <input id="bsearch" type="search" placeholder="search question or answer">
     <p class="hint"><b>Change a filter or click a row</b> for the full record. <span id="bcount" class="num"></span></p>
   </div>
@@ -187,6 +187,10 @@ Svar:</pre>
   <div class="tscroll"><table id="deftable"><thead><tr><th>Model</th><th>Condition</th><th>Most repeated answers (count)</th><th>Share of rows</th></tr></thead><tbody></tbody></table></div>
   <div class="tscroll"><table id="typetable"><thead><tr><th>Model</th><th>Condition</th><th>Years (141)</th><th>Other numbers (52)</th><th>Names and titles (399)</th></tr></thead><tbody></tbody></table></div>
   <p class="note">Exact match by type of the reference answer. Years gain most from a lookup, because an introduction usually states them.</p>
+  <h3>The benchmark's own noise, counted</h3>
+  <p>The questions were written by a language model from Wikipedia pages and then checked by people. Some slipped through. Every model meets the same noise, so the comparisons stand; the counts say how much of the score is not about the model.</p>
+  <div class="tscroll"><table id="noisetable"><thead><tr><th>What</th><th>Questions</th><th>Effect on the score</th></tr></thead><tbody></tbody></table></div>
+  <p class="note"><b>Click a row</b> to list those questions in the browser above.</p>
 </section>
 
 <section id="modelcard">

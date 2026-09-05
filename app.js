@@ -228,7 +228,7 @@ function browserFromTile(){
   window.__tileFilter = tileSel; drawBrowser();
   $("#browser").scrollIntoView({behavior:"smooth", block:"start"});
 }
-["bmodel","bcond","boutcome","btype"].forEach(id => $("#"+id).onchange = () => { window.__tileFilter = null; drawBrowser(); });
+["bmodel","bcond","boutcome","btype"].forEach(id => $("#"+id).onchange = () => { window.__tileFilter = null; if (id === "btype") window.__flag = null; drawBrowser(); });
 $("#bsearch").oninput = () => { window.__tileFilter = null; drawBrowser(); };
 function drawBrowser(){
   const m = bm.value, c = bc.value, o = $("#boutcome").value, t = $("#btype").value, s = $("#bsearch").value.trim().toLowerCase();
@@ -236,7 +236,8 @@ function drawBrowser(){
   let rows = D.questions.filter(q => q.runs[m+"|"+c]);
   rows = rows.filter(q => {
     const r = q.runs[m+"|"+c];
-    if (t !== "all" && q.type !== t) return false;
+    if (t === "flagged") { if (!(q.flags && q.flags.length && (!window.__flag || q.flags.includes(window.__flag)))) return false; }
+    else if (t !== "all" && q.type !== t) return false;
     if (o === "right" && r.em < 1) return false;
     if (o === "lenient" && !(r.len >= 1 && r.em < 1)) return false;
     if (o === "wrong" && r.len >= 1) return false;
@@ -255,7 +256,8 @@ function drawBrowser(){
     if (next && next.classList.contains("detail")) { next.remove(); return; }
     const det = document.createElement("tr"); det.className = "detail";
     const all = Object.entries(q.runs).filter(([k]) => k.startsWith(m+"|")).map(([k,r]) => `<div><b>${esc(CONDN[k.split("|")[1]]||k)}:</b> ${esc(r.p)} <span class="${r.em>=1?"match-1":(r.len>=1?"match-l":"match-0")}">${r.em>=1?"exact":(r.len>=1?"lenient":"wrong")}</span>${r.tq?` &middot; query: <span class="m">${esc(r.tq)}</span>`:""}${r.top?` &middot; fetched: ${esc(r.top)}`:""}${r.dec?` &middot; said: ${esc(r.dec)}`:""}</div>`).join("");
-    det.innerHTML = `<td colspan="6"><div><b>Subject:</b> ${esc(q.subject)} &middot; <b>type:</b> ${q.type} &middot; <b>answer in the ranked-index text:</b> ${q.hit_local===true?"yes":(q.hit_local===false?"no":"unknown")} &middot; <b>in the search-box text:</b> ${q.hit_shaped===true?"yes":(q.hit_shaped===false?"no":"unknown")}</div>${all}</td>`;
+    const FL = {leak:"answer appears in the question", unknown:"gold answer is 'unknown'", no_qmark:"hint, no question mark", multi:"several answers in one gold", danish_letters:"gold has Danish letters the official scorer deletes"};
+    det.innerHTML = `<td colspan="6"><div><b>Subject:</b> ${esc(q.subject)} &middot; <b>type:</b> ${q.type}${q.flags && q.flags.length ? ` &middot; <b>noise:</b> ${q.flags.map(f => FL[f] || f).join("; ")}` : ""} &middot; <b>answer in the ranked-index text:</b> ${q.hit_local===true?"yes":(q.hit_local===false?"no":"unknown")} &middot; <b>in the search-box text:</b> ${q.hit_shaped===true?"yes":(q.hit_shaped===false?"no":"unknown")}</div>${all}</td>`;
     tr.after(det);
   });
 }
@@ -275,6 +277,19 @@ drawBrowser();
   $("#deftable tbody").innerHTML = out.join("");
   $("#typetable tbody").innerHTML = D.agg.filter(a => ["closed","retrieve","retrieve-local"].includes(a.cond) && a.model !== "mimir" && a.n >= 500).sort((a,b) => MAIN.indexOf(a.model)-MAIN.indexOf(b.model) || a.cond.localeCompare(b.cond))
     .map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(CONDN[a.cond])}</td>` + ["year","number","text"].map(t => `<td class="n">${a.by_type[t] ? pct(a.by_type[t][0]) : ""}</td>`).join("") + `</tr>`).join("");
+}
+
+/* ---------- benchmark noise table ---------- */
+if (D.noise) {
+  const c = D.noise.counts, n = D.noise.n;
+  const rows = [
+    ["leak", "The answer appears in the question", "free points for every model, with or without a lookup"],
+    ["unknown", "The gold answer is 'unknown'", "cannot be answered right by design"],
+    ["multi", "Several answers packed into one gold string", "exact match cannot hit them"],
+    ["no_qmark", "A question with a hint and no question mark", "one odd row"],
+    ["danish_letters", "Gold answers with æ, ø or å", "the official scorer deletes those letters, which lowers word-level F1 and BLEU for the same rows in every model; exact match is unaffected"]];
+  $("#noisetable tbody").innerHTML = rows.filter(r => c[r[0]]).map(r => `<tr class="row" data-f="${r[0]}"><td>${esc(r[1])}</td><td class="n">${c[r[0]]} <span class="lab">(${pct0(c[r[0]]/n)})</span></td><td>${esc(r[2])}</td></tr>`).join("");
+  $("#noisetable tbody").querySelectorAll("tr.row").forEach(tr => tr.onclick = () => { window.__flag = tr.dataset.f; $("#btype").value = "flagged"; window.__tileFilter = null; drawBrowser(); $("#browser").scrollIntoView({behavior:"smooth", block:"start"}); });
 }
 
 /* ---------- model card and cost ---------- */
