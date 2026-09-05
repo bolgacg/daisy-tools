@@ -27,7 +27,12 @@ Build and serve:
 
     python patch/apply_prefixlm.py /path/to/llama.cpp
     cmake --build /path/to/llama.cpp/build -j --target llama-server
-    llama-server -m DFM-Mimir-Q8_0.gguf -c 8192 -b 4096 -ub 4096 -np 2 --jinja -fa on --reasoning off
+    llama-server -m DFM-Mimir-Q8_0.gguf -c 4096 -b 2048 -ub 2048 -np 1 --jinja -fa on --reasoning off
+
+The ubatch must cover the longest prompt, and it costs memory: the compute buffer reserves n_ubatch
+times the 262k-token vocabulary for logits, so -ub 4096 needs 4.3 GB on top of the weights and the
+KV cache (too much for a 6 GB card; 2048 fits). With more than one slot the batch splitter can chunk
+a prompt across ubatches, which the warning reports; use one slot for numbers that must be exact.
 
 `--reasoning off` matters for benchmark numbers: llama.cpp defaults `enable_thinking` to true and
 then renders Mimir's template with a system turn containing `<|think|>`; the Hugging Face template

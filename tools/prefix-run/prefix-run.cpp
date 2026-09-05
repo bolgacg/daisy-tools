@@ -16,12 +16,12 @@
 using json = nlohmann::json;
 
 int main(int argc, char ** argv) {
-    std::string model_path, in_path, out_path; int max_new = 100, ngl = 99, n_ctx = 4096, threads = 4; bool causal = false; int limit = 0;
+    std::string model_path, in_path, out_path; int max_new = 100, ngl = 99, n_ctx = 4096, threads = 4; bool causal = false; int limit = 0; int swa_full = 1; int n_outputs_max = 0;
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
         if (a == "-m") model_path = argv[++i]; else if (a == "-i") in_path = argv[++i]; else if (a == "-o") out_path = argv[++i];
         else if (a == "-n") max_new = atoi(argv[++i]); else if (a == "-ngl") ngl = atoi(argv[++i]); else if (a == "-c") n_ctx = atoi(argv[++i]);
-        else if (a == "-t") threads = atoi(argv[++i]); else if (a == "--causal") causal = true; else if (a == "--limit") limit = atoi(argv[++i]);
+        else if (a == "-t") threads = atoi(argv[++i]); else if (a == "--causal") causal = true; else if (a == "--limit") limit = atoi(argv[++i]); else if (a == "--swa-full") swa_full = atoi(argv[++i]); else if (a == "--n-outputs-max") n_outputs_max = atoi(argv[++i]);
     }
     if (model_path.empty() || in_path.empty() || out_path.empty()) { fprintf(stderr, "usage: prefix-run -m model.gguf -i prompts.jsonl -o out.jsonl [-n 100] [-ngl 99] [--causal] [--limit N]\n"); return 1; }
     llama_backend_init();
@@ -30,7 +30,7 @@ int main(int argc, char ** argv) {
     if (!model) { fprintf(stderr, "model load failed\n"); return 1; }
     const llama_vocab * vocab = llama_model_get_vocab(model);
     llama_context_params cp = llama_context_default_params();
-    cp.n_ctx = n_ctx; cp.n_batch = n_ctx; cp.n_ubatch = n_ctx; cp.n_seq_max = 1; cp.n_threads = threads; cp.n_threads_batch = threads;
+    cp.n_ctx = n_ctx; cp.n_batch = n_ctx; cp.n_ubatch = n_ctx; cp.n_seq_max = 1; cp.n_threads = threads; cp.n_threads_batch = threads; cp.swa_full = swa_full != 0; if (n_outputs_max > 0) cp.n_outputs_max = n_outputs_max;
     llama_context * ctx = llama_init_from_model(model, cp);
     if (!ctx) { fprintf(stderr, "context failed\n"); return 1; }
     std::ifstream in(in_path); std::ofstream out(out_path, std::ios::app);

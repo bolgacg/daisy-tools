@@ -382,3 +382,14 @@ Texts for the offer drafted in lit/PREFIX-PR-TEXTS.md (Bo's review; nothing sent
    to true; the HF template defaults to none. Benchmarks must run with thinking off (server flag) to match the official prompt.
 Build-prefix (CUDA) rebuilding on the box (llama.h changed, full lib recompile). Scratch clone commit as Bo, patch regenerated
 (tools/prefix-run/patch/). Next: 40-question probe with the new build (target: about 94 percent word-identical), then 021c.
+
+## 2026-09-06 00:40 v2 build done (build-prefix, CUDA). First probe server died at load: -ub 4096 asks for a 4.3 GB compute
+buffer (logits reserve = n_ubatch x 262k vocab) on top of weights and KV; the 6 GB card cannot. Serving config for Mimir on
+this card: -c 4096 -b 2048 -ub 2048 -np 1 (prompts up to 2048 tokens attend correctly; MWQA max is about 1800). With -np > 1
+the batch splitter can chunk a prompt across ubatches, so validation runs use one slot. Probe relaunched; 021c/022b updated.
+
+## 2026-09-06 00:50 v2 probe (60 q, GPU, -fa on, thinking off, cache off by the patch): template now identical to HF
+('<|turn>user ... <|turn>model'), word-identical to the official transformers output 47/60 = 78 percent (v1 server: 35 to 57),
+EM 10.0 = 10.0 on the 60, 1.57 s/q. Remaining 22 percent divergence: testing (T1) tokenisation HF vs GGUF on the 60 prompts,
+(T2) GPU with flash attention off, (T3) CPU (the driver's 94 percent was measured on CPU). Hypothesis: Pascal f16 attention
+precision flips low-margin argmax choices; wording changes, score does not.

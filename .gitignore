@@ -5,3 +5,4 @@ logs/
 verification/*.png
 vendor/SDU-Daisy/.git/
 *.gguf
+results/dev/

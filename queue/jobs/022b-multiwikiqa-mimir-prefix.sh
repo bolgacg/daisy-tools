@@ -4,7 +4,7 @@
 set -uo pipefail
 cd ~/daisy-tools && . .venv/bin/activate
 S=~/src/llama.cpp/build-prefix/bin/llama-server
-$S -m ~/models/DFM-Mimir-Q8_0.gguf --alias mimir-prefix --port 8080 -ngl 99 -c 8192 -b 4096 -ub 4096 -np 2 --jinja -fa on --reasoning off > logs/server_prefix_mwqa.log 2>&1 & SPID=$!
+$S -m ~/models/DFM-Mimir-Q8_0.gguf --alias mimir-prefix --port 8080 -ngl 99 -c 4096 -b 2048 -ub 2048 -np 1 --jinja -fa on --reasoning off > logs/server_prefix_mwqa.log 2>&1 & SPID=$!
 for i in $(seq 1 120); do curl -s localhost:8080/health | grep -q ok && break; sleep 2; done
 T0=$(date +%s)
 python scripts/multiwikiqa.py --backend server --base-url http://127.0.0.1:8080/v1 --model mimir-prefix --parallel 2 --limit 512 2>&1 | tail -2
