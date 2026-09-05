@@ -245,3 +245,7 @@ Its own tool queries still lose to the plain question (52.5 vs 61.3). 015e (Insp
 
 ## 2026-09-05 09:45 015e DONE: their Inspect format, all 592, Gemma 3 4B: daisy 5.4 (se 0.9) | daisy_lookup 66.0 (se 1.9), f1 0.705.
 Harness: 5.6 / 65.7. The two paths agree within half a point; the page coda now states this check. Queue: 017 PopQA long-tail (a) running.
+
+## 2026-09-05 10:30 R6 PopQA long-tail (Self-RAG's 1,399 questions and passages, contains-gold), Gemma 3 4B: closed 19.0 | top-5 passages 55.4
+Published on the same set: Self-RAG 7B 54.9, 13B 55.8 (trained); Llama2-7B + retrieval 38.2; ChatGPT + retrieval 50.8. An untrained 4B
+reader at 55.4 is level with the trained Self-RAG rows. ret10 and the agentic-en condition still running (job 017), then 023 for Qwen.
