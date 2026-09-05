@@ -327,3 +327,8 @@ Decisions for Bo: ask Jacob/Peter which protocol produced 9.6; open three one-li
 ## 2026-09-05 20:10 R5 their reading task (dfm-evals multi_wiki_qa, Danish, 2,048 rows, their protocol, EM / F1)
 llama1b 2.8 / 25.3 (does not obey "max 3 words") | llama3b 42.5 / 65.9 | gemma4b 45.6 / 72.7 | qwen3b 53.6 / 71.9.
 Their Table: Mimir 66.8; Qwen 3.5 4B 57.1; Gemma 4 E2B 44.1; Gemma 3 1B 42.6. Mimir official on 512 rows queued (022).
+
+## 2026-09-05 20:15 017d run.sh end-to-end test PASSED in a fresh copy (~/daisy-run-test, existing index and weights, LIMIT=20):
+venv created, deps installed (incl. openai), server started, upstream daisy + daisy_lookup + daisy_tool ran, table printed,
+"inspect view" hint shown. The one-command path is real. Benchmark-noise table live on the page (leak 11, unknown 2, multi 2,
+no question mark 1, Danish letters in gold 98) with a browser filter and per-question flags. 017e (Mimir, lab protocol) running.
