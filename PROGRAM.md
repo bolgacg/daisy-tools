@@ -434,3 +434,9 @@ ruff clean, 17 tests pass on the box. Job 026 queued: the PR file itself on all 
 our earlier Inspect copy 66.0). PR text drafted in lit/DAISY-LOOKUP-PR-TEXT.md; opening waits for Bo. llama.cpp branch
 hrm-text-prefix-lm pushed to the (new) fork bolgacg/llama.cpp, commit 66c7c5ed; PR onto noctrex:hrm-text-support waits for Bo.
 021c at 286/592 closed rows (01:35); 022b, 024, 025, 026 queued behind it.
+
+## 2026-09-06 02:00 R8 021c closed half, full 592, patched llama.cpp server (v2 mask patch, thinking off, cache off), script template
+EM 8.3 | official via hf_server, same template 8.4 | official transformers, dfm template 8.4 | causal port 5.6.
+Word-identical to the official implementation with the same prompt bytes: 92.4 percent (547/592); causal port 28.7 percent.
+Across the two prompt copies: 81.4 percent. 1043 s for 592 = 1.8 s/q (median 3.0 s per request at two in flight);
+mean answer 5.9 tokens. Texts A and B in lit/PREFIX-PR-TEXTS.md now carry these numbers. Lookup half at 276/592 (01:51).
