@@ -75,7 +75,7 @@ Svar:</pre>
   <div class="tscroll"><table id="reptable"><thead><tr><th>Their released predictions, rescored here</th><th>EM</th><th>F1</th><th>BLEU</th><th>F1 in paper</th><th>BLEU in paper</th></tr></thead><tbody></tbody></table></div>
   <p class="note">Same ranking as the paper; the public 592 score a little higher than the full set. Their best model, a 70B Llama, answers one question in four from memory.</p>
   <div class="tscroll"><table id="mimirtable"><thead><tr><th>Mimir, the same weights three ways</th><th>EM</th></tr></thead><tbody></tbody></table></div>
-  <p class="note">The official implementation lands within one standard error of the paper. The laptop port reads the prompt left to right only, and that alone costs a third of the score.</p>
+  <p class="note">The official implementation lands within one standard error of the paper. The laptop port reads the prompt left to right only, and that alone costs a third of the score. One open point: the group has two DAISY task definitions in public code, with different prompts and scorers, and neither is tied to the published 9.6; this page uses the one in their public evaluation library.</p>
   <div class="controls" id="a1controls">
     <div class="chips" id="a1chips"></div>
     <p class="hint"><b>Click a model chip.</b> Exact match from memory; the dotted line is the group's 70B.</p>
