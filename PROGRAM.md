@@ -280,3 +280,9 @@ From now on the cycle pushes master after each commit (git log check first) and 
 Box gene unreachable since about 13:20 (Tailscale timeout; tether). Queue runs on locally (017b second retrieval was running).
 Bo's new asks (13:30): score decomposition bar (charity-dollar pattern), real-life relevance write-up, intuitive-design skill
 (written: ~/.claude/skills/intuitive-design/), issue text to show before filing.
+
+## 2026-09-05 14:35 page pass on Bo's asks: light mode only (page.css overrides the dark tokens), copy cut by about a third,
+prompt in a collapsible, "Where the 592 questions go" two-row segmented chart with ceiling ticks (3 intros / whole pages / top 10;
+1 intro and +paragraphs ticks appear when 031 lands), generated sentences shortened to the two-numbers rule, tour step 6 now the
+chart. Walk clean; master pushed; gh-pages republished via scripts/publish_pages.sh; live check 200, 0 errors.
+Box still unreachable after the power loss (14:35); Bo asked to reconnect the phone.
