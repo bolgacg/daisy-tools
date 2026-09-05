@@ -301,3 +301,12 @@ rndis drops the adb function; should be rndis,adb).
 ## 2026-09-05 18:20 Bo approved ("do it"): comment posted as bolgacg on ggml-org/llama.cpp PR #27625 (noctrex, HrmTextForCausalLM),
 text identical to the draft shown to Bo: https://github.com/ggml-org/llama.cpp/pull/27625#issuecomment-5553071594
 Follow-up questions there are Bo's to answer; check the thread once a day until the deadline.
+
+## 2026-09-05 18:35 job 017b DONE: second-retrieval variants, Gemma 3 4B, full 592, offline index (labelled, not main line)
+plain lookup 65.7 (ceiling 75.5, fidelity 85.5, 944 tok) | +2 paragraphs same pages 68.8 (81.2, 83.2, 1302 tok) |
+wide: 10 pages, 3 intros + 4 best paragraphs 67.2 (81.6, 81.0, 1340 tok) | two-round: model writes a follow-up query when
+the text lacks the answer 64.4 (76.4, 82.7, 1068 tok; asked 100 times).
+Reading: a second retrieval buys almost nothing here. The wider net lifts the ceiling by 0.4 points over the paragraphs
+variant and costs 2 points of fidelity (more text, more distraction). Letting the model decide on a second query lowers
+the score: it asks only 100 times and the extra instruction costs 3 points of reading fidelity on every question.
+Best labelled variant stays "+paragraphs" (Gemma 68.8, Mimir 71.6). Page q_second fill now shows all three. 017c (run.sh test) running.
