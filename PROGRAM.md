@@ -262,3 +262,7 @@ reader at 55.4 is level with the trained Self-RAG rows. ret10 and the agentic-en
    Their usual UI is `inspect view`; run.sh prints the command.
 6. Recommendations status: dfm-evals task DONE and verified (66.0 vs 65.7); Mimir in the reader seat DONE (65.9);
    public issue on the attention finding DRAFTED (lit/ISSUE-DRAFT-mimir-prefix-attention.md), waits for Bo's text approval.
+
+## 2026-09-05 12:35 R6 PopQA long-tail interim (contains-gold, 1,399 q, Self-RAG passages): gemma4b closed 19.0 | ret5 55.4 | ret10 54.9 |
+agentic-en 32.8; qwen3b closed 21.4 | ret5 54.0 (ret10, agentic-en running). Published: Self-RAG 7B 54.9 / 13B 55.8; Llama2-7B+ret 38.2;
+ChatGPT+ret 50.8. Both untrained small readers land on the trained Self-RAG rows. Page field section to get this table when 017 closes.
