@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What one Wikipedia lookup does to DAISY, and what it cannot do</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="house-style.css">
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div class="wrap">
+
+<header id="top">
+  <div class="eyebrow">Work sample &middot; for the assessment committee of PhD scholarship 4203, IMADA, SDU &middot; generated <span data-fill="date"></span></div>
+  <h1>What one Wikipedia lookup does to DAISY, and what it cannot do</h1>
+  <p class="standfirst">DAISY, the group's quiz on the Danish Culture Canon, measures what a model remembers. Give the same models one
+  lookup in Danish Wikipedia and the same quiz measures three separate skills: finding the page, reading it, and knowing when to look.
+  With their prompt, their scorer and their questions, the group's own one-billion-parameter Mimir goes from
+  <span class="num" data-fill="mimirhf_closed_pct"></span> to <span class="num" data-fill="mimirhf_local_pct"></span> exact match,
+  level with a model four times its size, because it reads Danish text better than anything else this small.
+  No model here knows when to look: asked whether it knows the answer, Mimir says yes on
+  <span class="num" data-fill="mimir_bluff_pct"></span> of the questions it then gets wrong.</p>
+
+  <div class="headline">
+    <div><div class="k">Mimir, from memory</div><div class="v num" data-fill="mimirhf_closed_pct"></div><div class="s">their code path; the Mimir paper reports 9.6</div></div>
+    <div><div class="k">Mimir, one lookup</div><div class="v num" data-fill="mimirhf_local_pct"></div><div class="s">the question as the query, top three introductions</div></div>
+    <div><div class="k">Ceiling of that lookup</div><div class="v num" data-fill="ceil_local_pct"></div><div class="s">questions whose answer was in the fetched text</div></div>
+    <div><div class="k">Models that knew when to look</div><div class="v num">0 of 5</div><div class="s">each either always searched or never did</div></div>
+  </div>
+
+  <p class="byline">By Bolga&ccedil; G&uuml;len, Odense, September 2026. Benchmark, prompt, scorer and model are the Odense NLP group's own
+  (<a href="https://github.com/schneiderkamplab/SDU-Daisy">SDU-Daisy</a>, <a href="https://huggingface.co/danish-foundation-models/DFM-Mimir">DFM Mimir</a>).
+  Code, the index builder, every logged answer, and the task in the dfm-evals format: <a href="https://github.com/bolgacg/daisy-tools">github.com/bolgacg/daisy-tools</a>.
+  <button class="tour-open" id="tourbtn">Guided tour</button></p>
+</header>
+
+<section id="primer">
+  <h2>What you need to know to read this page</h2>
+  <ol class="primer">
+    <li><b>DAISY</b> is a quiz of short factual questions about the Danish Culture Canon, written by the group in Odense. 592 questions are public with their answers; those 592 are used here, and the group's own Mimir score was computed on the same 592.</li>
+    <li><b>From memory</b> means the model answers with nothing but the group's Danish prompt, at temperature zero, exactly as in their paper.</li>
+    <li><b>One lookup</b> means the question itself is sent to a search over Danish Wikipedia, and the introductions of the top three pages are placed above the question before the model answers. No model writes a query and nothing but the question is used.</li>
+    <li><b>Two search engines</b> are compared: Wikipedia's own search box, which needs every word of the query to appear in the page, and a standard ranked index (BM25) built here over the full Danish Wikipedia dump of 1 November 2023, which is older than the benchmark.</li>
+    <li>Scores are the group's: <b>exact match</b> (the normalised answer equals the reference) and word-level <b>F1</b>. A <b>contains-gold</b> score is shown beside them: the reference appears somewhere inside the answer.</li>
+  </ol>
+  <dl class="glossary">
+    <dt>Answer recall@3</dt><dd>How often the reference answer is literally inside the three fetched introductions. This is the ceiling of a lookup: no model can score above it from the text alone.</dd>
+    <dt>Reading fidelity</dt><dd>Exact match on the questions where the answer was inside the fetched text. It separates "could not find it" from "could not read it".</dd>
+    <dt>Oracle query</dt><dd>The benchmark's hidden subject field, the name of the canon work, used as the search term. A model never sees it; it marks the best possible query.</dd>
+    <dt>Decision</dt><dd>Whether the model, told it may search, writes a search or answers from memory. The four counts of act three compare that choice with whether its memory was right.</dd>
+    <dt>Prefix attention</dt><dd>Mimir reads the prompt with every token seeing every other token, and only writes the answer left to right. The common laptop port reads the prompt left to right only, which is not how the model was trained.</dd>
+    <dt>Quantised</dt><dd>Weights stored at eight bits (six for Gemma) to fit a six-gigabyte consumer graphics card. Mimir itself runs in the official implementation at half precision.</dd>
+  </dl>
+</section>
+
+<section id="world">
+  <h2>The call, the benchmark and the group's own numbers</h2>
+  <p>The scholarship call lists three directions: LLM customisation and test-time scaling, agentic behaviour and tool use, and
+  multi-modality. This page is a measured study on the second. It uses the group's assets end to end so that every number can be
+  read against their own tables.</p>
+  <div class="callout">
+    <p><strong>Their prompt, verbatim (Prompt Template Version 1 in the DAISY paper).</strong></p>
+    <pre class="prompt">Besvar spørgsmålet med kun det direkte svar, uden forklaring om hvorfor.
+Regelsæt:
+- Svar kun på dansk.
+- Hvis svaret er i højde, svar i meter (m).
+- Hvis svaret er i vægt, svar i kilogram (kg).
+- Hvis svaret er om en størrelse, svar i centimeter (cm). Fx Hvor stort er maleriet Mona Lisa? Svar: 77 cm x 53 cm.
+- Hvis svaret er en person angiv den måde de typisk bliver angivet på i danske tekster.
+
+Spørgsmål: {question}
+Svar:</pre>
+  </div>
+</section>
+
+<section id="act1">
+  <h2>Act one. Checking the ruler</h2>
+  <p class="lede">Nothing below can be trusted unless the published numbers come back first. Two checks were run: the group's released predictions were rescored with their own script, and Mimir was run through its official code path.</p>
+  <h3>Their released predictions, rescored here</h3>
+  <div class="tscroll"><table id="reptable"><thead><tr><th>Model (their run)</th><th>EM</th><th>F1</th><th>BLEU</th><th>F1 in paper</th><th>BLEU in paper</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">The ranking is the paper's. The numbers sit a little above the paper's because the public 592 are slightly easier than the full set. Their best model, a 70-billion-parameter Llama, answers about one question in four from memory.</p>
+  <h3>Mimir, three ways of running the same weights</h3>
+  <div class="tscroll"><table id="mimirtable"><thead><tr><th>How Mimir was run</th><th>EM on the 592</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">The Mimir paper reports 9.6. The official implementation with prefix attention lands within one standard error of it. The community llama.cpp port reads the prompt left to right only, and that alone costs a third of the score; quantisation costs nothing measurable.</p>
+  <div class="controls" id="a1controls">
+    <div class="chips" id="a1chips"></div>
+    <p class="hint"><b>Click a model chip</b> to highlight it. The bars are exact match from memory; the dotted line is the group's 70B result.</p>
+  </div>
+  <figure>
+    <div class="viz-root" id="a1chart"></div>
+    <figcaption><b>What you see:</b> one bar per model, exact match from memory on the 592 questions. <b>How to read it:</b> a bar at 5 means about 30 questions right. <b>What to take from it:</b> <span data-fill="a1_take"></span></figcaption>
+  </figure>
+  <div class="verdict">
+    <p><strong>The ruler is right, and the common way of running Mimir is not.</strong> <span data-fill="a1_verdict"></span></p>
+  </div>
+  <p class="handover">Memory is thin for every small model. The next act asks what one lookup adds, and what limits it.</p>
+</section>
+
+<section id="act2">
+  <h2>Act two. One lookup, two search engines</h2>
+  <p class="lede">A lookup has two ceilings: how often the right text is fetched, and how faithfully the model reads it. Both are measured separately, and the first turned out to be the one that mattered.</p>
+  <div class="controls" id="a2controls">
+    <div class="chips" id="a2chips"></div>
+    <p class="hint"><b>Click a search engine.</b> The grey bar is how often the answer was inside the fetched text; the coloured bars are what each model scored with that text in front of it.</p>
+  </div>
+  <figure>
+    <div class="viz-root" id="a2chart"></div>
+    <figcaption><b>What you see:</b> the grey bar is the answer recall of the chosen engine, the coloured bars are each model's exact match. <b>How to read it:</b> the gap between a model bar and the grey bar is reading failure. <b>What to take from it:</b> <span data-fill="a2_take"></span></figcaption>
+  </figure>
+  <h3>Reading fidelity on the ranked index</h3>
+  <div class="tscroll"><table id="fidtable"><thead><tr><th>Model</th><th>EM when the answer was in the text</th><th>EM when it was not</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">All models received the same fetched text, because the query is the question. The first column is therefore a clean reading test. <span data-fill="fid_note"></span></p>
+  <div class="verdict">
+    <p><strong>The search engine was the bottleneck, not the model.</strong> <span data-fill="a2_verdict"></span></p>
+  </div>
+  <div class="warnbox">
+    <h3>Where the misses go</h3>
+    <p><span data-fill="decomp_text"></span> A lookup of three introductions therefore caps at <span class="num" data-fill="ceil_local_pct"></span>; whole pages would cap at <span class="num" data-fill="ceil_pages_pct"></span>. A labelled variant that adds the two best paragraphs of the same pages scores <span class="num" data-fill="plus_best"></span>; it is reported, not counted as the main line, because it is a second selection step.</p>
+  </div>
+  <h3>Is the ranked index fair?</h3>
+  <p>It uses the same source as the search box, the whole Danish Wikipedia, in a snapshot from 1 November 2023 that predates the benchmark. It is a generic BM25 index with the title weighted, built by a 60-line script in the repository, and the query is the question as written. No field of the benchmark other than the question is read. Anyone can rebuild it in twenty minutes.</p>
+  <p class="handover">With the page found and read, one skill remains, and it is the one the call names: does the model know when to look?</p>
+</section>
+
+<section id="act3">
+  <h2>Act three. Does the model know when it does not know?</h2>
+  <p class="lede">A model that searches on every question is a retrieval pipeline. One that never searches is a closed book. The useful behaviour is in between: look up what you do not know, answer what you do.</p>
+  <div class="controls" id="a3controls">
+    <div class="chips" id="a3models"></div>
+    <div class="chips small" id="a3variants"></div>
+    <p class="hint"><b>Click a model, then a variant.</b> The four tiles count the model's decisions against its own record from memory. <b>Click a tile</b> to list those questions in the browser below.</p>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <p class="note" id="tilenote"></p>
+  <div class="verdict">
+    <p><strong>No model in this study made the decision the call describes.</strong> <span data-fill="a3_verdict"></span></p>
+  </div>
+  <div class="warnbox">
+    <h3>Why the score cannot yet test the decision</h3>
+    <p>When a model is right from memory on 3 to 8 percent of questions, "always search" is close to the best policy, so a high rate of "searched when wrong" is not evidence of judgement. The decision problem exists for a model that knows a lot; the 70B model in the group's paper knew about a quarter. What can be measured now is the bluff: whether a model claims to know when it does not.</p>
+  </div>
+  <h3>Can the model write its own query?</h3>
+  <div class="tscroll"><table id="asktable"><thead><tr><th>Model</th><th>Variant</th><th>Own queries</th><th>First hit was the subject page</th><th>EM with own query</th><th>EM when it fell back to the rule</th></tr></thead><tbody></tbody></table></div>
+  <p class="note"><span data-fill="ask_note"></span></p>
+  <p class="handover">Finding is solved by the index, reading is solved by the model. Knowing when to look is not solved by anything on this page, and that is the training problem the position is about.</p>
+</section>
+
+<section id="asked">
+  <h2>Questions asked along the way</h2>
+  <p class="lede">These are the questions the author of this page was asked while it was built, in the order they came. A reader will have the same ones.</p>
+  <div id="asked-first">
+  <h3>What do you mean by reading the prompt one way versus both ways?</h3>
+  <p>A language model normally reads a prompt one token at a time, and each token can only use the tokens before it, because that is how the model writes. Mimir was trained differently for the prompt: while reading the question, every token may also use the tokens after it, and only the answer is written left to right. The common laptop port only supports the first mode, so it feeds Mimir the question in a way it was never trained to read. Same weights, same questions: <span class="num" data-fill="q_causal"></span> read the wrong way, <span class="num" data-fill="mimirhf_closed_pct"></span> read the right way.</p>
+  </div>
+  <h3>How good is <span data-fill="mimirhf_local_pct"></span>?</h3>
+  <p><span data-fill="q_how_good"></span></p>
+  <h3>Is "Mimir reads, another model asks" two models combined?</h3>
+  <p><span data-fill="q_two_models"></span></p>
+  <h3>Why a development slice of 150, and why 592 rather than the paper's 741?</h3>
+  <p>Every idea was tried on a fixed slice of 150 questions, and only final numbers were run on all 592, so that ideas could not be tuned on the test set. The slice ran about three points above the full set, inside its own error bar. 592 is the whole public benchmark: the paper counts 741 questions, but 149 were withheld without public answers, so nobody outside the group can score them, and the group's own Mimir number was computed on the 592 as well.</p>
+  <h3>Was writing the search query part of the test?</h3>
+  <p><span data-fill="q_query"></span></p>
+  <h3>What would a second retrieval step do?</h3>
+  <p><span data-fill="q_second"></span></p>
+</section>
+
+<section id="browser">
+  <h2>Every question, every answer</h2>
+  <p class="lede">Aggregate scores hide how models fail. Here is each of the 592 questions with what every model answered under each condition, the query used and the page fetched.</p>
+  <div class="controls" id="bcontrols">
+    <label>Model <select id="bmodel"></select></label>
+    <label>Condition <select id="bcond"></select></label>
+    <label>Show <select id="boutcome"><option value="all">all</option><option value="right">exact match</option><option value="lenient">lenient only</option><option value="wrong">wrong</option><option value="called">searched</option><option value="silent">did not search</option></select></label>
+    <label>Type <select id="btype"><option value="all">all</option><option value="text">names and titles</option><option value="year">years</option><option value="number">other numbers</option></select></label>
+    <input id="bsearch" type="search" placeholder="search question or answer">
+    <p class="hint"><b>Change a filter or click a row</b> to see the full record: query, fetched page, answer and reference. <span id="bcount" class="num"></span></p>
+  </div>
+  <div class="tscroll"><table id="btable"><thead><tr><th>Question</th><th>Reference</th><th>Model answer</th><th>Match</th><th>Query</th><th>Fetched</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="field">
+  <h2>How this sits in the field</h2>
+  <p class="lede">A number means little without the nearest published numbers beside it. Every mismatch is stated.</p>
+  <ul class="limits">
+    <li><b>Same model, same shape of task, English.</b> Search-R1 (arXiv 2503.09516) reports Qwen2.5-3B on PopQA at 10.8 percent direct, 38.7 with retrieval and 43.5 when trained to search, all contains-gold. Here, the same model on DAISY, contains-gold: <span class="num" data-fill="qwen_closed_len"></span> direct, <span class="num" data-fill="qwen_local_len"></span> with one lookup on the ranked index, without any training. The Danish start is lower and the lookup lifts further, because the questions were written from Wikipedia pages.</li>
+    <li><b>Same questions and same passages as a published paper.</b> Self-RAG (arXiv 2310.11511) released its 1,399 long-tail PopQA questions with the passages its retriever fetched. The two small readers here were given exactly those passages, so the only thing that differs from the paper's rows is the reader. <span data-fill="popqa_text"></span>
+      <div class="tscroll"><table id="popqatable"><thead><tr><th>Reader on the Self-RAG passages (PopQA long-tail, 1,399 questions, contains-gold)</th><th>No passages</th><th>Top 5</th><th>Top 10</th></tr></thead><tbody></tbody></table></div></li>
+    <li><b>English open-domain question answering.</b> Systems trained for the task with far larger models score 44 to 64 exact match on Natural Questions (RAG 44.5, Fusion-in-Decoder 51.4, Atlas 64.0). An untrained 1B and 4B model at <span class="num" data-fill="mimirhf_local_pct"></span> and <span class="num" data-fill="gemma_local_pct"></span> here sit in that band; the tasks differ, so this is a placement, not a comparison.</li>
+    <li><b>Small readers fail to extract and get distracted.</b> A 2026 study of retrieval utilisation (arXiv 2603.11513) finds sub-7B models lose known answers to distracting passages. Here the two best readers convert about 86 percent of fetched answers and the 1B Llama 45 percent, on identical text.</li>
+    <li><b>Adaptive retrieval pays only when memory is worth something.</b> Mallen et al. (arXiv 2212.10511) retrieve on 40 percent of PopQA questions. Here memory is right on 1 to 8 percent, so always retrieving is the best policy, even though token log-probabilities predict correctness well (AUROC 0.83 to 0.91).</li>
+    <li><b>No published Danish retrieval-augmented QA number exists</b> as far as the literature sweep found. The DAISY and Mimir papers report memory only. These tables are the first, which is a contribution and a reason for caution.</li>
+  </ul>
+</section>
+
+<section id="failures">
+  <h2>What goes wrong, counted</h2>
+  <p class="lede">The DAISY paper describes failures by example; counts say which failure is common.</p>
+  <h3>Default answers</h3>
+  <p>A model that does not know tends to name the same famous thing. The three most repeated answers per run and the share of rows they cover:</p>
+  <div class="tscroll"><table id="deftable"><thead><tr><th>Model</th><th>Condition</th><th>Most repeated answers (count)</th><th>Share of rows</th></tr></thead><tbody></tbody></table></div>
+  <h3>By answer type</h3>
+  <div class="tscroll"><table id="typetable"><thead><tr><th>Model</th><th>Condition</th><th>Years (141)</th><th>Other numbers (52)</th><th>Names and titles (399)</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Exact match by the type of the reference answer. Years gain most from a lookup, because an introduction usually states them.</p>
+</section>
+
+<section id="modelcard">
+  <h2>Model card and cost</h2>
+  <div class="tscroll"><table id="cardtable"><thead><tr><th>Model</th><th>Parameters</th><th>Weights used</th><th>EM, one lookup</th><th>Seconds per question</th><th>Prompt tokens per question</th></tr></thead><tbody></tbody></table></div>
+  <p><b>Nothing was trained.</b> Five released instruction-tuned models were run as published. Four are quantised and served with llama.cpp; Mimir runs in the official implementation at half precision with prefix attention. Greedy decoding, at most 64 new tokens, the group's prompt, each model's chat template. The lookup is three introductions of at most 900 characters from the ranked index. Scores are the group's script, unmodified. Hardware: one GeForce GTX 1060 with six gigabytes of memory.</p>
+  <p><b>Baseline anyone could run without a model:</b> the answer recall. A system that returned the fetched text verbatim would score zero on exact match but would contain the answer <span class="num" data-fill="ceil_local_pct"></span> of the time. Reading fidelity measures how much of that the models convert.</p>
+  <p><b>Is it any good?</b> As a measurement, yes: it reproduces the group's ranking on their own files and their Mimir number on their own code path. As a system, a one-billion-parameter Danish model with one lookup answers two thirds of this quiz exactly, from a card that costs less than a textbook.</p>
+</section>
+
+<section id="limits">
+  <h2>Limits</h2>
+  <ul class="limits">
+    <li>592 public questions. With 592, the 95 percent interval on a score near 65 is about plus or minus 4 points; differences of 3 points between two runs are noise.</li>
+    <li>The questions were written from Wikipedia pages, so once the right page is found the answer is almost always in it. The lookup result says how well pages are found and read, not how the models would do on facts outside Wikipedia.</li>
+    <li>One index, one snapshot (1 November 2023), one query rule (the question itself), three introductions of 900 characters. A sweep of the number of pages and the cut length is in the queue, not on this page.</li>
+    <li>One run per condition at temperature zero, one seed.</li>
+    <li>The decision table cannot separate judgement from "always search" at this level of memory, as act three states.</li>
+    <li>No fine-tuning. The group's method, reinforcement learning on tool calls, is the natural next step and was not attempted.</li>
+  </ul>
+</section>
+
+<section id="coda">
+  <h2>Run it yourself</h2>
+  <p>The lookup is written as a task in the group's own evaluation library format (Inspect AI, as in dfm-evals), so it runs with the same command as their DAISY task against any OpenAI-compatible server.</p>
+  <pre class="prompt">pip install inspect-ai datasets
+python scripts/build_localwiki.py          # the index, about 20 minutes, 0.9 GB
+OPENAI_API_KEY=none inspect eval dfm_evals_task/daisy_lookup.py@daisy_lookup \
+    --model openai/&lt;served model&gt; --model-base-url http://127.0.0.1:8080/v1</pre>
+  <p>A second task, <span class="num">daisy_tool</span>, offers the same search as a native tool call and lets the model decide. Both keep the upstream prompt, decoding and scorer.</p>
+  <p><span data-fill="inspect_check"></span></p>
+  <h2>How this was built</h2>
+  <p>Their repository and dataset were pulled on 3 September 2026. A Python harness runs each condition against a local server and logs prompt, output, query, fetched titles, tokens and timing for every question. A second script scores every file with the group's metric code and writes the data behind this page. The runs took two nights on a second-hand desktop. All code, the logged rows and this page are in the repository linked at the top.</p>
+  <footer>Every number on this page is generated by the build script from the logged runs and the group's published files, as at <span data-fill="date"></span>. Sources: SDU-Daisy repository and dataset (MIT), the DAISY paper (arXiv 2601.19930), the DFM Mimir paper (arXiv 2608.13517), the Danish Wikipedia dump of 1 November 2023 (Wikimedia, CC BY-SA), the Danish Wikipedia API.</footer>
+</section>
+
+</div>
+<div id="tour"><div class="tour-hl" id="tour-hl"></div><div class="tour-card" id="tour-card"></div></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

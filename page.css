@@ -1,0 +1,62 @@
+/* page-specific additions on top of house-style.css: controls, tiles, browser, tour */
+:root{ --card:var(--paper); --rule2:var(--rule); }
+.wrap{max-width:78ch}
+.byline{font-size:14px;color:var(--soft);margin:0 0 30px}
+.byline a{color:var(--accent)}
+.lede{font:400 17px/1.5 var(--serif);color:var(--soft);margin:0 0 14px}
+.handover{border-top:1px solid var(--rule);padding-top:10px;margin-top:18px;font-style:italic;color:var(--soft)}
+ol.primer{padding-left:1.2em;margin:0 0 18px} ol.primer li{margin:0 0 8px}
+dl.glossary{border:1px solid var(--rule);padding:14px 18px;margin:0 0 10px;display:grid;grid-template-columns:max-content 1fr;gap:6px 18px}
+dl.glossary dt{font:500 13px/1.5 var(--mono);color:var(--accent)} dl.glossary dd{margin:0;font-size:14px;color:var(--soft)}
+pre.prompt{font:13px/1.5 var(--mono);white-space:pre-wrap;margin:6px 0 0;color:var(--ink)}
+.verdict{border-left:3px solid var(--accent);padding:2px 0 2px 16px;margin:14px 0}
+.verdict p{margin:0}
+.controls{margin:12px 0 6px}
+.hint{font-size:13px;color:var(--soft);margin:6px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.chip{font:500 13px/1 var(--mono);padding:8px 12px;border:1px solid var(--rule);border-radius:4px;background:var(--card);color:var(--soft);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chips.small .chip{font-size:12px;padding:6px 10px}
+.viz-root svg{width:100%;height:auto;display:block}
+.viz-root text{font-family:var(--mono);font-size:12px;fill:var(--ink)}
+.viz-root .axis{stroke:var(--rule);stroke-width:1}
+.viz-root .lab{fill:var(--soft);font-size:12px}
+.viz-root .bar{fill:var(--s1)} .viz-root .bar.dim{fill:var(--rule)} .viz-root .bar.on{fill:var(--s2)}
+.viz-root .ceil{fill:var(--faint);opacity:.55}
+.viz-root .ref{stroke:var(--s-real);stroke-dasharray:3 4;stroke-width:1.5}
+figcaption{font-size:13px;color:var(--soft);margin-top:8px;line-height:1.5}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0 6px}
+.tile{border:1px solid var(--rule);padding:14px 16px;cursor:pointer;background:var(--card)}
+.tile:hover{border-color:var(--accent)} .tile.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tile .k{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.tile .v{font:500 30px/1 var(--mono)} .tile .s{font-size:13px;color:var(--soft);margin-top:6px}
+.tile.good .v{color:var(--pos)} .tile.bad .v{color:var(--neg)}
+#bcontrols{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
+#bcontrols label{font:500 12px/1.2 var(--mono);color:var(--soft);display:flex;flex-direction:column;gap:4px}
+#bcontrols select,#bcontrols input{font:14px var(--sans);padding:6px 8px;border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:4px}
+#bcontrols .hint{flex-basis:100%}
+#btable td{vertical-align:top;font-size:13px} #btable tr.row{cursor:pointer} #btable tr.row:hover td{background:var(--panel)}
+#btable td.q{max-width:26ch} #btable td.m{font-family:var(--mono);font-size:12px}
+#btable tr.detail td{background:var(--panel);font-size:13px;color:var(--soft)}
+.match-1{color:var(--pos);font-weight:600} .match-l{color:var(--s4);font-weight:600} .match-0{color:var(--neg)}
+ul.limits{padding-left:1.2em} ul.limits li{margin:0 0 8px}
+table td.n,table th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* guided tour, reference implementation from grid-health-demo */
+#tour{position:absolute;top:0;left:0;right:0;z-index:50;display:none}
+#tour.on{display:block}
+.tour-hl{position:absolute;border:2px solid var(--accent);border-radius:8px;box-shadow:0 0 0 9999px rgba(26,29,33,.55);transition:all .35s ease;pointer-events:none}
+.tour-card{position:absolute;width:min(400px,calc(100vw - 32px));background:var(--card);border:1px solid var(--rule2);border-radius:8px;padding:18px 20px;box-shadow:0 6px 30px rgba(0,0,0,.18)}
+.tour-card .tk{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.tour-card p{font-size:14px;line-height:1.55;color:var(--ink);margin:0 0 12px}
+.tour-nav{display:flex;align-items:center;gap:8px}
+.tour-nav .dots{flex:1;display:flex;gap:5px}
+.tour-nav .dots i{width:6px;height:6px;border-radius:50%;background:var(--rule2)}
+.tour-nav .dots i.on{background:var(--accent)}
+.tour-btn{font-family:var(--mono);font-size:12px;padding:7px 14px;border-radius:4px;border:1px solid var(--rule2);background:var(--card);color:var(--soft);cursor:pointer}
+.tour-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.tour-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tour-btn.primary:hover{color:#fff;opacity:.92}
+.tour-open{font-family:var(--mono);font-size:12px;padding:6px 14px;border-radius:4px;border:1px solid var(--accent);background:var(--card);color:var(--accent);cursor:pointer;margin-left:12px}
+.tour-open:hover{background:var(--accent);color:#fff}
+@media (max-width:600px){ dl.glossary{grid-template-columns:1fr} .tiles{grid-template-columns:1fr 1fr} .headline{gap:14px} }
