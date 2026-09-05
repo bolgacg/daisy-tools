@@ -297,3 +297,7 @@ Boot Option 1 = Ubuntu (P1 Kingston), Restore AC Power Loss = Power On. Driver b
 017b requeued from row 461 (460 rows salvaged, 0 corrupt). Root cause still open: the CMOS battery (CR2032) must be replaced
 or every cold start repeats this. Tether watchdog fired at boot as designed; adb devices empty -> investigate (setFunctions
 rndis drops the adb function; should be rndis,adb).
+
+## 2026-09-05 18:20 Bo approved ("do it"): comment posted as bolgacg on ggml-org/llama.cpp PR #27625 (noctrex, HrmTextForCausalLM),
+text identical to the draft shown to Bo: https://github.com/ggml-org/llama.cpp/pull/27625#issuecomment-5553071594
+Follow-up questions there are Bo's to answer; check the thread once a day until the deadline.
