@@ -194,3 +194,9 @@ gemma4b 65.7 (85.5) | llama3b 61.3 (79.4) | qwen3b 59.8 (77.6) | llama1b 33.8 (4
 68.8 / 64.4 / 63.9 / 41.2. Agentic (model writes query) on offline index: gemma 48.5, qwen 55.4, llama3b 3.7,
 llama1b 0.7 (the Llamas never emit the SEARCH line; unchanged from live). Reading fidelity separates the readers
 cleanly: 85 > 79 > 78 > 45 with identical retrieved text. 015b (Mimir-hf, batch 2) started 01:41.
+
+## 2026-09-05 02:20 dfm-evals-format task written (dfm_evals_task/daisy_lookup.py): daisy_lookup (main line) and daisy_tool
+(native tool decision), upstream scorer/prompt vendored, imports and builds on the box; the lookup returns the same titles
+as the runner for the first question. Smoke job 015c (40 q, Gemma, closed vs lookup vs tool) queued after 015b.
+Mimir-hf on the offline index, first 134 rows: EM 67.9, fidelity 85.6, Gemma on the same ids 67.2 (NOT a record until 592).
+Letter and CV still cite the live-API numbers ("40 percent", "factor of five"); update once Mimir lands, in one pass.
