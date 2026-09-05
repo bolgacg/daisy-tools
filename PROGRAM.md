@@ -207,3 +207,11 @@ Answer in the 3 intros 75.5% | in a top-3 page but below the intro 9.1% | not in
 and 79 (Bo's target) needs the paragraphs variant or a second fetch. Queue changes: 021 cross-hybrids and 030 k-sweep (live API,
 causal Mimir) dropped as superseded; 016 native tools switched to the offline index; 031 k-sweep-local (Gemma, k=1/5, chars 1800) added.
 Mimir-hf offline interim 311 rows: 63.3 vs Gemma 62.1 on the same ids.
+
+## 2026-09-05 04:05 RECORD: Mimir (official, prefix) with one plain lookup on the offline index, full 592: EM 65.9
+(contains 70.3, fidelity 86.1%, 26 s/q on Pascal fp16, 944 prompt tokens). Gemma 3 4B same condition 65.7. The 1B Danish model
+reads as well as the 4B; both sit 2 points under the live oracle ceiling (67.9 / 69.4) and at 87% of the intro ceiling (75.5).
+R1 holder: Mimir-hf 65.9 = Gemma 65.7 (tie within noise). R2 (Mimir best) moved 53.4 -> 65.9, now a single model with one lookup.
+Page rewritten in the answer-bo voice: three acts (ruler / one lookup, two engines / decision), run-it-yourself coda with the
+dfm-evals task, model card with cost columns; headless walk clean at 1536 and 390 (0 errors, 0 overflow, 0 empty fills).
+Letter and CV still to update (they cite 40 percent and factor of five).

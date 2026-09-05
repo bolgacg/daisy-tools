@@ -17,3 +17,4 @@ for r in rows:
 n = len(rows)
 print(f"n={n} answer in the 3 intros {hit} ({100*hit/n:.1f}%) | in a top-3 page below the intro {below} ({100*below/n:.1f}%) "
       f"| not in the top-3 pages {miss} ({100*miss/n:.1f}%), of which in ranks 4 to 10: {top10}")
+json.dump({"n": n, "in_intros": hit, "below_intro": below, "not_in_top3": miss, "in_ranks_4_to_10": top10}, open("results/ceiling_decomp.json", "w"))

@@ -13,7 +13,7 @@ const { chromium } = require(process.env.PW || '/home/bolgac/projects/minimalist
     await page.waitForTimeout(1200);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     const fills = await page.evaluate(() => [...document.querySelectorAll('[data-fill]')].filter(e => !e.textContent.trim()).map(e => e.getAttribute('data-fill')));
-    const nums = await page.evaluate(() => ({ h1: document.querySelector('h1').textContent, mimir: document.querySelector('[data-fill=mimir_closed_pct]').textContent, best: document.querySelector('[data-fill=best_agentic_pct]').textContent, rows: document.querySelectorAll('#btable tbody tr.row').length, tiles: [...document.querySelectorAll('.tile .v')].map(e => e.textContent).join('/') }));
+    const nums = await page.evaluate(() => ({ h1: document.querySelector('h1').textContent, mimir: document.querySelector('[data-fill=mimirhf_closed_pct]').textContent, best: document.querySelector('[data-fill=mimirhf_local_pct]').textContent, rows: document.querySelectorAll('#btable tbody tr.row').length, tiles: [...document.querySelectorAll('.tile .v')].map(e => e.textContent).join('/') }));
     console.log(`== ${w}px: errors=${errors.length} overflow=${overflow}px emptyFills=${JSON.stringify(fills)}`);
     console.log('   ', JSON.stringify(nums));
     errors.slice(0, 5).forEach(e => console.log('    ERR', e));

@@ -2,57 +2,85 @@
 (function(){
 const D = window.DATA;
 const $ = s => document.querySelector(s);
-const MODELS = D.models;                       // key -> display name
-const ORDER = ["mimir","mimir-hf","llama1b","llama3b","gemma4b","qwen3b"].filter(m => D.models[m] && D.agg.some(a => a.model === m));
+const MODELS = Object.assign({}, D.models, {"mimir-hf": "DFM Mimir 1B (official)", "mimir": "DFM Mimir 1B (llama.cpp port)"});
+const ORDER = ["mimir-hf","mimir","llama1b","llama3b","gemma4b","qwen3b"].filter(m => D.models[m] && D.agg.some(a => a.model === m));
+const MAIN = ORDER.filter(m => m !== "mimir");            // the port is shown only where the attention mode is the point
 const pct = x => (x*100).toFixed(1) + " %";
 const pct0 = x => Math.round(x*100) + " %";
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const CONDN = {closed:"from memory", "closed-sc":"from memory, 5-sample vote", retrieve:"one lookup, search box", "retrieve-oracle":"one lookup, oracle query (search box)",
+  "retrieve-local":"one lookup, ranked index", "retrieve-plus-local":"lookup plus two paragraphs, ranked index (variant)", "retrieve-k1-local":"one lookup, ranked index, 1 page", "retrieve-k5-local":"one lookup, ranked index, 5 pages", "retrieve-c1800-local":"one lookup, ranked index, 1800 characters",
+  "retrieve-given-qwen":"Mimir reads, Qwen asks (search box)", "retrieve-given-gemma":"reads Gemma's queries (search box)", "retrieve-given-gemma+qwen":"reads Gemma's and Qwen's queries (search box)",
+  agentic:"model decides and writes the query, search box", "agentic-local":"model decides and writes the query, ranked index", "agentic-native":"native tool call, search box", "agentic-native-local":"native tool call, ranked index",
+  "agentic-fewshot":"model decides, with examples", "agentic-scaffold":"asked first whether it knows"};
 
 /* ---------- headline numbers and text fills ---------- */
 const fills = {};
 fills.date = new Date().toLocaleDateString("en-GB", {day:"numeric", month:"long", year:"numeric"});
-const mc = A("mimir","closed"), mr = A("mimir","retrieve");
-fills.mimir_closed_pct = pct(mc.em);
-fills.mimir_retrieve_pct = pct(mr.em);
-let best = null;
-for (const m of ORDER) for (const c of ["agentic","agentic-fewshot","agentic-scaffold"]) { const a = A(m,c); if (a && (!best || a.em > best.em)) best = a; }
-fills.best_agentic_pct = pct(best.em);
-fills.best_agentic_name = MODELS[best.model] + " (" + {agentic:"agentic", "agentic-fewshot":"agentic, with examples", "agentic-scaffold":"decide first, then search"}[best.cond] + ")";
-fills.ceil_shaped_pct = pct0(D.ceilings.shaped.hit);
-fills.ceil_oracle_pct = pct0(D.ceilings.subject.hit);
-const closedSorted = ORDER.map(m => A(m,"closed")).filter(Boolean).sort((a,b) => b.em - a.em);
-fills.a1_take = `the best small model from memory, ${MODELS[closedSorted[0].model]}, scores ${pct(closedSorted[0].em)}; the group's 70B model scores ${pct(D.replication["meta-llama-Llama-3.3-70B-Instruct"].EM)} on the same questions.`;
-fills.a1_verdict = ORDER.map(m => { const a = A(m,"closed"); return a ? `${MODELS[m]} ${pct(a.em)}` : null; }).filter(Boolean).join(", ") + ` exact match; lenient match is one to three points higher for each. Mimir, trained from scratch on Danish and permissible data, beats every multilingual model up to four times its size from memory, but the whole range is 1 to 6 percent.`;
-const shapedRows = ORDER.map(m => A(m,"retrieve")).filter(Boolean);
-const oracleRows = ORDER.map(m => A(m,"retrieve-oracle")).filter(Boolean);
-fills.a2_take = `with the rule query the answer is fetched ${pct0(D.ceilings.shaped.hit)} of the time and the models score ${pct0(Math.min(...shapedRows.map(a=>a.em)))} to ${pct0(Math.max(...shapedRows.map(a=>a.em)))}; with the oracle query it is fetched ${pct0(D.ceilings.subject.hit)} of the time and they score ${pct0(Math.min(...oracleRows.map(a=>a.em)))} to ${pct0(Math.max(...oracleRows.map(a=>a.em)))}.`;
-const fidBest = [...D.fidelity].sort((a,b)=>b.em_present-a.em_present);
-fills.a2_verdict = `Going from the raw question (answer fetched ${pct0(D.ceilings.question.hit)} of the time) to the rule query (${pct0(D.ceilings.shaped.hit)}) to the oracle query (${pct0(D.ceilings.subject.hit)}) moves every model more than any difference between models does. When the answer is in the text, ${MODELS[fidBest[0].model]} extracts it ${pct0(fidBest[0].em_present)} of the time and ${MODELS[fidBest[fidBest.length-1].model]} ${pct0(fidBest[fidBest.length-1].em_present)}; Mimir reads Danish text better than Llama 3B's larger size would suggest (${pct0(D.fidelity.find(f=>f.model==="mimir").em_present)} against ${pct0(D.fidelity.find(f=>f.model==="llama3b").em_present)}).`;
-const dec = v => D.decision.filter(d => d.variant===v);
-const never = dec("agentic").filter(d => d.called_wrong + d.called_right === 0).map(d => MODELS[d.model]);
-const always = dec("agentic").filter(d => (d.called_wrong + d.called_right) / (d.called_wrong + d.called_right + d.silent_wrong + d.silent_right) > 0.9).map(d => MODELS[d.model]);
+const mhc = A("mimir-hf","closed"), mhl = A("mimir-hf","retrieve-local"), gl = A("gemma4b","retrieve-local");
+fills.mimirhf_closed_pct = pct(mhc.em);
+fills.mimirhf_local_pct = mhl ? pct(mhl.em) : "running";
+fills.gemma_local_pct = pct(gl.em);
+fills.ceil_local_pct = pct(D.ceilings.local.hit);
+fills.ceil_pages_pct = D.ceilings.local_pages ? pct(D.ceilings.local_pages.hit) : "";
+const scaff = D.decision.find(d => d.model==="mimir-hf" && d.variant==="agentic-scaffold") || D.decision.find(d => d.model==="mimir" && d.variant==="agentic-scaffold");
+fills.mimir_bluff_pct = scaff ? pct0(scaff.silent_wrong / Math.max(1, scaff.silent_wrong + scaff.called_wrong)) : "";
+const plusRows = MAIN.map(m => A(m,"retrieve-plus-local")).filter(Boolean).sort((a,b)=>b.em-a.em);
+fills.plus_best = plusRows.length ? `${pct(plusRows[0].em)} for ${MODELS[plusRows[0].model]}` : "";
+const closedSorted = MAIN.map(m => A(m,"closed")).filter(Boolean).sort((a,b) => b.em - a.em);
+const l70 = D.replication["meta-llama-Llama-3.3-70B-Instruct"].EM;
+fills.a1_take = `the best small model from memory, ${MODELS[closedSorted[0].model]}, scores ${pct(closedSorted[0].em)}; the group's 70B model scores ${pct(l70)} on the same questions.`;
+const port = A("mimir","closed");
+fills.a1_verdict = `Rescoring their files gives their ranking, and Mimir on its official path gives ${pct(mhc.em)} against the paper's 9.6, inside one standard error. ` +
+  (port ? `The same weights through the llama.cpp port score ${pct(port.em)}, because the port can only read the prompt left to right. ` : "") +
+  `From memory the small models range from ${pct(closedSorted[closedSorted.length-1].em)} to ${pct(closedSorted[0].em)}; Mimir, trained on Danish, holds the most. Sampling five answers and voting changed no model by more than one point.`;
+/* act two */
+const ENG = [
+  {k:"box", label:"Wikipedia search box", cond:"retrieve", ceil:D.ceilings.shaped.hit},
+  {k:"local", label:"ranked index (BM25)", cond:"retrieve-local", ceil:D.ceilings.local.hit},
+  {k:"oracle", label:"oracle query, search box", cond:"retrieve-oracle", ceil:D.ceilings.subject.hit}];
+const boxRows = MAIN.map(m => A(m,"retrieve")).filter(Boolean), locRows = MAIN.map(m => A(m,"retrieve-local")).filter(a => a && a.n >= 500), orRows = MAIN.map(m => A(m,"retrieve-oracle")).filter(Boolean);
+const rng = rows => `${pct0(Math.min(...rows.map(a=>a.em)))} to ${pct0(Math.max(...rows.map(a=>a.em)))}`;
+fills.a2_take = `through the search box the answer is fetched ${pct0(D.ceilings.shaped.hit)} of the time and the models score ${rng(boxRows)}; through the ranked index it is fetched ${pct0(D.ceilings.local.hit)} of the time and they score ${rng(locRows)}, with the oracle query at ${pct0(D.ceilings.subject.hit)} and ${rng(orRows)}.`;
+const locBest = [...locRows].sort((a,b)=>b.em-a.em)[0];
+const orBest = orRows.find(a => a.model===locBest.model);
+fills.a2_verdict = `Same models, same prompt, same questions; only the search behind the tool changed, and the best result moved from ${pct(boxRows.find(a=>a.model===locBest.model).em)} to ${pct(locBest.em)} for ${MODELS[locBest.model]}, ${orBest ? (orBest.em > locBest.em ? `${((orBest.em-locBest.em)*100).toFixed(1)} points under` : `${((locBest.em-orBest.em)*100).toFixed(1)} points above`) : "close to"} the oracle query that a model never sees. ` +
+  `The search box needs every word of the question to appear in the page; a ranked index does not, and that is the whole difference. ` +
+  (mhl && mhl.n >= 500 ? `Mimir, one billion parameters, scores ${pct(mhl.em)} on the same text as Gemma 3 4B at ${pct(gl.em)}.` : "");
+const fl = [...D.fidelity_local].sort((a,b)=>b.em_present-a.em_present);
+fills.fid_note = fl.length ? `${MODELS[fl[0].model]} converts ${pct0(fl[0].em_present)} of the fetched answers and ${MODELS[fl[fl.length-1].model]} ${pct0(fl[fl.length-1].em_present)}. When the answer is absent every model still answers, almost always wrongly.` : "";
+const dc = D.decomp;
+fills.decomp_text = dc ? `Of the ${dc.n} questions, the answer was inside the three fetched introductions for ${dc.in_intros} (${pct0(dc.in_intros/dc.n)}), further down one of those three pages for ${dc.below_intro} (${pct0(dc.below_intro/dc.n)}), and not in the top three pages at all for ${dc.not_in_top3} (${pct0(dc.not_in_top3/dc.n)}), of which ${dc.in_ranks_4_to_10} sat in ranks four to ten.` : "";
+/* act three */
+const dec = v => D.decision.filter(d => d.variant===v && d.model !== "mimir");
+const rate = d => (d.called_wrong + d.called_right) / (d.called_wrong + d.called_right + d.silent_wrong + d.silent_right);
+const never = dec("agentic").filter(d => rate(d) < 0.02).map(d => MODELS[d.model]);
+const always = dec("agentic").filter(d => rate(d) > 0.9).map(d => MODELS[d.model]);
 const l3 = dec("agentic-fewshot").find(d => d.model==="llama3b");
-const sc = dec("agentic-scaffold");
-const scText = sc.length ? " Asked first whether it knew the answer, " + sc.filter(d => d.model==="mimir" || d.model==="llama3b").map(d => { const wrong = d.called_wrong + d.silent_wrong; return `${MODELS[d.model]} claimed to know on ${pct0(d.silent_wrong/Math.max(1,wrong))} of the questions it then got wrong`; }).join(" and ") + "; the two models that always searched kept searching, and Llama 1B said no to every question." : "";
-fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a search line in 592 chances each; ${always.join(" and ")} wrote one on ${always.length===2 ? "nearly every" : "nearly every"} question. ` + (l3 ? `Llama 3B searched only when shown examples, ${l3.called_wrong + l3.called_right} times out of 592, all of them on questions it had wrong from memory, which is the right instinct at the wrong scale. ` : "") + `The two models that ask outscore the rule query because their own queries land on the right page about half the time.` + scText;
-const qc = A("qwen3b","closed"), qr = A("qwen3b","retrieve"), qa = A("qwen3b","agentic");
-if (qc && qr && qa) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_retrieve_len = pct(qr.lenient); fills.qwen_agentic_len = pct(qa.lenient); }
+const agLoc = MAIN.map(m => ({m, a: A(m,"agentic-local"), r: A(m,"retrieve-local")})).filter(x => x.a && x.r && x.a.n >= 500 && rate(D.decision.find(d=>d.model===x.m && d.variant==="agentic-local") || {called_wrong:0,called_right:0,silent_wrong:1,silent_right:0}) > 0.5);
+fills.a3_verdict = `Told they may search, ${never.join(", ")} never wrote a search line in 592 chances each; ${always.join(" and ")} wrote one on nearly every question. ` +
+  (l3 ? `Llama 3B searched only when shown examples, ${l3.called_wrong + l3.called_right} times out of 592, all on questions it had wrong from memory: the right instinct at the wrong scale. ` : "") +
+  (scaff ? `Asked first whether it knew the answer, Mimir said yes on ${fills.mimir_bluff_pct} of the questions it then got wrong. ` : "") +
+  (agLoc.length ? `On the ranked index the models that write their own query score below the plain question: ${agLoc.map(x => `${MODELS[x.m]} ${pct(x.a.em)} against ${pct(x.r.em)}`).join(", ")}. Once the engine ranks properly, rewriting the question costs points.` : "");
+fills.ask_note = `A model-written query "landed" when the first result was the canon work the question is about. When a query returned nothing, the question itself was used instead, marked as a fallback. On the ranked index the question as written is the better query.`;
+const qc = A("qwen3b","closed"), ql = A("qwen3b","retrieve-local");
+if (qc && ql) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_local_len = pct(ql.lenient); }
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
-/* ---------- replication table ---------- */
+/* ---------- replication and ruler tables ---------- */
 {
   const tb = $("#reptable tbody");
   const rows = Object.entries(D.replication).sort((a,b) => b[1].F1 - a[1].F1);
   const nice = k => k.replace("meta-llama-","").replace("openai-","").replace("google-","").replace("mistralai-","");
   tb.innerHTML = rows.map(([k,v]) => `<tr><td>${esc(nice(k))}</td><td class="n">${v.EM.toFixed(3)}</td><td class="n">${v.F1.toFixed(3)}</td><td class="n">${v.BLEU.toFixed(3)}</td><td class="n">${v.paper_f1 ?? ""}</td><td class="n">${v.paper_bleu ?? ""}</td></tr>`).join("");
+  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td><td class="n">${pct(m.em)}</td></tr>`).join("") + `<tr><td>Reported in the Mimir paper (Inspect harness)</td><td class="n">9.6 %</td></tr>`;
 }
 
 /* ---------- bar chart helper ---------- */
 function bars(root, items, opts){
-  // items: [{label, value(0..1), cls, sub}], opts: {ref: {value,label}, ceil: value}
-  const W = 640, rowH = 34, left = 150, right = 60, top = 8;
-  const H = top + items.length*rowH + (opts.ref ? 18 : 6);
+  const W = 640, rowH = 34, left = 170, right = 60, top = 8;
+  const H = top + items.length*rowH + (opts.ref || opts.ceil !== undefined ? 18 : 6);
   const max = Math.max(0.05, ...items.map(i=>i.value), opts.ref ? opts.ref.value : 0, opts.ceil || 0) * 1.08;
   const x = v => left + (W-left-right) * v / max;
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"bar chart")}">`;
@@ -61,47 +89,45 @@ function bars(root, items, opts){
     const y = top + i*rowH;
     s += `<text class="lab" x="${left-8}" y="${y+17}" text-anchor="end">${esc(it.label)}</text>`;
     s += `<rect class="bar ${it.cls||""}" x="${left}" y="${y+2}" width="${Math.max(1,x(it.value)-left)}" height="${rowH-12}" rx="1"></rect>`;
-    s += `<text x="${x(it.value)+6}" y="${y+17}">${pct(it.value)}</text>`;
+    s += `<text x="${x(it.value)+6}" y="${y+17}">${it.text || pct(it.value)}</text>`;
   });
   if (opts.ref) { const xr = x(opts.ref.value); s += `<line class="ref" x1="${xr}" y1="${top}" x2="${xr}" y2="${top+items.length*rowH-4}"></line><text class="lab" x="${xr}" y="${H-3}" text-anchor="middle">${esc(opts.ref.label)}</text>`; }
-  if (opts.ceil !== undefined) s += `<text class="lab" x="${x(opts.ceil)}" y="${H-3}" text-anchor="middle">ceiling ${pct(opts.ceil)}</text>`;
+  if (opts.ceil !== undefined) s += `<text class="lab" x="${x(opts.ceil)}" y="${H-3}" text-anchor="middle">answer fetched ${pct(opts.ceil)}</text>`;
   s += `<line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${top+items.length*rowH-4}"></line></svg>`;
   root.innerHTML = s;
 }
 
 /* ---------- act 1 ---------- */
-let a1sel = "mimir";
+let a1sel = "mimir-hf";
 function drawA1(){
   const items = ORDER.map(m => { const a = A(m,"closed"); return a ? {label: MODELS[m], value: a.em, cls: m===a1sel ? "on" : ""} : null; }).filter(Boolean);
-  bars($("#a1chart"), items, {ref: {value: D.replication["meta-llama-Llama-3.3-70B-Instruct"].EM, label: "Llama 3.3 70B, their run"}, aria: "closed-book exact match per model"});
+  bars($("#a1chart"), items, {ref: {value: l70, label: "Llama 3.3 70B, their run"}, aria: "exact match from memory per model"});
   $("#a1chips").innerHTML = ORDER.map(m => `<button class="chip ${m===a1sel?"on":""}" data-m="${m}">${esc(MODELS[m])}</button>`).join("");
   $("#a1chips").querySelectorAll(".chip").forEach(b => b.onclick = () => { a1sel = b.dataset.m; drawA1(); });
 }
 drawA1();
 
 /* ---------- act 2 ---------- */
-const Q = [{k:"question", label:"raw question", cond:null, ceil:D.ceilings.question.hit},
-           {k:"shaped", label:"rule (shaped) query", cond:"retrieve", ceil:D.ceilings.shaped.hit},
-           {k:"subject", label:"oracle query", cond:"retrieve-oracle", ceil:D.ceilings.subject.hit}];
-let a2sel = "shaped";
+let a2sel = "local";
 function drawA2(){
-  const q = Q.find(x=>x.k===a2sel);
-  const items = ORDER.map(m => { const a = q.cond ? A(m,q.cond) : null; return {label: MODELS[m] + (a ? "" : " (not run)"), value: a ? a.em : 0, cls: a ? "" : "dim"}; });
-  bars($("#a2chart"), items, {ceil: q.ceil, aria: "exact match with retrieval against the retrieval ceiling"});
-  $("#a2chips").innerHTML = Q.map(x => `<button class="chip ${x.k===a2sel?"on":""}" data-k="${x.k}">${esc(x.label)}</button>`).join("");
+  const q = ENG.find(x=>x.k===a2sel);
+  const items = MAIN.map(m => { const a = A(m,q.cond); const partial = a && a.n < 500; return {label: MODELS[m] + (a ? (partial ? " (running)" : "") : " (not run)"), value: a ? a.em : 0, cls: a ? (partial ? "dim" : "") : "dim"}; });
+  bars($("#a2chart"), items, {ceil: q.ceil, aria: "exact match with one lookup against the answer recall of the engine"});
+  $("#a2chips").innerHTML = ENG.map(x => `<button class="chip ${x.k===a2sel?"on":""}" data-k="${x.k}">${esc(x.label)}</button>`).join("");
   $("#a2chips").querySelectorAll(".chip").forEach(b => b.onclick = () => { a2sel = b.dataset.k; drawA2(); });
 }
 drawA2();
-$("#fidtable tbody").innerHTML = ORDER.map(m => D.fidelity.find(f=>f.model===m)).filter(Boolean)
-  .map(f => `<tr><td>${esc(MODELS[f.model])}</td><td class="n">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span></td><td class="n">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span></td></tr>`).join("");
+$("#fidtable tbody").innerHTML = MAIN.map(m => D.fidelity_local.find(f=>f.model===m)).filter(Boolean)
+  .map(f => `<tr><td>${esc(MODELS[f.model])}${f.n < 592 ? ` <span class="lab">(${f.n} of 592 so far)</span>` : ""}</td><td class="n">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span></td><td class="n">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span></td></tr>`).join("");
 
 /* ---------- act 3: decision tiles ---------- */
-const VARS = [["agentic","agentic"],["agentic-fewshot","agentic, with examples"],["agentic-scaffold","decide first, then search"]];
-let a3m = "gemma4b", a3v = "agentic", tileSel = null;
+const VARS = [["agentic","writes its own query, search box"],["agentic-local","writes its own query, ranked index"],["agentic-native-local","native tool call, ranked index"],["agentic-fewshot","with examples, search box"],["agentic-scaffold","asked first whether it knows"]];
+let a3m = "mimir-hf", a3v = "agentic-scaffold", tileSel = null;
 function drawA3(){
   const avail = VARS.filter(([v]) => D.decision.some(d => d.model===a3m && d.variant===v));
+  if (!avail.length) { a3m = "gemma4b"; return drawA3(); }
   if (!avail.some(([v]) => v===a3v)) a3v = avail[0][0];
-  $("#a3models").innerHTML = ORDER.map(m => `<button class="chip ${m===a3m?"on":""}" data-m="${m}">${esc(MODELS[m])}</button>`).join("");
+  $("#a3models").innerHTML = MAIN.map(m => `<button class="chip ${m===a3m?"on":""}" data-m="${m}">${esc(MODELS[m])}</button>`).join("");
   $("#a3variants").innerHTML = VARS.map(([v,l]) => { const ok = D.decision.some(d => d.model===a3m && d.variant===v); return `<button class="chip ${v===a3v?"on":""}" data-v="${v}" ${ok?"":"disabled style='opacity:.4'"}>${esc(l)}</button>`; }).join("");
   $("#a3models").querySelectorAll(".chip").forEach(b => b.onclick = () => { a3m = b.dataset.m; tileSel=null; drawA3(); });
   $("#a3variants").querySelectorAll(".chip:not([disabled])").forEach(b => b.onclick = () => { a3v = b.dataset.v; tileSel=null; drawA3(); });
@@ -115,17 +141,16 @@ function drawA3(){
   $("#tiles").innerHTML = tiles.map(t => `<div class="tile ${t.cls} ${tileSel===t.k?"on":""}" data-k="${t.k}"><div class="k">${esc(t.t)}</div><div class="v">${d[t.k]}</div><div class="s">${esc(t.s)} &middot; ${pct0(d[t.k]/n)} of ${n}</div></div>`).join("");
   $("#tiles").querySelectorAll(".tile").forEach(el => el.onclick = () => { tileSel = el.dataset.k; drawA3(); browserFromTile(); });
   const calls = d.called_wrong + d.called_right, wrong = d.called_wrong + d.silent_wrong;
-  $("#tilenote").textContent = `${MODELS[a3m]}, ${VARS.find(([v])=>v===a3v)[1]}: searched on ${calls} of ${n} questions (${pct0(calls/n)}). Of the ${wrong} questions it had wrong from memory, it searched on ${d.called_wrong} (${pct0(d.called_wrong/Math.max(1,wrong))}).` + (calls/n > 0.9 ? " Searching on nearly everything is the policy here, not a judgement per question." : "");
+  $("#tilenote").textContent = `${MODELS[a3m]}, ${VARS.find(([v])=>v===a3v)[1]}: searched on ${calls} of ${n} questions (${pct0(calls/n)}). Of the ${wrong} questions it had wrong from memory, it searched on ${d.called_wrong} (${pct0(d.called_wrong/Math.max(1,wrong))}).` + (calls/n > 0.9 ? " Searching on nearly everything is a policy, not a judgement per question." : "") + (calls/n < 0.05 ? " Never searching is the closed book with extra steps." : "");
 }
 drawA3();
-$("#asktable tbody").innerHTML = D.ask.map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td><td class="n">${pct(a.em_own_query)}</td><td class="n">${a.em_fallback==null ? "" : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
+$("#asktable tbody").innerHTML = D.ask.filter(a => a.model !== "mimir").map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || CONDN[a.variant] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td><td class="n">${pct(a.em_own_query)}</td><td class="n">${a.em_fallback==null ? "" : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
 
 /* ---------- question browser ---------- */
-const CONDN = {closed:"closed book", "closed-sc":"closed book, 5-sample vote", retrieve:"lookup, rule query", "retrieve-oracle":"lookup, oracle query", agentic:"agentic", "agentic-fewshot":"agentic, with examples", "agentic-scaffold":"decide first, then search"};
 const bm = $("#bmodel"), bc = $("#bcond");
 bm.innerHTML = ORDER.map(m => `<option value="${m}">${esc(MODELS[m])}</option>`).join("");
 bc.innerHTML = D.conds.filter(c => D.agg.some(a=>a.cond===c)).map(c => `<option value="${c}">${esc(CONDN[c]||c)}</option>`).join("");
-bm.value = "gemma4b"; bc.value = "agentic";
+bm.value = "mimir-hf"; bc.value = "retrieve-local";
 function browserFromTile(){
   bm.value = a3m; bc.value = a3v;
   $("#boutcome").value = {called_wrong:"called", silent_wrong:"silent", called_right:"called", silent_right:"silent"}[tileSel];
@@ -159,7 +184,7 @@ function drawBrowser(){
     if (next && next.classList.contains("detail")) { next.remove(); return; }
     const det = document.createElement("tr"); det.className = "detail";
     const all = Object.entries(q.runs).filter(([k]) => k.startsWith(m+"|")).map(([k,r]) => `<div><b>${esc(CONDN[k.split("|")[1]]||k)}:</b> ${esc(r.p)} <span class="${r.em>=1?"match-1":(r.len>=1?"match-l":"match-0")}">${r.em>=1?"exact":(r.len>=1?"lenient":"wrong")}</span>${r.tq?` &middot; query: <span class="m">${esc(r.tq)}</span>`:""}${r.top?` &middot; fetched: ${esc(r.top)}`:""}${r.dec?` &middot; said: ${esc(r.dec)}`:""}</div>`).join("");
-    det.innerHTML = `<td colspan="6"><div><b>Subject:</b> ${esc(q.subject)} &middot; <b>type:</b> ${q.type} &middot; <b>answer in the rule-query text:</b> ${q.hit_shaped===true?"yes":(q.hit_shaped===false?"no":"unknown")}</div>${all}</td>`;
+    det.innerHTML = `<td colspan="6"><div><b>Subject:</b> ${esc(q.subject)} &middot; <b>type:</b> ${q.type} &middot; <b>answer in the ranked-index text:</b> ${q.hit_local===true?"yes":(q.hit_local===false?"no":"unknown")} &middot; <b>in the search-box text:</b> ${q.hit_shaped===true?"yes":(q.hit_shaped===false?"no":"unknown")}</div>${all}</td>`;
     tr.after(det);
   });
 }
@@ -169,36 +194,36 @@ drawBrowser();
 {
   const norm = s => String(s||"").toLowerCase().replace(/[^a-z0-9æøå]+/g," ").trim();
   const out = [];
-  for (const m of ORDER) for (const c of ["closed","retrieve","agentic"]) {
+  for (const m of MAIN) for (const c of ["closed","retrieve","retrieve-local"]) {
     const cnt = {}; let n = 0;
     D.questions.forEach(q => { const r = q.runs[m+"|"+c]; if (!r) return; n++; const k = norm(r.p); cnt[k] = (cnt[k]||0)+1; });
-    if (!n) continue;
+    if (n < 500) continue;
     const top = Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,3);
     out.push(`<tr><td>${esc(MODELS[m])}</td><td>${esc(CONDN[c])}</td><td>${top.map(([k,v]) => `${esc(k.slice(0,28))} (${v})`).join("; ")}</td><td class="n">${pct0(top.reduce((s,[,v])=>s+v,0)/n)}</td></tr>`);
   }
   $("#deftable tbody").innerHTML = out.join("");
-  $("#typetable tbody").innerHTML = D.agg.filter(a => ["closed","retrieve","agentic"].includes(a.cond)).sort((a,b) => ORDER.indexOf(a.model)-ORDER.indexOf(b.model) || a.cond.localeCompare(b.cond))
+  $("#typetable tbody").innerHTML = D.agg.filter(a => ["closed","retrieve","retrieve-local"].includes(a.cond) && a.model !== "mimir" && a.n >= 500).sort((a,b) => MAIN.indexOf(a.model)-MAIN.indexOf(b.model) || a.cond.localeCompare(b.cond))
     .map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(CONDN[a.cond])}</td>` + ["year","number","text"].map(t => `<td class="n">${a.by_type[t] ? pct(a.by_type[t][0]) : ""}</td>`).join("") + `</tr>`).join("");
 }
 
-/* ---------- model card ---------- */
+/* ---------- model card and cost ---------- */
 {
-  const meta = {mimir:["1.0 B (1.8 B with embeddings)","Q8_0, community GGUF, causal attention"], "mimir-hf":["1.0 B (1.8 B with embeddings)","fp16, official implementation, prefix attention"], llama1b:["1.2 B","Q8_0"], llama3b:["3.2 B","Q8_0"], gemma4b:["4.3 B","Q6_K"], qwen3b:["3.1 B","Q8_0"]};
-  $("#cardtable tbody").innerHTML = ORDER.map(m => { const c = A(m,"closed"), g = A(m,"agentic"); const mm = meta[m] || ["", ""]; return `<tr><td>${esc(MODELS[m])}</td><td class="n">${mm[0]}</td><td>${mm[1]}</td><td class="n">${c ? c.sec.toFixed(1) : ""}</td><td class="n">${g ? g.sec.toFixed(1) : ""}</td></tr>`; }).join("");
+  const meta = {"mimir-hf":["1.0 B (1.8 B with embeddings)","fp16, official implementation, prefix attention"], mimir:["1.0 B (1.8 B with embeddings)","Q8_0, community GGUF, causal attention"], llama1b:["1.2 B","Q8_0"], llama3b:["3.2 B","Q8_0"], gemma4b:["4.3 B","Q6_K"], qwen3b:["3.1 B","Q8_0"]};
+  $("#cardtable tbody").innerHTML = MAIN.map(m => { const r = A(m,"retrieve-local"); const mm = meta[m] || ["", ""]; return `<tr><td>${esc(MODELS[m])}</td><td class="n">${mm[0]}</td><td>${mm[1]}</td><td class="n">${r ? pct(r.em) + (r.n < 592 ? ` (${r.n} so far)` : "") : ""}</td><td class="n">${r ? r.sec.toFixed(1) : ""}</td><td class="n">${r && r.ptok ? Math.round(r.ptok) : ""}</td></tr>`; }).join("");
 }
 
 /* ---------- guided tour (spotlight; positions computed from document coordinates, then scrolled) ---------- */
 (function(){
   const STEPS = [
-    {sel:"#top h1", k:"Welcome · 1 of 8", html:`This page asks one question from the scholarship call: <b>can a small language model tell when it should look something up instead of answering from memory?</b> It is measured on the Odense group's own Danish quiz, with their own model and their own scorer, so every number can be read against their tables.`},
-    {sel:"#primer .primer", k:"Five things to know · 2 of 8", html:`The primer defines every term used below: the quiz, closed-book, lookup, agentic, and the two scores. Nothing further down assumes anything not on this list; the glossary under it stays open.`},
-    {sel:"#reptable", k:"Their numbers first · 3 of 8", html:`Before any new result, the group's own published predictions for five large models were rescored here. Same ranking as their paper, slightly higher numbers because the public subset is easier. If this table did not match, nothing below could be trusted.`},
-    {sel:"#a1chart", k:"Act one: memory · 4 of 8", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory; the dotted line is the 70B model from their paper. Mimir, trained on Danish, holds the most, and it is still one question in twenty.`},
-    {sel:"#a2chart", k:"Act two: the lookup · 5 of 8", html:`<b>Click a query formulation.</b> The grey bar is how often the answer was even fetched; the coloured bars are what each model scored with that text. The query moves the result more than the choice of model does.`},
-    {sel:"#tiles", k:"Act three: the decision · 6 of 8", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search against its own closed-book record. Two models always search, three almost never; none decides question by question. The box below the tiles says why this data cannot yet test that judgement.`},
-    {sel:"#field", k:"Next to the field · 7 of 9", html:`Three published results with the same shape sit beside ours: the same Qwen model on English entity questions, the finding that small readers fail to extract and get distracted, and the adaptive-retrieval cost results. No Danish retrieval number existed before this page.`},
-    {sel:"#bcontrols", k:"Every answer · 8 of 9", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query it wrote and the page it fetched. Aggregates hide how models fail; this does not.`},
-    {sel:"#cardtable", k:"Model card and limits · 9 of 9", html:`What was run, on what hardware, with which weights, and what was not done. The limits list is written before a reader has to find them. That is the whole page; the Guided tour button at the top restarts this walkthrough.`},
+    {sel:"#top h1", k:"Welcome · 1 of 9", html:`This page takes the group's own Danish quiz and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first.</b> They are Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
+    {sel:"#primer .primer", k:"Five things to know · 2 of 9", html:`Every term used below is defined here: the quiz, from memory, one lookup, the two search engines, and the two scores. The glossary under it stays open.`},
+    {sel:"#mimirtable", k:"Act one: the ruler · 3 of 9", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
+    {sel:"#a1chart", k:"Act one: memory · 4 of 9", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
+    {sel:"#a2chart", k:"Act two: the lookup · 5 of 9", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
+    {sel:"#fidtable", k:"Act two: reading · 6 of 9", html:`Every model read the same fetched text, so this table is a clean reading test. The one-billion-parameter Mimir reads as well as the four-billion Gemma.`},
+    {sel:"#tiles", k:"Act three: the decision · 7 of 9", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
+    {sel:"#bcontrols", k:"Every answer · 8 of 9", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the page fetched.`},
+    {sel:"#coda pre", k:"Run it yourself · 9 of 9", html:`Three commands reproduce the main table on any machine with a served model, in the group's own evaluation format. The Guided tour button at the top restarts this walkthrough.`},
   ];
   const root=$("#tour"), hl=$("#tour-hl"), card=$("#tour-card");
   let idx=0;
@@ -206,7 +231,7 @@ drawBrowser();
     const st=STEPS[idx]; const elm=document.querySelector(st.sel);
     if(!elm){ next(); return; }
     const r=elm.getBoundingClientRect(), sx=window.scrollX, sy=window.scrollY;
-    const top=r.top+sy, left=r.left+sx;                  // document coordinates, independent of scroll timing
+    const top=r.top+sy, left=r.left+sx;
     root.style.height=document.documentElement.scrollHeight+"px";
     hl.style.left=(left-8)+"px"; hl.style.top=(top-8)+"px"; hl.style.width=(r.width+16)+"px"; hl.style.height=(r.height+16)+"px";
     const dots=STEPS.map((_,i)=>`<i class="${i===idx?"on":""}"></i>`).join("");
