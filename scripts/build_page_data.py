@@ -115,10 +115,24 @@ popqa = json.load(open("results/popqa_summary.json")) if os.path.exists("results
 # replication rows
 rep = json.load(open("results/replication_big_models_public592.json")) if os.path.exists("results/replication_big_models_public592.json") else {}
 
+# benchmark noise: questions where the gold is given away, unanswerable, or mangled by the official normaliser
+def _nt(t): return re.sub(r"[^a-z0-9æøå]+", " ", (t or "").lower()).strip()
+def flags_for(g):
+    q, a = g["Question"], g["Answer"].strip(); f = []
+    if _nt(a) and (" " + _nt(a) + " ") in (" " + _nt(q) + " "): f.append("leak")
+    if a.lower().startswith("ukendt"): f.append("unknown")
+    if not q.strip().endswith("?"): f.append("no_qmark")
+    if " eller " in a or "/" in a: f.append("multi")
+    if any(ord(c) > 127 for c in a): f.append("danish_letters")
+    return f
+noise_counts = collections.Counter()
+for g in gold.values():
+    for f in flags_for(g): noise_counts[f] += 1
+noise = {"n": len(gold), "counts": dict(noise_counts)}
 # per-question rows for the browser (compact)
 qrows = []
 for i, g in gold.items():
-    q = {"id": i, "q": g["Question"], "gold": g["Answer"], "subject": g["Subject"], "type": atype(g["Answer"]), "hit_shaped": hit_shaped.get(i), "hit_local": hit_local.get(i), "runs": {}}
+    q = {"id": i, "q": g["Question"], "gold": g["Answer"], "subject": g["Subject"], "type": atype(g["Answer"]), "hit_shaped": hit_shaped.get(i), "hit_local": hit_local.get(i), "flags": flags_for(g), "runs": {}}
     for (mdl, cond), rows in runs.items():
         r = rows.get(i)
         if not r: continue
@@ -129,7 +143,7 @@ for i, g in gold.items():
     qrows.append(q)
 
 out = {"models": MODELS, "conds": CONDS, "agg": agg, "ceilings": {k: {"hit": v["hit"], "n": v["n"]} for k, v in ceil.items()},
-       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "questions": qrows,
+       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "noise": noise, "questions": qrows,
        "paper": {"mimir_daisy_em_741": 9.6, "llama70b_f1_741": 0.268, "llama70b_bleu_741": 0.166}}
 json.dump(out, open("site/data.json", "w", encoding="utf-8"), ensure_ascii=False)
 open("site/data.js", "w", encoding="utf-8").write("window.DATA=" + json.dumps(out, ensure_ascii=False) + ";")

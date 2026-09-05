@@ -323,3 +323,7 @@ Best labelled variant stays "+paragraphs" (Gemma 68.8, Mimir 71.6). Page q_secon
 Also: Peter Schneider-Kamp is peter-sk on GitHub/HF and said (HF, 20 Aug) "we will happily provide GGUFs once this is sorted";
 PR 27625 has zero reviews; noctrex is a GGUF hobbyist; quantised Mimir cards (3 Sep) report Daisy 8.8 (FP8) and 7.6 (AWQ).
 Decisions for Bo: ask Jacob/Peter which protocol produced 9.6; open three one-line dfm-evals PRs (CODEOWNERS, suite, authors).
+
+## 2026-09-05 20:10 R5 their reading task (dfm-evals multi_wiki_qa, Danish, 2,048 rows, their protocol, EM / F1)
+llama1b 2.8 / 25.3 (does not obey "max 3 words") | llama3b 42.5 / 65.9 | gemma4b 45.6 / 72.7 | qwen3b 53.6 / 71.9.
+Their Table: Mimir 66.8; Qwen 3.5 4B 57.1; Gemma 4 E2B 44.1; Gemma 3 1B 42.6. Mimir official on 512 rows queued (022).
