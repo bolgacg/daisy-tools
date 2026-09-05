@@ -112,6 +112,20 @@ mimir_paths = [
 mimir_paths = [m for m in mimir_paths if "em" in m]
 inspect_full = json.load(open("results/inspect_full_gemma4b.json")) if os.path.exists("results/inspect_full_gemma4b.json") else None
 popqa = json.load(open("results/popqa_summary.json")) if os.path.exists("results/popqa_summary.json") else None
+# their reading benchmark (multi_wiki_qa, dfm-evals protocol) and EuroEval, per model
+mwqa = {}
+for pth in glob.glob("results/mwqa_*.jsonl"):
+    m = re.match(r"results/mwqa_(.+)\.jsonl", pth).group(1); rows = load(pth)
+    if len(rows) >= 100:
+        mwqa[m] = {"n": len(rows), "em": sum(float(r.get("em", 0)) for r in rows) / len(rows), "f1": sum(float(r.get("f1", 0)) for r in rows) / len(rows),
+                   "sec": sum(r.get("seconds", 0) for r in rows) / len(rows)}
+euroeval = {}
+for pth in glob.glob("results/euroeval/*.jsonl"):
+    for l in open(pth):
+        d = json.loads(l); name = (d.get("model_info") or {}).get("name") or ""
+        key = "gemma4b" if "gemma" in name else ("qwen3b" if "qwen" in name else ("llama3b" if "3b" in name.lower() and "llama" in name.lower() else name))
+        sc = {e["evaluation_name"]: e["score_details"]["score"] for e in d.get("evaluation_results", [])}
+        if sc: euroeval[key] = {"em": sc.get("test_em"), "f1": sc.get("test_f1"), "dataset": (d["evaluation_results"][0]["source_data"]["dataset_name"])}
 # replication rows
 rep = json.load(open("results/replication_big_models_public592.json")) if os.path.exists("results/replication_big_models_public592.json") else {}
 
@@ -143,7 +157,7 @@ for i, g in gold.items():
     qrows.append(q)
 
 out = {"models": MODELS, "conds": CONDS, "agg": agg, "ceilings": {k: {"hit": v["hit"], "n": v["n"]} for k, v in ceil.items()},
-       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "noise": noise, "questions": qrows,
+       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "noise": noise, "mwqa": mwqa, "euroeval": euroeval, "questions": qrows,
        "paper": {"mimir_daisy_em_741": 9.6, "llama70b_f1_741": 0.268, "llama70b_bleu_741": 0.166}}
 json.dump(out, open("site/data.json", "w", encoding="utf-8"), ensure_ascii=False)
 open("site/data.js", "w", encoding="utf-8").write("window.DATA=" + json.dumps(out, ensure_ascii=False) + ";")

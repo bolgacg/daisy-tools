@@ -34,7 +34,9 @@
   <button class="tour-open" id="tourbtn">Guided tour</button></p>
 </header>
 
-<section id="primer">
+<nav id="contents" aria-label="Chapters"><h2>Chapters</h2><ol></ol></nav>
+
+<section id="primer" class="chapter">
   <h2>Five things to know</h2>
   <ol class="primer">
     <li><b>DAISY</b> is the group's quiz of short factual questions about the Danish Culture Canon. The 592 public questions are used here; the group's own Mimir score was computed on the same 592.</li>
@@ -52,8 +54,8 @@
   </dl>
 </section>
 
-<section id="world">
-  <h2>The call and the benchmark</h2>
+<section id="world" class="chapter">
+  <h2>The benchmark and the call</h2>
   <p>The scholarship call lists three directions: LLM customisation and test-time scaling, agentic behaviour and tool use, and multi-modality. This is a measured study on the second, on the group's own assets end to end, so every number reads against their tables.</p>
   <details class="prompt"><summary>Their prompt, verbatim (Prompt Template Version 1 in the DAISY paper)</summary>
     <pre class="prompt">Besvar spørgsmålet med kun det direkte svar, uden forklaring om hvorfor.
@@ -69,8 +71,8 @@ Svar:</pre>
   </details>
 </section>
 
-<section id="act1">
-  <h2>Act one. Checking the ruler</h2>
+<section id="act1" class="chapter">
+  <h2>The ruler</h2>
   <p class="lede">Nothing below counts unless the published numbers come back first.</p>
   <div class="tscroll"><table id="reptable"><thead><tr><th>Their released predictions, rescored here</th><th>EM</th><th>F1</th><th>BLEU</th><th>F1 in paper</th><th>BLEU in paper</th></tr></thead><tbody></tbody></table></div>
   <p class="note">Same ranking as the paper; the public 592 score a little higher than the full set. Their best model, a 70B Llama, answers one question in four from memory.</p>
@@ -88,8 +90,8 @@ Svar:</pre>
   <p class="handover">Memory is thin for every small model. What does one lookup add, and what limits it?</p>
 </section>
 
-<section id="act2">
-  <h2>Act two. One lookup, two search engines</h2>
+<section id="act2" class="chapter">
+  <h2>One lookup</h2>
   <p class="lede">A lookup has two ceilings, how often the right text is fetched and how faithfully it is read, and the first turned out to be the one that mattered.</p>
   <div class="controls" id="a2controls">
     <div class="chips" id="a2chips"></div>
@@ -116,8 +118,8 @@ Svar:</pre>
   <p class="handover">Found and read. One skill remains, and it is the one the call names.</p>
 </section>
 
-<section id="act3">
-  <h2>Act three. Does the model know when it does not know?</h2>
+<section id="act3" class="chapter">
+  <h2>The decision</h2>
   <p class="lede">Always searching is a retrieval pipeline; never searching is a closed book. The useful behaviour is in between.</p>
   <div class="controls" id="a3controls">
     <div class="chips" id="a3models"></div>
@@ -136,7 +138,14 @@ Svar:</pre>
   <p class="handover">Finding is solved by the index, reading by the model. Knowing when to look is solved by nothing on this page, and that is the training problem the position is about.</p>
 </section>
 
-<section id="asked">
+<section id="second" class="chapter">
+  <h2>Second retrieval</h2>
+  <p class="lede">Bo asked what a second retrieval step would buy. Every variant here adds a selection step beyond one lookup, so none is the main line; each is labelled and its cost is printed.</p>
+  <div class="tscroll"><table id="secondtable"><thead><tr><th>Variant, offline index</th><th>Gemma 3 4B</th><th>Mimir 1B</th><th>Answer in fetched text</th><th>Prompt tokens</th></tr></thead><tbody></tbody></table></div>
+  <p class="note"><span data-fill="second_note"></span></p>
+</section>
+
+<section id="asked" class="chapter">
   <h2>Questions asked along the way</h2>
   <p class="lede">The questions the author was asked while building this, in order. A reader will have the same ones.</p>
   <div id="asked-first">
@@ -155,8 +164,8 @@ Svar:</pre>
   <p><span data-fill="q_second"></span></p>
 </section>
 
-<section id="browser">
-  <h2>Every question, every answer</h2>
+<section id="browser" class="chapter">
+  <h2>Every question</h2>
   <p class="lede">Aggregates hide how models fail. Here is each question with every model's answer under each condition.</p>
   <div class="controls" id="bcontrols">
     <label>Model <select id="bmodel"></select></label>
@@ -169,8 +178,14 @@ Svar:</pre>
   <div class="tscroll"><table id="btable"><thead><tr><th>Question</th><th>Reference</th><th>Model answer</th><th>Match</th><th>Query</th><th>Fetched</th></tr></thead><tbody></tbody></table></div>
 </section>
 
-<section id="field">
-  <h2>How this sits in the field</h2>
+<section id="field" class="chapter">
+  <h2>Other benchmarks</h2>
+  <p class="lede">The same models on the group's other Danish test and on two English ones, next to the published rows.</p>
+  <h3>Their reading benchmark, their protocol</h3>
+  <p>Multi Wiki QA: 2,048 Danish Wikipedia passages, each with a question answerable from the passage, scored with their code. No lookup here; the passage is given. This is reading alone.</p>
+  <div class="tscroll"><table id="mwqatable"><thead><tr><th>Model</th><th>Exact match</th><th>F1</th><th>Seconds per question</th></tr></thead><tbody></tbody></table></div>
+  <p class="note"><span data-fill="mwqa_note"></span></p>
+  <h3>English comparisons</h3>
   <ul class="limits">
     <li><b>Same questions and passages as a published paper.</b> Self-RAG (arXiv 2310.11511) released its 1,399 long-tail PopQA questions with the passages its retriever fetched; the two small readers here got exactly those passages. <span data-fill="popqa_text"></span>
       <div class="tscroll"><table id="popqatable"><thead><tr><th>Reader on the Self-RAG passages (contains-gold)</th><th>No passages</th><th>Top 5</th><th>Top 10</th></tr></thead><tbody></tbody></table></div></li>
@@ -181,8 +196,8 @@ Svar:</pre>
   </ul>
 </section>
 
-<section id="failures">
-  <h2>What goes wrong, counted</h2>
+<section id="failures" class="chapter">
+  <h2>What goes wrong</h2>
   <p class="lede">A model that does not know names the same famous thing. The three most repeated answers per run:</p>
   <div class="tscroll"><table id="deftable"><thead><tr><th>Model</th><th>Condition</th><th>Most repeated answers (count)</th><th>Share of rows</th></tr></thead><tbody></tbody></table></div>
   <div class="tscroll"><table id="typetable"><thead><tr><th>Model</th><th>Condition</th><th>Years (141)</th><th>Other numbers (52)</th><th>Names and titles (399)</th></tr></thead><tbody></tbody></table></div>
@@ -193,14 +208,34 @@ Svar:</pre>
   <p class="note"><b>Click a row</b> to list those questions in the browser above.</p>
 </section>
 
-<section id="modelcard">
-  <h2>Model card and cost</h2>
-  <div class="tscroll"><table id="cardtable"><thead><tr><th>Model</th><th>Parameters</th><th>Weights used</th><th>EM, one lookup</th><th>Seconds per question</th><th>Prompt tokens per question</th></tr></thead><tbody></tbody></table></div>
+<section id="speed" class="chapter">
+  <h2>Speed and cost</h2>
+  <p class="lede">A score without its price is half a result. Every row is one GeForce GTX 1060 with six gigabytes, one question at a time unless stated.</p>
+  <div class="tscroll"><table id="speedtable"><thead><tr><th>Model and path</th><th>From memory, seconds</th><th>One lookup, seconds</th><th>Prompt tokens, one lookup</th></tr></thead><tbody></tbody></table></div>
+  <p class="note"><span data-fill="speed_note"></span></p>
+</section>
+
+<section id="tools" class="chapter">
+  <h2>Tools built</h2>
+  <p class="lede">Everything on this page runs from code in the repository. What each piece is, in one line.</p>
+  <ul class="limits" id="toolslist">
+    <li><b>The harness</b> (daisy_tools/runner.py): every condition on this page, against any OpenAI-compatible server, logging prompt, answer, query, fetched pages, tokens and seconds per question, resumable by question id.</li>
+    <li><b>The offline index</b> (scripts/build_localwiki.py): the full Danish Wikipedia dump of 1 November 2023 in a SQLite full-text index with BM25 ranking, 0.9 GB, built in about twenty minutes.</li>
+    <li><b>The task in their format</b> (dfm_evals_task/): DAISY with one lookup and DAISY with the lookup as a tool, as Inspect AI tasks that keep their prompt, decoding and scorer; run.sh runs everything in one command.</li>
+    <li><b>The official-path runner</b> (scripts/mimir_official.py): Mimir through the transformers implementation with the prompt read in both directions, the reference every other Mimir number is checked against.</li>
+    <li><b>The prefix-mode driver and patch</b> (tools/prefix-run/): the community llama.cpp port made to read the prompt the way Mimir was trained, first through the public API without touching llama.cpp, then as a fifteen-line change to the port itself.</li>
+    <li><b>The page builder</b> (scripts/build_page_data.py): every number on this page is computed from the logged answers; nothing is typed in.</li>
+  </ul>
+</section>
+
+<section id="modelcard" class="chapter">
+  <h2>Model card</h2>
+  <div class="tscroll"><table id="cardtable"><thead><tr><th>Model</th><th>Parameters</th><th>Weights used</th><th>EM from memory</th><th>EM, one lookup</th></tr></thead><tbody></tbody></table></div>
   <p><b>Nothing was trained.</b> Four models run quantised through llama.cpp; Mimir runs in the official implementation at half precision with prefix attention. Greedy decoding, at most 64 new tokens, the group's prompt, each model's chat template, three introductions of at most 900 characters, the group's scorer unmodified, one GeForce GTX 1060 with six gigabytes.</p>
   <p><b>Is it any good?</b> As a measurement, yes: it reproduces the group's ranking on their files and their Mimir number on their code path. As a system, a one-billion-parameter Danish model with one lookup answers two thirds of this quiz exactly.</p>
 </section>
 
-<section id="limits">
+<section id="limits" class="chapter">
   <h2>Limits</h2>
   <ul class="limits">
     <li>592 questions: the 95 percent interval on a score near 65 is about plus or minus 4 points.</li>
@@ -211,7 +246,7 @@ Svar:</pre>
   </ul>
 </section>
 
-<section id="coda">
+<section id="coda" class="chapter">
   <h2>Run it yourself</h2>
   <p>The lookup is a task in the group's own evaluation format (Inspect AI, as in dfm-evals). One command runs everything and prints the table; their viewer then shows every question, fetched text, answer and score.</p>
   <pre class="prompt">git clone https://github.com/bolgacg/daisy-tools && cd daisy-tools

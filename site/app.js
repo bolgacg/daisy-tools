@@ -100,6 +100,47 @@ if (D.popqa) {
 }
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
+/* ---------- chapters: number every chapter section and build the contents list ---------- */
+{
+  const secs = [...document.querySelectorAll("section.chapter")];
+  const ol = document.querySelector("#contents ol");
+  secs.forEach((sec, i) => {
+    const h = sec.querySelector("h2"); if (!h) return;
+    const lab = document.createElement("div"); lab.className = "chlabel"; lab.textContent = `Chapter ${i+1}`; sec.insertBefore(lab, h);
+    if (!sec.id) sec.id = "ch" + (i+1);
+    if (ol) ol.insertAdjacentHTML("beforeend", `<li><a href="#${sec.id}">${esc(h.textContent)}</a></li>`);
+  });
+}
+
+/* ---------- second retrieval table ---------- */
+{
+  const V = [["retrieve-local","One plain lookup (main line)"],["retrieve-plus-local","Plus the two best paragraphs of the same pages"],["retrieve-wide-local","Ten pages, three introductions plus four best paragraphs"],["retrieve-tworound-local","Model writes a follow-up query when the text lacks the answer"]];
+  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td><td class="n">${g && g.n>=500 ? pct(g.em) : ""}</td><td class="n">${m && m.n>=500 ? pct(m.em) : ""}</td><td class="n">${ce ? pct(ce.hit) : ""}</td><td class="n">${g && g.ptok ? Math.round(g.ptok) : ""}</td></tr>` : ""; }).join("");
+  const el = $("#secondtable tbody"); if (el) el.innerHTML = rows;
+  fills.second_note = "The paragraphs variant is the best of them and remains a side row. The wider net raises the ceiling half a point and loses two points of reading; the model-written follow-up query lowers the score, because the extra instruction costs reading fidelity on every question and it asks only one time in six.";
+}
+
+/* ---------- their reading benchmark table ---------- */
+if (D.mwqa) {
+  const PUB = [["DFM Mimir 1B, their run (Mimir report)", 0.668, null, null], ["Qwen 3.5 4B, their run", 0.571, null, null], ["Gemma 3 1B, their run", 0.426, null, null]];
+  const ours = MAIN.filter(m => D.mwqa[m]).map(m => [MODELS[m] + " (this page)", D.mwqa[m].em, D.mwqa[m].f1, D.mwqa[m].sec]);
+  const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${pct(r[1])}</td><td class="n">${r[2]==null?"":pct(r[2])}</td><td class="n">${r[3]==null?"":r[3].toFixed(1)}</td></tr>`).join("");
+  const ll = D.mwqa.llama1b;
+  fills.mwqa_note = `Published rows from the Mimir report's table, same task and code. ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
+}
+
+/* ---------- speed table ---------- */
+{
+  const rows = [];
+  for (const m of MAIN) { const c = A(m,"closed"), r = A(m,"retrieve-local"); if (c||r) rows.push([MODELS[m] + (m==="mimir-hf" ? " (official transformers path)" : " (llama.cpp)"), c ? c.sec : null, r ? r.sec : null, r && r.ptok ? Math.round(r.ptok) : null]); }
+  const pp = A("mimir-prefix","closed"), pr = A("mimir-prefix","retrieve-local");
+  if (pp || pr) rows.push(["DFM Mimir 1B (llama.cpp, patched prefix attention)", pp ? pp.sec : null, pr ? pr.sec : null, pr && pr.ptok ? Math.round(pr.ptok) : null]);
+  const el = $("#speedtable tbody"); if (el) el.innerHTML = rows.map(r => `<tr><td>${esc(r[0])}</td><td class="n">${r[1]==null?"":r[1].toFixed(1)}</td><td class="n">${r[2]==null?"":r[2].toFixed(1)}</td><td class="n">${r[3]==null?"":r[3]}</td></tr>`).join("");
+  fills.speed_note = (pp || pr) ? `The patched port reads the same prompt as the official implementation and returns the same answers; the seconds column shows what the fix buys.` : `Mimir on the official implementation is the slow row: that code was written to be correct, not fast. The patched llama.cpp port is being measured and will appear here.`;
+}
+
+["second_note","mwqa_note","speed_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
+
 /* ---------- replication and ruler tables ---------- */
 {
   const tb = $("#reptable tbody");
@@ -295,7 +336,7 @@ if (D.noise) {
 /* ---------- model card and cost ---------- */
 {
   const meta = {"mimir-hf":["1.0 B (1.8 B with embeddings)","fp16, official implementation, prefix attention"], mimir:["1.0 B (1.8 B with embeddings)","Q8_0, community GGUF, causal attention"], llama1b:["1.2 B","Q8_0"], llama3b:["3.2 B","Q8_0"], gemma4b:["4.3 B","Q6_K"], qwen3b:["3.1 B","Q8_0"]};
-  $("#cardtable tbody").innerHTML = MAIN.map(m => { const r = A(m,"retrieve-local"); const mm = meta[m] || ["", ""]; return `<tr><td>${esc(MODELS[m])}</td><td class="n">${mm[0]}</td><td>${mm[1]}</td><td class="n">${r ? pct(r.em) + (r.n < 592 ? ` (${r.n} so far)` : "") : ""}</td><td class="n">${r ? r.sec.toFixed(1) : ""}</td><td class="n">${r && r.ptok ? Math.round(r.ptok) : ""}</td></tr>`; }).join("");
+  $("#cardtable tbody").innerHTML = MAIN.map(m => { const r = A(m,"retrieve-local"), c = A(m,"closed"); const mm = meta[m] || ["", ""]; return `<tr><td>${esc(MODELS[m])}</td><td class="n">${mm[0]}</td><td>${mm[1]}</td><td class="n">${c ? pct(c.em) : ""}</td><td class="n">${r ? pct(r.em) + (r.n < 592 ? ` (${r.n} so far)` : "") : ""}</td></tr>`; }).join("");
 }
 
 /* ---------- guided tour (spotlight; positions computed from document coordinates, then scrolled) ---------- */
@@ -303,11 +344,11 @@ if (D.noise) {
   const STEPS = [
     {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page takes the group's own Danish quiz and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first.</b> They are Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
     {sel:"#primer .primer", k:"Five things to know · 2 of 10", html:`Every term used below is defined here: the quiz, from memory, one lookup, the two search engines, and the two scores. The glossary under it stays open.`},
-    {sel:"#mimirtable", k:"Act one: the ruler · 3 of 10", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
-    {sel:"#a1chart", k:"Act one: memory · 4 of 10", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
-    {sel:"#a2chart", k:"Act two: the lookup · 5 of 10", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
-    {sel:"#decchart", k:"Act two: where the questions go · 6 of 10", html:`<b>Click a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks are the ceilings of narrower and wider lookups.`},
-    {sel:"#tiles", k:"Act three: the decision · 7 of 10", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
+    {sel:"#mimirtable", k:"The ruler · 3 of 10", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
+    {sel:"#a1chart", k:"The ruler, from memory · 4 of 10", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
+    {sel:"#a2chart", k:"One lookup · 5 of 10", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
+    {sel:"#decchart", k:"Where the questions go · 6 of 10", html:`<b>Click a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks are the ceilings of narrower and wider lookups.`},
+    {sel:"#tiles", k:"The decision · 7 of 10", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
     {sel:"#asked-first", k:"Questions asked · 8 of 10", html:`Six questions the author was asked while building this, answered in order: what the attention modes mean, how good the score is, whether the two-model pipeline is a trick, why 150 and 592, whether writing the query was part of the test, and what a second retrieval would do.`},
     {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the page fetched.`},
     {sel:"#coda pre", k:"Run it yourself · 10 of 10", html:`Three commands reproduce the main table on any machine with a served model, in the group's own evaluation format. The Guided tour button at the top restarts this walkthrough.`},
