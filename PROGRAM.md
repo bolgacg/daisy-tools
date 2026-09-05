@@ -220,3 +220,7 @@ Letter and CV still to update (they cite 40 percent and factor of five).
 (contains 75.7; answer in context 81.2%; fidelity 87.1%; 43 s/q). Gemma same variant 68.8. Job 015b now runs Mimir agentic-local
 (expected: never searches), then the superseded qwenq condition, which the skip watcher (~/queue/skip-qwenq.sh) kills on start.
 Headline stays the main line: Mimir 65.9 / Gemma 65.7 with one plain lookup.
+
+## 2026-09-05 08:15 job 015b DONE. Mimir-hf agentic-local (writes its own search line, offline index): EM 12.0, searched 56 of 592.
+Confirms: Mimir does not act as a tool user without training; as a reader it is the best small model. The qwenq condition was
+killed on start by the skip watcher (superseded). 015c Inspect smoke test running.
