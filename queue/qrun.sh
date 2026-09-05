@@ -9,7 +9,7 @@ log "queue runner started"
 while true; do
   job=$(ls $Q/pending 2>/dev/null | sort | head -1)
   if [ -z "$job" ]; then sleep 20; continue; fi
-  while pgrep -f "llama-server|mimir_official.py|hf_server.py|run_logprobs.sh|run_all.sh|run_extra.sh" >/dev/null; do sleep 30; done
+  while pgrep -x llama-server >/dev/null || pgrep -f "python[0-9.]* .*(mimir_official|hf_server|run_logprobs)" >/dev/null; do sleep 30; done
   mv $Q/pending/$job $Q/running/$job; log "START $job"
   if bash $Q/running/$job > $Q/logs/$job.log 2>&1; then mv $Q/running/$job $Q/done/$job; log "DONE $job"
   else mv $Q/running/$job $Q/failed/$job; log "FAIL $job (see logs/$job.log)"; fi
