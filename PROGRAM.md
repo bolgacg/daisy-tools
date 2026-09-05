@@ -227,3 +227,9 @@ killed on start by the skip watcher (superseded). 015c Inspect smoke test runnin
 
 ## 2026-09-05 08:25 015c smoke test failed in 18 s: Inspect needs openai>=3.1, the daisy venv pins 2.54 (litellm). Fix: separate
 ~/inspect-venv on the box (inspect-ai 0.3.263, openai 3.8.0), task import-checked there; 015d re-queued after 016 (native tools, local).
+
+## 2026-09-05 09:05 job 016 native tool calls (OpenAI tools API through each chat template), offline index, full 592
+gemma4b: 0 calls, EM 5.6 (Gemma 3 has no native tool format in llama.cpp) | qwen3b: 144 calls (24%), EM 16.9 | mimir port: 0 calls, 3.2 |
+llama3b: called on 143/143 then the run died on a llama.cpp parse error ("does not match the expected peg-native format").
+Runner patched to log tool_format_error rows and continue; 016b resumes llama3b after the smoke test.
+Reading: the native tool channel does not create judgement either; Qwen's 24% of calls score far below the plain lookup (16.9 vs 59.8).

@@ -249,7 +249,11 @@ def run(rows, condition, base_url, model, out_path, k=3, chars=900, max_tokens=6
         elif condition == "agentic-native":
             # the model's own tool-call format (chat template), one round: call -> tool result -> answer
             msgs = [{"role": "user", "content": base_prompt}]
-            first, q, raw = _chat_tools(base_url, model, msgs, max_tokens, temperature)
+            try:
+                first, q, raw = _chat_tools(base_url, model, msgs, max_tokens, temperature)
+            except RuntimeError as e:  # llama.cpp cannot parse the model's tool-call text (grammar/format error): log it, count the row as unanswered
+                rec["tool_format_error"] = str(e)[:160]
+                first, q, raw = "", None, {}
             rec["first_output"] = first; rec["native_call"] = bool(q)
             usage = {}
             if q:

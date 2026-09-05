@@ -327,6 +327,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | qwen3b | retrieve-local | 592 | 0.598 | 1055 | 6.5 | 1.00 | 4.2 | 0.56 | 0.144 |
 | qwen3b | agentic-local | 592 | 0.554 | 267 | 13.3 | 1.00 | 4.5 | 1.97 | 0.124 |
 | mimir-hf | retrieve-given-gemma+qwen | 592 | 0.534 | 869 | 6.0 | 0.92 | 12.3 | 0.61 | 0.043 |
+| llama3b | agentic-native-local | 143 | 0.490 | 1192 | 6.8 | 1.00 | 6.5 | 0.41 | 0.076 |
 | gemma4b | agentic-local | 592 | 0.485 | 222 | 13.5 | 0.93 | 6.6 | 2.06 | 0.074 |
 | mimir-hf | retrieve-given-qwen | 592 | 0.473 | 675 | 5.9 | 0.74 | 8.3 | 0.69 | 0.057 |
 | llama1b | retrieve-plus-local | 592 | 0.412 | 1411 | 10.2 | 1.00 | 3.4 | 0.29 | 0.121 |
@@ -346,6 +347,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | qwen3b | agentic-scaffold | 592 | 0.275 | 738 | 6.7 | 0.99 | 2.9 | 0.37 | 0.094 |
 | mimir | retrieve | 592 | 0.265 | 665 | 7.8 | 1.00 | 9.3 | 0.39 | 0.029 |
 | llama1b | retrieve-given-gemma | 592 | 0.250 | 747 | 11.8 | 0.80 | 1.1 | 0.33 | 0.232 |
+| qwen3b | agentic-native-local | 592 | 0.169 | 304 | 1.4 | 0.24 | 1.9 | 0.55 | 0.088 |
 | llama1b | retrieve | 592 | 0.152 | 727 | 12.0 | 1.00 | 1.3 | 0.21 | 0.117 |
 | llama1b | agentic-scaffold | 592 | 0.150 | 727 | 12.0 | 1.00 | 1.2 | 0.20 | 0.123 |
 | mimir-hf | agentic-scaffold | 592 | 0.123 | 247 | 5.9 | 0.16 | 4.2 | 0.49 | 0.029 |
@@ -356,6 +358,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | mimir-official-prefix-t100 | closed | 592 | 0.084 | 0 | 0.0 | 0.00 | 576.7 | nan | 0.000 |
 | llama3b | agentic-scaffold | 592 | 0.066 | 263 | 6.9 | 0.12 | 1.0 | 0.24 | 0.064 |
 | mimir | closed-sc | 592 | 0.062 | 173 | 7.8 | 0.00 | 20.2 | 0.35 | 0.003 |
+| gemma4b | agentic-native-local | 592 | 0.056 | 0 | 0.0 | 0.00 | 1.2 | nan | 0.046 |
 | gemma4b | closed | 592 | 0.056 | 166 | 5.3 | 0.00 | 1.2 | 0.33 | 0.046 |
 | mimir | closed | 592 | 0.056 | 173 | 6.9 | 0.00 | 6.0 | 0.31 | 0.009 |
 | gemma4b | closed-sc | 592 | 0.054 | 166 | 5.3 | 0.00 | 3.3 | 0.32 | 0.017 |
@@ -366,6 +369,7 @@ Reading: 'called when wrong' is the useful call, 'silent when wrong' is the bluf
 | llama3b | closed-sc | 592 | 0.039 | 206 | 6.1 | 0.00 | 1.5 | 0.18 | 0.026 |
 | llama3b | agentic-local | 592 | 0.037 | 271 | 8.3 | 0.00 | 0.5 | 0.13 | 0.075 |
 | llama3b | agentic | 592 | 0.037 | 271 | 8.5 | 0.00 | 0.5 | 0.13 | 0.074 |
+| mimir | agentic-native-local | 592 | 0.032 | 0 | 0.0 | 0.00 | 8.7 | nan | 0.004 |
 | qwen3b | closed-sc | 592 | 0.032 | 202 | 6.3 | 0.00 | 1.5 | 0.15 | 0.021 |
 | mimir | agentic-fewshot | 592 | 0.030 | 321 | 9.1 | 0.00 | 7.4 | 0.09 | 0.004 |
 | qwen3b | closed | 592 | 0.030 | 202 | 6.2 | 0.00 | 0.4 | 0.15 | 0.076 |
