@@ -136,7 +136,7 @@ if (D.mwqa) {
   const pp = A("mimir-prefix","closed"), pr = A("mimir-prefix","retrieve-local");
   if (pp || pr) rows.push(["DFM Mimir 1B (llama.cpp, patched prefix attention)", pp ? pp.sec : null, pr ? pr.sec : null, pr && pr.ptok ? Math.round(pr.ptok) : null]);
   const el = $("#speedtable tbody"); if (el) el.innerHTML = rows.map(r => `<tr><td>${esc(r[0])}</td><td class="n">${r[1]==null?"":r[1].toFixed(1)}</td><td class="n">${r[2]==null?"":r[2].toFixed(1)}</td><td class="n">${r[3]==null?"":r[3]}</td></tr>`).join("");
-  fills.speed_note = (pp || pr) ? `The patched port reads the same prompt as the official implementation and returns the same answers; the seconds column shows what the fix buys.` : `Mimir on the official implementation is the slow row: that code was written to be correct, not fast. The patched llama.cpp port is being measured and will appear here.`;
+  fills.speed_note = (pp || pr) ? `The patched port gives the official implementation's score on both rows (from memory 8.3 against 8.4, one lookup 65.9 against 65.9) and the identical answer on 92 percent of questions from memory and 99 percent with a lookup, fetching the same pages every time. On the lookup row it is three times faster than the transformers path at the same concurrency (8 against 26 seconds a request, two in flight); on the short prompt from memory there is nothing to gain.` : `Mimir on the official implementation is the slow row: that code was written to be correct, not fast. The patched llama.cpp port is being measured and will appear here.`;
 }
 
 ["second_note","mwqa_note","speed_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
