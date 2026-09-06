@@ -498,3 +498,18 @@ eyebrow label gone; 9 "Nothing below counts" and "a little higher" replaced with
 10 the from-memory chart lost its purposeless chips (kept only where clicking changes the data; active chip now filled).
 Also: chart label margin widened, 70B reference label unclipped, Self-RAG baselines named, casual cells reworded.
 Bo also downgraded the session model to Fable 5 (11:00) considering 5.1 lazier; noted.
+
+## 2026-09-06 12:40 page reframed and overhauled on Bo's 17-point review (commit 6c3324b, live)
+Frame: Bo chose the audit frame; title now "DAISY, measured", 15 chapters (Terms / call / Reproduction / Broken and fixed /
+What a lookup adds / Deciding / Second retrieval / Other benchmarks / Q and A / Every question / Speed / Tools / Model card /
+Limits / Run it yourself). Headline tiles = one number per pillar. New: hover definitions for 14 terms (first occurrence per
+chapter, dotted underline) plus circled-i bubbles on table headers, affordance declared in chapter 1; decision tiles as a
+labelled 2x2 matrix; a2 chart per-row ceiling tracks instead of the grey band; decomposition ticks laid out collision-free
+(leftmost highest) with a colour legend; typetable pivoted (one row per model, memory vs lookup groups); deftable one row per
+model; speed table grouped by execution path with EM/output-token columns and a drivers note; "not run / not published" in
+every gap with footnotes; browser collapsed to 5 rows with an expand button; Mimir table renamed (four runs and the published
+number, published row bold); æøå normalisation explained with an example; chapter 8 restructured into named comparison blocks;
+tools chapter rewritten with why-it-exists lines. Verification: walk.js now fails on SVG text overlaps and unexplained empty
+cells, screenshots 17 elements at both widths; caught 4 real overlaps before publish. Skill written: ~/.claude/skills/sci-dataviz.
+Queued from the review: 028 (upstream daisy task on Mimir via the patched port, the last replication path for 9.6 we can run),
+029 (bf16 closed 592). dtype flag added to mimir_official.py.
