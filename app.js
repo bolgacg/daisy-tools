@@ -7,6 +7,7 @@ const ORDER = ["mimir-hf","mimir","llama1b","llama3b","gemma4b","qwen3b"].filter
 const MAIN = ORDER.filter(m => m !== "mimir");            // the port is shown only where the attention mode is the point
 const pct = x => (x*100).toFixed(1) + "%";
 const pct0 = x => Math.round(x*100) + "%";
+const pc = v => `<td class="n pfill">${pct(v)}<span class="ptrack"><i style="width:${(v*100).toFixed(1)}%"></i></span></td>`; // % cell with a 0..100 mini bar
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const CONDN = {closed:"from memory", "closed-sc":"from memory, 5-sample vote", retrieve:"one lookup, search box", "retrieve-oracle":"one lookup, oracle query (search box)",
@@ -183,7 +184,7 @@ document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribu
 {
   const V = [["retrieve-local","One plain lookup (main line)"],["retrieve-plus-local","Plus the two best paragraphs of the same pages"],["retrieve-wide-local","Ten pages, three introductions plus four best paragraphs"],["retrieve-tworound-local","Model writes a follow-up query when the text lacks the answer"]];
   const gp = v => v == null ? `<td class="n gap">not run</td>` : `<td class="n">${v}</td>`;
-  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td>${gp(g && g.n>=500 ? pct(g.em) : null)}${gp(m && m.n>=500 ? pct(m.em) : null)}${gp(ce ? pct(ce.hit) : null)}${gp(g && g.ptok ? Math.round(g.ptok) : null)}</tr>` : ""; }).join("");
+  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td>${g && g.n>=500 ? pc(g.em) : gp(null)}${m && m.n>=500 ? pc(m.em) : gp(null)}${ce ? pc(ce.hit) : gp(null)}${gp(g && g.ptok ? Math.round(g.ptok) : null)}</tr>` : ""; }).join("");
   const el = $("#secondtable tbody"); if (el) el.innerHTML = rows;
   fills.second_note = "The paragraphs variant is the best of them and remains a side row. The wider net raises the ceiling half a point and loses two points of reading; the model-written follow-up query lowers the score, because the extra instruction costs reading fidelity on every question and it asks only one time in six.";
 }
@@ -194,7 +195,7 @@ if (D.mwqa) {
   const ours = MAIN.filter(m => D.mwqa[m]).map(m => [MODELS[m] + " (this page)", D.mwqa[m].em, D.mwqa[m].f1, D.mwqa[m].sec]);
   if (D.mwqa["mimir-prefix"]) ours.unshift(["DFM Mimir 1B (this page, patched llama.cpp port, 512 rows)", D.mwqa["mimir-prefix"].em, D.mwqa["mimir-prefix"].f1, D.mwqa["mimir-prefix"].sec]);
   const gp = (v, f) => v == null ? `<td class="n gap">not published</td>` : `<td class="n">${f(v)}</td>`;
-  const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map((r, i) => `<tr${i===0?' class="pubrow"':''}><td>${esc(r[0])}</td><td class="n">${pct(r[1])}</td>${gp(r[2], pct)}${gp(r[3], v=>v.toFixed(1))}</tr>`).join("");
+  const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map((r, i) => `<tr${i===0?' class="pubrow"':''}><td>${esc(r[0])}</td>${pc(r[1])}${gp(r[2], pct)}${gp(r[3], v=>v.toFixed(1))}</tr>`).join("");
   const ll = D.mwqa.llama1b;
   fills.mwqa_note = `Published rows are from the Mimir report, same task and code. ${D.mwqa["mimir-prefix"] ? `Mimir through the patched llama.cpp port lands within noise of the published 66.8 on 512 rows, a second benchmark on which the port reproduces the official run. ` : ``} ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
 }
@@ -203,7 +204,7 @@ if (D.mwqa) {
 {
   const cell = (v, f) => v == null ? `<td class="n gap">not run</td>` : `<td class="n">${f(v)}</td>`;
   const row = (label, m) => { const c = A(m,"closed"), r = A(m,"retrieve-local");
-    return `<tr><td>${esc(label)}</td>${cell(r && r.n>=500 ? r.em : null, pct)}${cell(c ? c.sec : null, v=>v.toFixed(1))}${cell(r ? r.sec : null, v=>v.toFixed(1))}${cell(r && r.ptok ? Math.round(r.ptok) : null, v=>v)}${cell(r && r.otok ? Math.round(r.otok) : null, v=>v)}</tr>`; };
+    return `<tr><td>${esc(label)}</td>${r && r.n>=500 ? pc(r.em) : cell(null, pct)}${cell(c ? c.sec : null, v=>v.toFixed(1))}${cell(r ? r.sec : null, v=>v.toFixed(1))}${cell(r && r.ptok ? Math.round(r.ptok) : null, v=>v)}${cell(r && r.otok ? Math.round(r.otok) : null, v=>v)}</tr>`; };
   const sub = t => `<tr class="subhead"><td colspan="6">${t}</td></tr>`;
   let html = sub("llama.cpp, quantised weights, three requests in flight");
   for (const m of ["llama1b","llama3b","gemma4b","qwen3b"]) html += row(MODELS[m], m);
@@ -231,7 +232,7 @@ if (D.mwqa) {
   const rows = Object.entries(D.replication).sort((a,b) => b[1].F1 - a[1].F1);
   const nice = k => k.replace("meta-llama-","").replace("openai-","").replace("google-","").replace("mistralai-","");
   tb.innerHTML = rows.map(([k,v]) => `<tr><td>${esc(nice(k))}</td><td class="n">${v.EM.toFixed(3)}</td><td class="n">${v.F1.toFixed(3)}</td><td class="n">${v.BLEU.toFixed(3)}</td><td class="n">${v.paper_f1 ?? ""}</td><td class="n">${v.paper_bleu ?? ""}</td></tr>`).join("");
-  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td><td class="n">${pct(m.em)}</td></tr>`).join("") + `<tr class="pubrow"><td>Reported in the Mimir paper (Inspect harness)</td><td class="n">9.6%</td></tr>`;
+  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td>${pc(m.em)}</tr>`).join("") + `<tr class="pubrow"><td>Reported in the Mimir paper (Inspect harness)</td><td class="n pfill">9.6%<span class="ptrack"><i style="width:9.6%"></i></span></td></tr>`;
 }
 
 /* ---------- bar chart helper ---------- */
@@ -273,7 +274,7 @@ function drawA2(){
 }
 drawA2();
 $("#fidtable tbody").innerHTML = MAIN.map(m => D.fidelity_local.find(f=>f.model===m)).filter(Boolean)
-  .map(f => `<tr><td>${esc(MODELS[f.model])}${f.n < 592 ? ` <span class="lab">(${f.n} of 592 so far)</span>` : ""}</td><td class="n">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span></td><td class="n">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span></td></tr>`).join("");
+  .map(f => `<tr><td>${esc(MODELS[f.model])}${f.n < 592 ? ` <span class="lab">(${f.n} of 592 so far)</span>` : ""}</td><td class="n pfill">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span><span class="ptrack"><i style="width:${(f.em_present*100).toFixed(1)}%"></i></span></td><td class="n pfill">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span><span class="ptrack"><i style="width:${(f.em_absent*100).toFixed(1)}%"></i></span></td></tr>`).join("");
 
 /* ---------- where the 592 questions go (two rows, same scale) ---------- */
 let decSel = "mimir-hf";
@@ -351,7 +352,7 @@ function drawA3(){
   $("#tilenote").textContent = `${MODELS[a3m]}, ${VARS.find(([v])=>v===a3v)[1]}: searched on ${calls} of ${n} questions (${pct0(calls/n)}). Of the ${wrong} questions it had wrong from memory, it searched on ${d.called_wrong} (${pct0(d.called_wrong/Math.max(1,wrong))}).` + (calls/n > 0.9 ? " Searching on nearly everything is a policy, not a judgement per question." : "") + (calls/n < 0.05 ? " Never searching reproduces the closed book." : "");
 }
 drawA3();
-$("#asktable tbody").innerHTML = D.ask.filter(a => a.model !== "mimir").map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || CONDN[a.variant] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td><td class="n">${pct(a.em_own_query)}</td><td class="n">${a.em_fallback==null ? '<span class="gap">no fallbacks</span>' : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
+$("#asktable tbody").innerHTML = D.ask.filter(a => a.model !== "mimir").map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || CONDN[a.variant] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td>${pc(a.em_own_query)}<td class="n">${a.em_fallback==null ? '<span class="gap">no fallbacks</span>' : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
 
 /* ---------- question browser ---------- */
 const bm = $("#bmodel"), bc = $("#bcond");
@@ -415,7 +416,7 @@ drawBrowser();
   $("#typetable tbody").innerHTML = MAIN.map(m => {
     const c = A(m,"closed"), r = A(m,"retrieve-local");
     if (!c || !r || r.n < 500) return "";
-    const cell = (a,t) => a.by_type[t] ? `<td class="n">${pct(a.by_type[t][0])}</td>` : `<td class="n gap">not run</td>`;
+    const cell = (a,t) => a.by_type[t] ? pc(a.by_type[t][0]) : `<td class="n gap">not run</td>`;
     return `<tr><td>${esc(MODELS[m])}</td>` + ["year","number","text"].map(t=>cell(c,t)).join("") + ["year","number","text"].map(t=>cell(r,t)).join("") + `</tr>`; }).join("");
 }
 

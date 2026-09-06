@@ -43,6 +43,9 @@ figcaption{font-size:13px;color:var(--soft);margin-top:8px;line-height:1.5}
 .match-1{color:var(--pos);font-weight:600} .match-l{color:var(--s4);font-weight:600} .match-0{color:var(--neg)}
 ul.limits{padding-left:1.2em} ul.limits li{margin:0 0 8px}
 table td.n,table th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+td.n.pfill{white-space:nowrap}
+.ptrack{display:inline-block;width:56px;height:8px;margin-left:9px;background:var(--rule);border-radius:2px;vertical-align:middle;position:relative;top:-1px}
+.ptrack i{display:block;height:100%;background:rgba(42,120,214,.55);border-radius:2px}
 /* guided tour, reference implementation from grid-health-demo */
 #tour{position:absolute;top:0;left:0;right:0;z-index:50;display:none}
 #tour.on{display:block}
