@@ -140,7 +140,12 @@ if (D.mwqa) {
   fills.speed_note = (pp || pr) ? `The patched port gives the official implementation's score on both rows (from memory 8.3 against 8.4, one lookup 65.9 against 65.9) and the identical answer on 92 percent of questions from memory and 99 percent with a lookup, fetching the same pages every time. On the lookup row it is three times faster than the transformers path at the same concurrency (8 against 26 seconds a request, two in flight); on the short prompt from memory there is nothing to gain.` : `Mimir on the official implementation is the slow row: that code was written to be correct, not fast. The patched llama.cpp port is being measured and will appear here.`;
 }
 
-["second_note","mwqa_note","speed_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
+{
+  const g1 = A("gemma4b","retrieve-k1-local"), g3 = A("gemma4b","retrieve-local"), g5 = A("gemma4b","retrieve-k5-local"), gc = A("gemma4b","retrieve-c1800-local");
+  const c = k => D.ceil_by_cond && D.ceil_by_cond[k] ? pct(D.ceil_by_cond[k].hit) : null;
+  if (g1 && g3 && g5) fills.ksweep_note = `How many pages to fetch, measured on Gemma 3 4B: one introduction ${pct(g1.em)} (answer present in ${c("retrieve-k1-local")} of prompts), three ${pct(g3.em)} (${c("retrieve-local")}), five ${pct(g5.em)} (${c("retrieve-k5-local")}). Beyond three pages the ceiling keeps rising and the score stops, because every extra page is more text to misread.${gc ? ` Doubling each introduction to 1,800 characters at three pages gives ${pct(gc.em)}.` : ``}`;
+}
+["second_note","mwqa_note","speed_note","ksweep_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
 
 /* ---------- replication and ruler tables ---------- */
 {
