@@ -578,3 +578,14 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
   at 26 s/q; the port is validated equal on the main lookup line (65.9 = 65.9, 99% identical), so the side cells run
   through it and the page note will say so. On landing: scp results, app.js Mimir column falls back to mimir-prefix
   for these two conditions with the engine named in the note, rebuild, republish.
+
+## 2026-09-06 18:00 Bar design corrected to Bo's spec; daisy_lookup PR text amended for the scope worry
+- Bo rejected the mini-track bars ("not what I wanted at all") and supplied mockups: the WHOLE CELL tints
+  proportionally. Reverted pc() to the cell-gradient (rgba(42,120,214,.13), --p inline), note sentence updated,
+  walk pass at both widths matches his mockups, commit + gh-pages republished. Lesson: his first description
+  ("bg pct full") meant exactly the first implementation; the walk-pass judgement call replaced the wrong thing.
+- Scope worry on daisy_lookup ("a maintainer could say a lookup variant does not belong"): verified facts for the
+  answer: dfm_evals/tasks holds bfcl (tool calling) so the SUITE is general Danish evals, not memory-only; and
+  mbpp_modal is itself "MBPP variant with a configurable sandbox backend" importing the upstream task's logic,
+  the exact variant pattern daisy_lookup follows for daisy. PR body to gain two sentences (precedent + free-no
+  close); amended text shown to Bo, opening still awaits his word.
