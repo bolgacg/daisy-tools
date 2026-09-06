@@ -477,3 +477,8 @@ with a computed note (identical answer on 93.4 percent of 592 from memory, causa
 benchmark 65.8 vs 66.8), glossary line and tour step updated, README sentence added. Data: results/portcheck_mimir-prefix_vs_
 official-dfm.jsonl (the 592-question compare) now feeds D.port_check. Walk clean, published 717c444. Headings stay as short
 chapter titles by Bo's request; the ledes carry the claims. Remaining review items for Bo's own read: none blocking.
+
+## 2026-09-06 05:25 R13 026 DONE: the dfm-evals pull-request task file (dfm_evals/tasks/daisy_lookup.py, branch daisy-lookup-task)
+on all 592 with Gemma 3 4B against the real index: exact match 65.7 (stderr 2.0), F1 70.5, BLEU 46.1; the harness's plain-lookup
+row is 65.7. The PR file reproduces the page's main line to the decimal. 1174 s wall. Queue empty; 027 queued: the same task file
+with Mimir through the patched port, so the PR text can quote Mimir from this code.

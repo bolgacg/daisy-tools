@@ -16,6 +16,6 @@ import json, glob
 f = sorted(glob.glob("logs/inspect-daisy-lookup/*.json"))[-1]
 d = json.load(open(f))
 for s in d["results"]["scores"]:
-    m = s["metrics"]; print("PR task daisy_lookup, Gemma 3 4B, n", d["results"].get("total_samples"), "exact_match", round(100*m["exact_match"]["value"],1), "f1", round(100*m["f1"]["value"],1))
+    print("PR task daisy_lookup, n", d["results"].get("total_samples"), s["name"], round(100*s["metrics"]["mean"]["value"],1), "se", round(100*s["metrics"]["stderr"]["value"],1))
 PY
 kill $SPID; wait $SPID 2>/dev/null; true
