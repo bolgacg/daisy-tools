@@ -468,3 +468,12 @@ and 1-intro / 5-intros ticks. 025 (PopQA Llama 3B) started 04:01; 026 (PR task c
 top-5 55.4 | top-10 54.6. Llama 3.2 1B (earlier): 12.8 | 47.5 | 47.1. All three untrained 3B and 4B readers land on the trained
 Self-RAG 7B/13B rows (54.9, 55.8); the 1B stays above the paper's untrained 7B baseline (38.2). scripts/popqa_summary.py now
 regenerates results/popqa_summary.json; the page's PopQA text handles any number of readers. 026 (PR task file on all 592) running.
+
+## 2026-09-06 05:10 cold read with the new demo-review skill (~/.claude/skills/demo-review/SKILL.md, Bo's 5 Sep ask)
+Decider's sentence after ninety seconds matches the purpose ("one lookup takes their 1B from 8 to 66; nobody knows when to
+look"). One gap: the fixed port, validated on three checks, had no place on the page except the speed note. Added: fourth row in
+the Mimir table ("Community port with the prefix-attention fix built here" 8.3), an h3 "The laptop port, fixed" in the ruler chapter
+with a computed note (identical answer on 93.4 percent of 592 from memory, causal port 29; one lookup 65.9 = 65.9; reading
+benchmark 65.8 vs 66.8), glossary line and tour step updated, README sentence added. Data: results/portcheck_mimir-prefix_vs_
+official-dfm.jsonl (the 592-question compare) now feeds D.port_check. Walk clean, published 717c444. Headings stay as short
+chapter titles by Bo's request; the ledes carry the claims. Remaining review items for Bo's own read: none blocking.
