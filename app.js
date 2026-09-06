@@ -32,6 +32,9 @@ const closedSorted = MAIN.map(m => A(m,"closed")).filter(Boolean).sort((a,b) => 
 const l70 = D.replication["meta-llama-Llama-3.3-70B-Instruct"].EM;
 fills.a1_take = `the best small model from memory, ${MODELS[closedSorted[0].model]}, scores ${pct(closedSorted[0].em)}; the released 70B Llama scores ${pct(l70)} on the same questions.`;
 const port = A("mimir","closed");
+const portfix = A("mimir-prefix","closed");
+fills.port_pct = port ? pct(port.em) : "";
+fills.portfix_closed_pct = portfix ? pct(portfix.em) : "running";
 fills.a1_verdict = `The released prediction files reproduce the published ranking, and Mimir on the official implementation gives ${pct(mhc.em)} against the published 9.6. ` +
   (port ? `The same weights through the community llama.cpp port give ${pct(port.em)}, because the port reads the prompt left to right only. ` : "") +
   `Mimir, trained on Danish, retains the most from memory of the five small models.`;
@@ -94,7 +97,7 @@ if (D.popqa) {
   const PUB = [["Llama 2 7B (Self-RAG paper baseline, untrained)", 0.147, 0.382, null], ["Llama 2 13B (Self-RAG paper baseline, untrained)", 0.147, 0.457, null], ["Self-RAG 7B (trained to retrieve and critique)", null, 0.549, null], ["Self-RAG 13B (trained)", null, 0.558, null]];
   const PORDER = ["llama1b","llama3b","qwen3b","gemma4b"];
   const ours = Object.entries(D.popqa).filter(([m, v]) => v.ret5 && v.ret5.n >= 1000).sort((a,b) => PORDER.indexOf(a[0]) - PORDER.indexOf(b[0])).map(([m, v]) => [MODELS[m] + " (this page, untrained)", v.closed ? v.closed.match : null, v.ret5 ? v.ret5.match : null, v.ret10 ? v.ret10.match : null, m]);
-  const cell = v => v == null ? "" : pct(v);
+  const cell = v => v == null ? '<span class="gap">not published</span>' : pct(v);
   $("#popqatable tbody").innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${cell(r[1])}</td><td class="n">${cell(r[2])}</td><td class="n">${cell(r[3])}</td></tr>`).join("");
   const best = ours.map(r => Math.max(r[2] || 0, r[3] || 0));
   { const big = ours.filter(r => r[4] !== "llama1b"), small = ours.find(r => r[4] === "llama1b");
@@ -102,6 +105,66 @@ if (D.popqa) {
     fills.popqa_text = `With five passages the untrained 3B and 4B readers score ${rng}, level with the trained Self-RAG rows (54.9 and 55.8)${small ? `; the 1B reader scores ${pct(small[2])}, still above the paper's untrained 7B baseline with the same passages (38.2)` : `; the paper's untrained 7B baseline with the same passages scores 38.2`}. Published rows are from Table 2 of the Self-RAG paper.`; }
 }
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
+
+/* ---------- hover definitions: wrap the first occurrence of each term per chapter ---------- */
+{
+  const TERMS = [
+    ["prefix attention", "Mimir's trained reading mode: every prompt token attends to every other prompt token; only the answer is written left to right."],
+    ["reading fidelity", "Exact match restricted to the questions where the answer was in the fetched text."],
+    ["answer recall", "How often the reference answer is inside the fetched text; the ceiling of a lookup."],
+    ["contains-gold", "The reference answer appears somewhere inside the model's answer; softer than exact match."],
+    ["exact match", "The official score: the normalised answer equals the reference answer."],
+    ["oracle query", "The benchmark's hidden subject field used as the search term; the best possible query, never shown to a model."],
+    ["greedy decoding", "The model always takes its single most likely next token; no sampling, so runs repeat exactly."],
+    ["from memory", "The model answers with nothing but the official prompt; no lookup."],
+    ["one lookup", "The question, as written, fetches the top three Wikipedia introductions, which are placed above the prompt."],
+    ["ranked index", "A standard BM25 full-text index over the Danish Wikipedia dump of 1 November 2023, built for this study."],
+    ["search box", "Wikipedia's own search, which requires every word of the query to match the page."],
+    ["BM25", "The standard ranking formula of full-text search: a page scores by how many of the rarer query words it contains."],
+    ["standard error", "The uncertainty of a score from a finite sample; on 592 questions about 1 to 2 points."],
+    ["quantised", "Weights stored at 6 or 8 bits instead of 16 to fit a small graphics card; scores barely change."],
+  ];
+  document.querySelectorAll("section.chapter").forEach(sec => {
+    if (sec.id === "primer") return;
+    const done = new Set();
+    const els = sec.querySelectorAll("p, li, dd, figcaption");
+    for (const [term, tip] of TERMS) {
+      if (done.has(term)) continue;
+      const rx = new RegExp("(^|[\\s(>])(" + term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")([\\s.,;:)<]|$)", "i");
+      for (const el of els) {
+        if (done.has(term)) break;
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+          acceptNode: nd => { const p = nd.parentElement; return (p.closest("a, button, select, .term, .ib, pre, svg") || !nd.textContent.trim()) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+        let nd;
+        while ((nd = walker.nextNode())) {
+          const m = nd.textContent.match(rx);
+          if (!m) continue;
+          const i = m.index + m[1].length;
+          const after = nd.splitText(i); after.splitText(m[2].length);
+          const span = document.createElement("span"); span.className = "term"; span.setAttribute("data-tip", tip); span.setAttribute("tabindex", "0");
+          span.textContent = after.textContent; after.replaceWith(span);
+          done.add(term); break;
+        }
+      }
+    }
+  });
+  const tipEl = document.createElement("div"); tipEl.id = "tipbox"; document.body.appendChild(tipEl);
+  let tipFor = null;
+  function showTip(el){
+    tipEl.textContent = el.getAttribute("data-tip"); tipEl.style.display = "block"; tipFor = el;
+    const r = el.getBoundingClientRect(), tw = Math.min(300, innerWidth - 24);
+    tipEl.style.maxWidth = tw + "px";
+    const tr = tipEl.getBoundingClientRect();
+    let x = r.left + r.width/2 - tr.width/2; x = Math.max(12, Math.min(x, innerWidth - tr.width - 12));
+    let y = r.top - tr.height - 8; if (y < 8) y = r.bottom + 8;
+    tipEl.style.left = (x + scrollX) + "px"; tipEl.style.top = (y + scrollY) + "px";
+  }
+  function hideTip(){ tipEl.style.display = "none"; tipFor = null; }
+  document.addEventListener("mouseover", e => { const t = e.target.closest("[data-tip]"); if (t) showTip(t); else if (tipFor) hideTip(); });
+  document.addEventListener("focusin", e => { const t = e.target.closest("[data-tip]"); if (t) showTip(t); });
+  document.addEventListener("focusout", () => hideTip());
+  window.addEventListener("scroll", () => { if (tipFor) hideTip(); }, {passive: true});
+}
 
 /* ---------- chapters: number every chapter section and build the contents list ---------- */
 {
@@ -119,7 +182,8 @@ document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribu
 /* ---------- second retrieval table ---------- */
 {
   const V = [["retrieve-local","One plain lookup (main line)"],["retrieve-plus-local","Plus the two best paragraphs of the same pages"],["retrieve-wide-local","Ten pages, three introductions plus four best paragraphs"],["retrieve-tworound-local","Model writes a follow-up query when the text lacks the answer"]];
-  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td><td class="n">${g && g.n>=500 ? pct(g.em) : ""}</td><td class="n">${m && m.n>=500 ? pct(m.em) : ""}</td><td class="n">${ce ? pct(ce.hit) : ""}</td><td class="n">${g && g.ptok ? Math.round(g.ptok) : ""}</td></tr>` : ""; }).join("");
+  const gp = v => v == null ? `<td class="n gap">not run</td>` : `<td class="n">${v}</td>`;
+  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td>${gp(g && g.n>=500 ? pct(g.em) : null)}${gp(m && m.n>=500 ? pct(m.em) : null)}${gp(ce ? pct(ce.hit) : null)}${gp(g && g.ptok ? Math.round(g.ptok) : null)}</tr>` : ""; }).join("");
   const el = $("#secondtable tbody"); if (el) el.innerHTML = rows;
   fills.second_note = "The paragraphs variant is the best of them and remains a side row. The wider net raises the ceiling half a point and loses two points of reading; the model-written follow-up query lowers the score, because the extra instruction costs reading fidelity on every question and it asks only one time in six.";
 }
@@ -129,19 +193,25 @@ if (D.mwqa) {
   const PUB = [["DFM Mimir 1B (published, Mimir report)", 0.668, null, null], ["Qwen 3.5 4B (published)", 0.571, null, null], ["Gemma 3 1B (published)", 0.426, null, null]];
   const ours = MAIN.filter(m => D.mwqa[m]).map(m => [MODELS[m] + " (this page)", D.mwqa[m].em, D.mwqa[m].f1, D.mwqa[m].sec]);
   if (D.mwqa["mimir-prefix"]) ours.unshift(["DFM Mimir 1B (this page, patched llama.cpp port, 512 rows)", D.mwqa["mimir-prefix"].em, D.mwqa["mimir-prefix"].f1, D.mwqa["mimir-prefix"].sec]);
-  const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${pct(r[1])}</td><td class="n">${r[2]==null?"":pct(r[2])}</td><td class="n">${r[3]==null?"":r[3].toFixed(1)}</td></tr>`).join("");
+  const gp = (v, f) => v == null ? `<td class="n gap">not published</td>` : `<td class="n">${f(v)}</td>`;
+  const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map((r, i) => `<tr${i===0?' class="pubrow"':''}><td>${esc(r[0])}</td><td class="n">${pct(r[1])}</td>${gp(r[2], pct)}${gp(r[3], v=>v.toFixed(1))}</tr>`).join("");
   const ll = D.mwqa.llama1b;
   fills.mwqa_note = `Published rows are from the Mimir report, same task and code. ${D.mwqa["mimir-prefix"] ? `Mimir through the patched llama.cpp port lands within noise of the published 66.8 on 512 rows, a second benchmark on which the port reproduces the official run. ` : ``} ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
 }
 
 /* ---------- speed table ---------- */
 {
-  const rows = [];
-  for (const m of MAIN) { const c = A(m,"closed"), r = A(m,"retrieve-local"); if (c||r) rows.push([MODELS[m] + (m==="mimir-hf" ? " (official transformers path)" : " (llama.cpp)"), c ? c.sec : null, r ? r.sec : null, r && r.ptok ? Math.round(r.ptok) : null]); }
+  const cell = (v, f) => v == null ? `<td class="n gap">not run</td>` : `<td class="n">${f(v)}</td>`;
+  const row = (label, m) => { const c = A(m,"closed"), r = A(m,"retrieve-local");
+    return `<tr><td>${esc(label)}</td>${cell(r && r.n>=500 ? r.em : null, pct)}${cell(c ? c.sec : null, v=>v.toFixed(1))}${cell(r ? r.sec : null, v=>v.toFixed(1))}${cell(r && r.ptok ? Math.round(r.ptok) : null, v=>v)}${cell(r && r.otok ? Math.round(r.otok) : null, v=>v)}</tr>`; };
+  const sub = t => `<tr class="subhead"><td colspan="6">${t}</td></tr>`;
+  let html = sub("llama.cpp, quantised weights, three requests in flight");
+  for (const m of ["llama1b","llama3b","gemma4b","qwen3b"]) html += row(MODELS[m], m);
+  html += sub("Official transformers implementation, fp16, batch of two") + row("DFM Mimir 1B (official)", "mimir-hf");
   const pp = A("mimir-prefix","closed"), pr = A("mimir-prefix","retrieve-local");
-  if (pp || pr) rows.push(["DFM Mimir 1B (llama.cpp, patched prefix attention)", pp ? pp.sec : null, pr ? pr.sec : null, pr && pr.ptok ? Math.round(pr.ptok) : null]);
-  const el = $("#speedtable tbody"); if (el) el.innerHTML = rows.map(r => `<tr><td>${esc(r[0])}</td><td class="n">${r[1]==null?"":r[1].toFixed(1)}</td><td class="n">${r[2]==null?"":r[2].toFixed(1)}</td><td class="n">${r[3]==null?"":r[3]}</td></tr>`).join("");
-  fills.speed_note = (pp || pr) ? `The patched port gives the official implementation's score on both rows (from memory 8.3 against 8.4, one lookup 65.9 against 65.9) and the identical answer on 92 percent of questions from memory and 99 percent with a lookup, fetching the same pages every time. On the lookup row it is three times faster than the transformers path at the same concurrency (8 against 26 seconds a request, two in flight); on the short prompt from memory there is nothing to gain.` : `Mimir on the official implementation is the slow row: that code was written to be correct, not fast. The patched llama.cpp port is being measured and will appear here.`;
+  if (pp || pr) html += sub("llama.cpp with the prefix-attention fix, served one request at a time") + row("DFM Mimir 1B (patched port)", "mimir-prefix");
+  const el = $("#speedtable tbody"); if (el) el.innerHTML = html;
+  fills.speed_note = `Three things drive every difference in this table. The lookup multiplies the prompt by about six (960 tokens against 160), which is most of the gap between the two seconds columns. The path drives the rest: the official transformers implementation is correct but unbatched, so its lookup row costs 26 seconds a request; the patched port returns the same answers (identical on 93% of questions from memory, 99% with the lookup, same score) at a third of that time even served one request at a time. Output length barely matters: every model writes under ten tokens.`;
 }
 
 {
@@ -161,7 +231,7 @@ if (D.mwqa) {
   const rows = Object.entries(D.replication).sort((a,b) => b[1].F1 - a[1].F1);
   const nice = k => k.replace("meta-llama-","").replace("openai-","").replace("google-","").replace("mistralai-","");
   tb.innerHTML = rows.map(([k,v]) => `<tr><td>${esc(nice(k))}</td><td class="n">${v.EM.toFixed(3)}</td><td class="n">${v.F1.toFixed(3)}</td><td class="n">${v.BLEU.toFixed(3)}</td><td class="n">${v.paper_f1 ?? ""}</td><td class="n">${v.paper_bleu ?? ""}</td></tr>`).join("");
-  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td><td class="n">${pct(m.em)}</td></tr>`).join("") + `<tr><td>Reported in the Mimir paper (Inspect harness)</td><td class="n">9.6 %</td></tr>`;
+  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td><td class="n">${pct(m.em)}</td></tr>`).join("") + `<tr class="pubrow"><td>Reported in the Mimir paper (Inspect harness)</td><td class="n">9.6%</td></tr>`;
 }
 
 /* ---------- bar chart helper ---------- */
@@ -171,15 +241,16 @@ function bars(root, items, opts){
   const max = Math.max(0.05, ...items.map(i=>i.value), opts.ref ? opts.ref.value : 0, opts.ceil || 0) * 1.08;
   const x = v => left + (W-left-right) * v / max;
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||"bar chart")}">`;
-  if (opts.ceil !== undefined) s += `<rect class="ceil" x="${left}" y="${top}" width="${x(opts.ceil)-left}" height="${items.length*rowH-6}"></rect>`;
   items.forEach((it,i) => {
     const y = top + i*rowH;
     s += `<text class="lab" x="${left-8}" y="${y+17}" text-anchor="end">${esc(it.label)}</text>`;
+    if (opts.ceil !== undefined) s += `<rect class="ceilrow" x="${left}" y="${y+2}" width="${Math.max(1,x(opts.ceil)-left)}" height="${rowH-12}" rx="1"></rect>`;
     s += `<rect class="bar ${it.cls||""}" x="${left}" y="${y+2}" width="${Math.max(1,x(it.value)-left)}" height="${rowH-12}" rx="1"></rect>`;
     s += `<text x="${x(it.value)+6}" y="${y+17}">${it.text || pct(it.value)}</text>`;
   });
+  if (opts.ceil !== undefined) s += `<line class="ref" x1="${x(opts.ceil)}" y1="${top}" x2="${x(opts.ceil)}" y2="${top+items.length*rowH-4}"></line>`;
   if (opts.ref) { const xr = x(opts.ref.value); const anch = xr > W*0.72 ? "end" : "middle"; const lx = anch === "end" ? xr - 5 : xr; s += `<line class="ref" x1="${xr}" y1="${top}" x2="${xr}" y2="${top+items.length*rowH-4}"></line><text class="lab" x="${lx}" y="${H-3}" text-anchor="${anch}">${esc(opts.ref.label)}</text>`; }
-  if (opts.ceil !== undefined) s += `<text class="lab" x="${x(opts.ceil)}" y="${H-3}" text-anchor="middle">answer fetched ${pct(opts.ceil)}</text>`;
+  if (opts.ceil !== undefined) { const xc = x(opts.ceil); const anch = xc > W*0.72 ? "end" : "middle"; s += `<text class="lab" x="${anch==="end"?xc-4:xc}" y="${H-3}" text-anchor="${anch}">ceiling: answer fetched ${pct(opts.ceil)}</text>`; }
   s += `<line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${top+items.length*rowH-4}"></line></svg>`;
   root.innerHTML = s;
 }
@@ -222,7 +293,16 @@ function drawDecomp(){
   const ticks = [[dc.in_intros, "3 intros"], [dc.in_intros + dc.below_intro, "whole pages"], [dc.in_intros + dc.below_intro + dc.in_ranks_4_to_10, "top 10"]];
   const k1 = D.ceil_by_cond && D.ceil_by_cond["retrieve-k1-local"]; if (k1) ticks.unshift([Math.round(k1.hit*n), "1 intro"]);
   const plus = D.ceil_by_cond && D.ceil_by_cond["retrieve-plus-local"]; if (plus) ticks.push([Math.round(plus.hit*n), "+paragraphs"]);
-  const tk = ticks.sort((a,b)=>a[0]-b[0]); const top = 8 + tk.length * 11; const H = top + 4 + 50 + 30 + 24;
+  const tk = ticks.sort((a,b)=>a[0]-b[0]);
+  // leftmost tick gets the highest level and every label sits to the right of its own line, so no
+  // line can pass through a label: lines only descend past labels whose text starts further right.
+  const LVH = 16, placed = [];
+  tk.forEach(([v, lab], i) => {
+    const xt = x(v), txt = `${lab} ${pct0(v/n)}`, wpx = txt.length * 6.6 + 4;
+    const x0 = Math.min(xt + 3, W - wpx - 4);
+    placed.push({xt, txt, x0, lvl: tk.length - 1 - i});
+  });
+  const nlv = tk.length; const top = 6 + nlv * LVH; const H = top + 4 + 50 + 30 + 24;
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="where the 592 questions go for ${esc(MODELS[decSel])}">`;
   const row = (segs, y, label) => {
     s += `<text class="rowlab" x="${left-8}" y="${y+19}" text-anchor="end">${esc(label)}</text>`;
@@ -232,12 +312,15 @@ function drawDecomp(){
       if (w > 64) s += `<text class="seglab ${light?"light":""}" x="${x0+6}" y="${y+19}">${esc(lab)} ${v}</text>`;
       else if (w > 26) s += `<text class="seglab ${light?"light":""}" x="${x0+4}" y="${y+19}">${v}</text>`; });
   };
-  tk.forEach(([v, lab], i) => { const xt = x(v); const yy = 11 + i * 11; const anchor = xt > W - 118 ? "end" : "start"; const dx = anchor === "end" ? -3 : 3;
-    s += `<line class="tick" x1="${xt}" y1="${yy+3}" x2="${xt}" y2="${top+2}"></line><text class="ticklab" x="${xt+dx}" y="${yy}" text-anchor="${anchor}">${esc(lab)} ${pct0(v/n)}</text>`; });
+  placed.forEach(q => { const yy = top - 4 - q.lvl * LVH;
+    s += `<line class="tick" x1="${q.xt}" y1="${yy+3}" x2="${q.xt}" y2="${top+2}"></line><text class="ticklab" x="${q.x0}" y="${yy}">${esc(q.txt)}</text>`; });
   row(rowA, top + 4, "the answer was");
   row(rowB, top + 50, SHORT[decSel] || MODELS[decSel]);
   s += `<text class="rowlab" x="${left}" y="${H-6}">0</text><text class="rowlab" x="${x(n)}" y="${H-6}" text-anchor="end">${n} questions</text></svg>`;
   $("#decchart").innerHTML = s;
+  const LEG = [["Top row", [["seg-in","answer in the 3 introductions"],["seg-below","further down a fetched page"],["seg-r410","in a page ranked 4 to 10"],["seg-beyond","not in the top 10"]]],
+               ["Bottom row", [["seg-right","read right"],["seg-misread","answer was there, misread"],["seg-memory","right from memory"],["seg-wrong","wrong, answer not fetched"]]]];
+  const lg = $("#decleg"); if (lg) lg.innerHTML = LEG.map(([t, items]) => `<div><span class="legt">${t}:</span>` + items.map(([c, l]) => `<span class="legi"><i class="sw ${c}"></i>${l}</span>`).join("") + `</div>`).join("");
   fills.dec_take = `for ${MODELS[decSel]}, ${rightIn} of the ${inT.length} fetched answers were read right and ${wrongIn} misread; of the ${outT.length} questions the lookup missed, ${rightOut} were still answered from memory. ${dc.below_intro} answers sat further down a fetched page and ${dc.in_ranks_4_to_10} in pages ranked four to ten, which is what the second-retrieval variants recover.`;
   const el = document.querySelector("[data-fill=dec_take]"); if (el) el.textContent = fills.dec_take;
 }
@@ -257,17 +340,18 @@ function drawA3(){
   const d = D.decision.find(x => x.model===a3m && x.variant===a3v);
   const n = d.called_wrong + d.silent_wrong + d.called_right + d.silent_right;
   const tiles = [
-    {k:"called_wrong", t:"Searched when its memory was wrong", cls:"good", s:"the useful call"},
-    {k:"silent_wrong", t:"Answered from memory and was wrong", cls:"bad", s:"the bluff"},
-    {k:"called_right", t:"Searched although its memory was right", cls:"", s:"wasted effort, harmless"},
-    {k:"silent_right", t:"Answered from memory and was right", cls:"good", s:"earned trust"}];
-  $("#tiles").innerHTML = tiles.map(t => `<div class="tile ${t.cls} ${tileSel===t.k?"on":""}" data-k="${t.k}"><div class="k">${esc(t.t)}</div><div class="v">${d[t.k]}</div><div class="s">${esc(t.s)} &middot; ${pct0(d[t.k]/n)} of ${n}</div></div>`).join("");
-  $("#tiles").querySelectorAll(".tile").forEach(el => el.onclick = () => { tileSel = el.dataset.k; drawA3(); browserFromTile(); });
+    {k:"called_wrong", cls:"good", s:"the useful call"},
+    {k:"called_right", cls:"", s:"wasted effort, harmless"},
+    {k:"silent_wrong", cls:"bad", s:"the bluff"},
+    {k:"silent_right", cls:"good", s:"earned trust"}];
+  tiles.forEach(t => { const cell = $("#t-" + t.k); if (!cell) return;
+    cell.innerHTML = `<div class="tile ${t.cls} ${tileSel===t.k?"on":""}" data-k="${t.k}"><div class="v">${d[t.k]}</div><div class="s">${esc(t.s)} &middot; ${pct0(d[t.k]/n)} of ${n}</div></div>`;
+    cell.firstChild.onclick = () => { tileSel = t.k; drawA3(); browserFromTile(); }; });
   const calls = d.called_wrong + d.called_right, wrong = d.called_wrong + d.silent_wrong;
   $("#tilenote").textContent = `${MODELS[a3m]}, ${VARS.find(([v])=>v===a3v)[1]}: searched on ${calls} of ${n} questions (${pct0(calls/n)}). Of the ${wrong} questions it had wrong from memory, it searched on ${d.called_wrong} (${pct0(d.called_wrong/Math.max(1,wrong))}).` + (calls/n > 0.9 ? " Searching on nearly everything is a policy, not a judgement per question." : "") + (calls/n < 0.05 ? " Never searching reproduces the closed book." : "");
 }
 drawA3();
-$("#asktable tbody").innerHTML = D.ask.filter(a => a.model !== "mimir").map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || CONDN[a.variant] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td><td class="n">${pct(a.em_own_query)}</td><td class="n">${a.em_fallback==null ? "" : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
+$("#asktable tbody").innerHTML = D.ask.filter(a => a.model !== "mimir").map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || CONDN[a.variant] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td><td class="n">${pct(a.em_own_query)}</td><td class="n">${a.em_fallback==null ? '<span class="gap">no fallbacks</span>' : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
 
 /* ---------- question browser ---------- */
 const bm = $("#bmodel"), bc = $("#bcond");
@@ -280,6 +364,9 @@ function browserFromTile(){
   window.__tileFilter = tileSel; drawBrowser();
   $("#browser").scrollIntoView({behavior:"smooth", block:"start"});
 }
+let bLimit = 5;
+const bx = $("#bexpand");
+if (bx) bx.onclick = () => { bLimit = bLimit === 5 ? 200 : 5; drawBrowser(); };
 ["bmodel","bcond","boutcome","btype"].forEach(id => $("#"+id).onchange = () => { window.__tileFilter = null; if (id === "btype") window.__flag = null; drawBrowser(); });
 $("#bsearch").oninput = () => { window.__tileFilter = null; drawBrowser(); };
 function drawBrowser(){
@@ -299,10 +386,11 @@ function drawBrowser(){
     if (s && !(q.q.toLowerCase().includes(s) || q.gold.toLowerCase().includes(s) || r.p.toLowerCase().includes(s))) return false;
     return true;
   });
-  $("#bcount").textContent = `${rows.length} of 592 questions shown.`;
+  $("#bcount").textContent = `${rows.length} of 592 questions match; ${Math.min(bLimit, rows.length)} shown.`;
+  if (bx) bx.textContent = bLimit === 5 ? `Show all matching rows` : `Show 5 rows`;
   const tb = $("#btable tbody");
-  tb.innerHTML = rows.slice(0, 200).map(q => { const r = q.runs[m+"|"+c]; const cls = r.em>=1 ? "match-1" : (r.len>=1 ? "match-l" : "match-0"); const lab = r.em>=1 ? "exact" : (r.len>=1 ? "lenient" : "wrong");
-    return `<tr class="row" data-id="${q.id}"><td class="q">${esc(q.q)}</td><td>${esc(q.gold)}</td><td>${esc(r.p)}</td><td class="${cls}">${lab}</td><td class="m">${esc(r.tq)}${r.fb?" (fallback)":""}</td><td class="m">${esc(r.top)}</td></tr>`; }).join("") + (rows.length > 200 ? `<tr><td colspan="6" class="lab">First 200 shown; narrow the filters or search.</td></tr>` : "");
+  tb.innerHTML = rows.slice(0, bLimit).map(q => { const r = q.runs[m+"|"+c]; const cls = r.em>=1 ? "match-1" : (r.len>=1 ? "match-l" : "match-0"); const lab = r.em>=1 ? "exact" : (r.len>=1 ? "lenient" : "wrong");
+    return `<tr class="row" data-id="${q.id}"><td class="q">${esc(q.q)}</td><td>${esc(q.gold)}</td><td>${esc(r.p)}</td><td class="${cls}">${lab}</td><td class="m">${esc(r.tq)}${r.fb?" (fallback)":""}</td><td class="m">${esc(r.top)}</td></tr>`; }).join("") + (rows.length > bLimit ? `<tr><td colspan="6" class="lab">${bLimit === 5 ? "Five rows shown; the button above shows the rest." : "First 200 shown; narrow the filters or search."}</td></tr>` : "");
   tb.querySelectorAll("tr.row").forEach(tr => tr.onclick = () => {
     const q = D.questions.find(x => x.id === tr.dataset.id); const next = tr.nextElementSibling;
     if (next && next.classList.contains("detail")) { next.remove(); return; }
@@ -318,17 +406,17 @@ drawBrowser();
 /* ---------- failures: default answers and by type ---------- */
 {
   const norm = s => String(s||"").toLowerCase().replace(/[^a-z0-9æøå]+/g," ").trim();
-  const out = [];
-  for (const m of MAIN) for (const c of ["closed","retrieve","retrieve-local"]) {
-    const cnt = {}; let n = 0;
+  const fav = (m, c) => { const cnt = {}; let n = 0;
     D.questions.forEach(q => { const r = q.runs[m+"|"+c]; if (!r) return; n++; const k = norm(r.p); cnt[k] = (cnt[k]||0)+1; });
-    if (n < 500) continue;
-    const top = Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,3);
-    out.push(`<tr><td>${esc(MODELS[m])}</td><td>${esc(CONDN[c])}</td><td>${top.map(([k,v]) => `${esc(k.slice(0,28))} (${v})`).join("; ")}</td><td class="n">${pct0(top.reduce((s,[,v])=>s+v,0)/n)}</td></tr>`);
-  }
-  $("#deftable tbody").innerHTML = out.join("");
-  $("#typetable tbody").innerHTML = D.agg.filter(a => ["closed","retrieve","retrieve-local"].includes(a.cond) && a.model !== "mimir" && a.n >= 500).sort((a,b) => MAIN.indexOf(a.model)-MAIN.indexOf(b.model) || a.cond.localeCompare(b.cond))
-    .map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(CONDN[a.cond])}</td>` + ["year","number","text"].map(t => `<td class="n">${a.by_type[t] ? pct(a.by_type[t][0]) : ""}</td>`).join("") + `</tr>`).join("");
+    if (n < 500) return null;
+    const [k, v] = Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]; return `${esc(k.slice(0,30))} (${v})`; };
+  $("#deftable tbody").innerHTML = MAIN.map(m => { const a = fav(m,"closed"), b = fav(m,"retrieve-local");
+    return (a||b) ? `<tr><td>${esc(MODELS[m])}</td><td>${a||'<span class="gap">not run</span>'}</td><td>${b||'<span class="gap">not run</span>'}</td></tr>` : ""; }).join("");
+  $("#typetable tbody").innerHTML = MAIN.map(m => {
+    const c = A(m,"closed"), r = A(m,"retrieve-local");
+    if (!c || !r || r.n < 500) return "";
+    const cell = (a,t) => a.by_type[t] ? `<td class="n">${pct(a.by_type[t][0])}</td>` : `<td class="n gap">not run</td>`;
+    return `<tr><td>${esc(MODELS[m])}</td>` + ["year","number","text"].map(t=>cell(c,t)).join("") + ["year","number","text"].map(t=>cell(r,t)).join("") + `</tr>`; }).join("");
 }
 
 /* ---------- benchmark noise table ---------- */
@@ -353,15 +441,15 @@ if (D.noise) {
 /* ---------- guided tour (spotlight; positions computed from document coordinates, then scrolled) ---------- */
 (function(){
   const STEPS = [
-    {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page runs DAISY, the Danish Foundation Models benchmark, and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first:</b> Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
-    {sel:"#primer .glossary", k:"Terms · 2 of 10", html:`Every term on the page is defined once, in this list. Answer recall, reading fidelity and the decision are the three that carry the analysis.`},
-    {sel:"#mimirtable", k:"Reproduction · 3 of 10", html:`<b>Four rows, same weights.</b> The official implementation reproduces the published number. The community llama.cpp port loses a third of it by reading the prompt the wrong way round; the fourth row is that port with the fix built for this study.`},
-    {sel:"#a1chart", k:"From memory · 4 of 10", html:`Exact match from memory, one bar per model. Every small model holds almost none of the canon; the dotted line is the released 70B run.`},
-    {sel:"#a2chart", k:"One lookup · 5 of 10", html:`<b>Select a search engine above the chart.</b> The grey band is how often the answer was fetched at all; the bars are what each model scored with that text. Between engines the models do not change; the engine does.`},
-    {sel:"#decchart", k:"Where the questions go · 6 of 10", html:`<b>Select a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks mark the ceilings of narrower and wider lookups.`},
-    {sel:"#tiles", k:"The decision · 7 of 10", html:`<b>Select a model and a variant, then click a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red count is the bluff: answered from memory, and wrong.`},
+    {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page measures DAISY, the Danish Foundation Models benchmark, and everything around it. <b>Read the four numbers under the title first:</b> the published Mimir score reproduced, the community port fixed, Mimir with one lookup, and how many models knew when to look.`},
+    {sel:"#primer .glossary", k:"Terms · 2 of 10", html:`Every term is defined once, in this list, and <b>every dotted-underlined term on the page shows its definition on hover</b>. Answer recall, reading fidelity and the decision carry the analysis.`},
+    {sel:"#mimirtable", k:"Reproduction · 3 of 10", html:`<b>Four runs of the same weights, and the published number in bold.</b> The official implementation reproduces it within one standard error; the community llama.cpp port loses a third of it by reading the prompt the wrong way round; the last run is that port with the fix built for this study.`},
+    {sel:"#fixed h3", k:"Broken and fixed · 4 of 10", html:`Reproduction surfaced three findings: the port that reads backwards, now fixed in 35 lines and checked on all 592 questions; a prompt that exists in two versions one blank line apart; and the benchmark's own noise, counted row by row.`},
+    {sel:"#a2chart", k:"What a lookup adds · 5 of 10", html:`<b>Select a search engine above the chart.</b> Each bar sits in a light track that ends at the engine's ceiling, the share of questions whose answer was fetched at all. Between engines the models do not change; the engine does.`},
+    {sel:"#decchart", k:"Where the questions go · 6 of 10", html:`<b>Select a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The legend under the chart names every colour; the ticks mark the ceilings of narrower and wider lookups.`},
+    {sel:"#tilegrid", k:"The decision · 7 of 10", html:`<b>A two-by-two: what the model decided, against what its memory could deliver.</b> Select a model and a variant, then click a tile to see those questions. The red count is the bluff: answered from memory, and wrong.`},
     {sel:"#asked-first", k:"Questions and answers · 8 of 10", html:`Questions a reader is likely to ask, answered in order: the attention modes, how good the headline score is, the two-model pipeline, the choice of 592, the query, and a second retrieval.`},
-    {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the pages fetched.`},
+    {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, five rows at a time; the button shows all matches.`},
     {sel:"#coda pre", k:"Run it yourself · 10 of 10", html:`Three commands reproduce the main table on any machine with a served model, in the dfm-evals format. The Replay button at the top restarts this walkthrough.`},
   ];
   const root=$("#tour"), hl=$("#tour-hl"), card=$("#tour-card");
