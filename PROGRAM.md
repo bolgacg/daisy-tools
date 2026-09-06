@@ -482,3 +482,8 @@ chapter titles by Bo's request; the ledes carry the claims. Remaining review ite
 on all 592 with Gemma 3 4B against the real index: exact match 65.7 (stderr 2.0), F1 70.5, BLEU 46.1; the harness's plain-lookup
 row is 65.7. The PR file reproduces the page's main line to the decimal. 1174 s wall. Queue empty; 027 queued: the same task file
 with Mimir through the patched port, so the PR text can quote Mimir from this code.
+
+## 2026-09-06 06:05 R14 027 DONE: the dfm-evals pull-request task file with Mimir through the patched llama.cpp port, all 592:
+exact match 66.0 (stderr 1.9), F1 71.3, BLEU 46.6, 0 split warnings, 2342 s. Harness row 65.9. Both readers' numbers in the PR
+text now come from the PR file itself. Queue empty. Everything else waits on Bo: texts A/B (llama.cpp offer), the daisy_lookup
+PR text, his own read of the page, pins, David_Utrecht, CR2032, submit by Monday 23:59.
