@@ -7,7 +7,7 @@ const ORDER = ["mimir-hf","mimir","llama1b","llama3b","gemma4b","qwen3b"].filter
 const MAIN = ORDER.filter(m => m !== "mimir");            // the port is shown only where the attention mode is the point
 const pct = x => (x*100).toFixed(1) + "%";
 const pct0 = x => Math.round(x*100) + "%";
-const pc = v => `<td class="n pfill">${pct(v)}<span class="ptrack"><i style="width:${(v*100).toFixed(1)}%"></i></span></td>`; // % cell with a 0..100 mini bar
+const pc = v => `<td class="n pfill" style="--p:${(v*100).toFixed(1)}%">${pct(v)}</td>`; // % cell: the cell itself fills 0..100
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const CONDN = {closed:"from memory", "closed-sc":"from memory, 5-sample vote", retrieve:"one lookup, search box", "retrieve-oracle":"one lookup, oracle query (search box)",
@@ -232,7 +232,7 @@ if (D.mwqa) {
   const rows = Object.entries(D.replication).sort((a,b) => b[1].F1 - a[1].F1);
   const nice = k => k.replace("meta-llama-","").replace("openai-","").replace("google-","").replace("mistralai-","");
   tb.innerHTML = rows.map(([k,v]) => `<tr><td>${esc(nice(k))}</td><td class="n">${v.EM.toFixed(3)}</td><td class="n">${v.F1.toFixed(3)}</td><td class="n">${v.BLEU.toFixed(3)}</td><td class="n">${v.paper_f1 ?? ""}</td><td class="n">${v.paper_bleu ?? ""}</td></tr>`).join("");
-  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td>${pc(m.em)}</tr>`).join("") + `<tr class="pubrow"><td>Reported in the Mimir paper (Inspect harness)</td><td class="n pfill">9.6%<span class="ptrack"><i style="width:9.6%"></i></span></td></tr>`;
+  $("#mimirtable tbody").innerHTML = (D.mimir_paths || []).map(m => `<tr><td>${esc(m.label)}</td>${pc(m.em)}</tr>`).join("") + `<tr class="pubrow"><td>Reported in the Mimir paper (Inspect harness)</td><td class="n pfill" style="--p:9.6%">9.6%</td></tr>`;
 }
 
 /* ---------- bar chart helper ---------- */
@@ -274,7 +274,7 @@ function drawA2(){
 }
 drawA2();
 $("#fidtable tbody").innerHTML = MAIN.map(m => D.fidelity_local.find(f=>f.model===m)).filter(Boolean)
-  .map(f => `<tr><td>${esc(MODELS[f.model])}${f.n < 592 ? ` <span class="lab">(${f.n} of 592 so far)</span>` : ""}</td><td class="n pfill">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span><span class="ptrack"><i style="width:${(f.em_present*100).toFixed(1)}%"></i></span></td><td class="n pfill">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span><span class="ptrack"><i style="width:${(f.em_absent*100).toFixed(1)}%"></i></span></td></tr>`).join("");
+  .map(f => `<tr><td>${esc(MODELS[f.model])}${f.n < 592 ? ` <span class="lab">(${f.n} of 592 so far)</span>` : ""}</td><td class="n pfill" style="--p:${(f.em_present*100).toFixed(1)}%">${pct(f.em_present)} <span class="lab">(n=${f.n_present})</span></td><td class="n pfill" style="--p:${(f.em_absent*100).toFixed(1)}%">${pct(f.em_absent)} <span class="lab">(n=${f.n_absent})</span></td></tr>`).join("");
 
 /* ---------- where the 592 questions go (two rows, same scale) ---------- */
 let decSel = "mimir-hf";
