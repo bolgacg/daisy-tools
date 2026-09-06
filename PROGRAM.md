@@ -527,3 +527,11 @@ and 8.6 (the two prompt copies), official transformers fp16 8.4, bf16 8.4, the l
 Every path we can run lands 8.3 to 8.6, all within one SE of 9.6; the only untested difference left is the group's own serving
 stack (vLLM / native engine), which needs newer hardware. The precise question for the professor, when Bo chooses to ask it:
 which serving stack produced the 9.6. Queue empty; watchers on the three GitHub threads continue.
+
+## 2026-09-06 16:50 SENT with Bo's approval ("both approved"): the prefix-mode offer
+PR https://github.com/noctrex/llama.cpp/pull/1 (bolgacg:hrm-text-prefix-lm onto noctrex:hrm-text-support, title
+"hrm-text : add prefix-LM attention", body = lit/PREFIX-PR-TEXTS.md section B as amended in Bo's review loops).
+Comment https://github.com/ggml-org/llama.cpp/pull/27625#issuecomment-5559786692 (section A, benefit-attitude version,
+approved wording, PR link inserted). Both under Bo's account, no trailers. Bo settled the AI-disclosure question: if a
+PR is later opened against ggml-org master, the template's AI-usage box is ticked honestly, like noctrex did.
+Watchers live: George's branch head + PR 27625 comment count (monitor bt55a03z1), box queue log (bv1rfai3e).
