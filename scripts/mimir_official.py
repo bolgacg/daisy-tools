@@ -10,14 +10,14 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 ap = argparse.ArgumentParser(); ap.add_argument("--limit", type=int, default=0); ap.add_argument("--cpu", action="store_true")
 ap.add_argument("--max-new", type=int, default=100); ap.add_argument("--out", default=None)
 ap.add_argument("--prefix", action="store_true", help="bidirectional prompt attention via token_type_ids=1 (prefix-LM)")
-ap.add_argument("--attn", default="sdpa")
+ap.add_argument("--attn", default="sdpa"); ap.add_argument("--dtype", default=None, choices=["float16","bfloat16","float32"], help="override the default (fp16 on GPU, fp32 on CPU)")
 ap.add_argument("--template", default="dfm", choices=["dfm", "repo", "lab"], help="dfm = dfm-evals daisy.py template (their Inspect run); repo = SDU-Daisy eval.py template; lab = schneiderkamplab/dfm-evals dfm7.py sdu-daisy template (64 tokens, lowercase exact)")
 a = ap.parse_args()
 if a.out is None:
     a.out = f"results/pred_mimir-official{'-prefix' if a.prefix else ''}-t{a.max_new}{'' if a.template == 'dfm' else '-' + a.template}_closed.jsonl"
 name = "danish-foundation-models/DFM-Mimir"
 dev = "cpu" if a.cpu or not torch.cuda.is_available() else "cuda"
-dtype = torch.float32 if dev == "cpu" else torch.float16
+dtype = getattr(torch, a.dtype) if a.dtype else (torch.float32 if dev == "cpu" else torch.float16)
 tok = AutoTokenizer.from_pretrained(name)
 model = AutoModelForCausalLM.from_pretrained(name, dtype=dtype, attn_implementation=a.attn).to(dev).eval()
 import inspect
