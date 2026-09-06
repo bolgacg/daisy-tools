@@ -463,3 +463,8 @@ group's own run. Page: MWQA table gains the port row. Texts A and B complete (no
 five the ceiling rises 3 points and the score does not move (more text to misread); longer introductions of the same three
 pages buy 1.7 points, the paragraphs variant (68.8) remains the best labelled side row. Page: note under the decomposition chart
 and 1-intro / 5-intros ticks. 025 (PopQA Llama 3B) started 04:01; 026 (PR task check) after it.
+
+## 2026-09-06 05:05 R12 025 DONE: PopQA long-tail (Self-RAG passages, contains-gold, 1,399 q), Llama 3.2 3B: closed 18.7 |
+top-5 55.4 | top-10 54.6. Llama 3.2 1B (earlier): 12.8 | 47.5 | 47.1. All three untrained 3B and 4B readers land on the trained
+Self-RAG 7B/13B rows (54.9, 55.8); the 1B stays above the paper's untrained 7B baseline (38.2). scripts/popqa_summary.py now
+regenerates results/popqa_summary.json; the page's PopQA text handles any number of readers. 026 (PR task file on all 592) running.
