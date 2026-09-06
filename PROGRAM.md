@@ -589,3 +589,11 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
   mbpp_modal is itself "MBPP variant with a configurable sandbox backend" importing the upstream task's logic,
   the exact variant pattern daisy_lookup follows for daisy. PR body to gain two sentences (precedent + free-no
   close); amended text shown to Bo, opening still awaits his word.
+
+## 2026-09-06 18:20 daisy_lookup PR OPENED with Bo's approval ("both approved")
+- https://github.com/danish-foundation-models/dfm-evals/pull/9, title "Add daisy_lookup: DAISY with one Wikipedia
+  lookup", head bolgacg:daisy-lookup-task (310ddae), body = lit/DAISY-LOOKUP-PR-TEXT.md as amended (scope paragraph:
+  mbpp_modal precedent + free-no close). Opened as Bo via gh, no trailers. Bo's open PRs now four: noctrex#1,
+  SDU-Daisy#2, dfm-evals#8, dfm-evals#9.
+- Next outward item: the professor email, undergoing Bo's requested anxiety pass; sending waits for his word on the
+  final text.
