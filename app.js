@@ -92,11 +92,14 @@ if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
 /* PopQA long-tail on the Self-RAG passages */
 if (D.popqa) {
   const PUB = [["Llama 2 7B (their baseline, untrained)", 0.147, 0.382, null], ["Llama 2 13B (their baseline, untrained)", 0.147, 0.457, null], ["Self-RAG 7B (trained to retrieve and critique)", null, 0.549, null], ["Self-RAG 13B (trained)", null, 0.558, null]];
-  const ours = Object.entries(D.popqa).map(([m, v]) => [MODELS[m] + " (this page, untrained)", v.closed ? v.closed.match : null, v.ret5 ? v.ret5.match : null, v.ret10 ? v.ret10.match : null]);
+  const PORDER = ["llama1b","llama3b","qwen3b","gemma4b"];
+  const ours = Object.entries(D.popqa).filter(([m, v]) => v.ret5 && v.ret5.n >= 1000).sort((a,b) => PORDER.indexOf(a[0]) - PORDER.indexOf(b[0])).map(([m, v]) => [MODELS[m] + " (this page, untrained)", v.closed ? v.closed.match : null, v.ret5 ? v.ret5.match : null, v.ret10 ? v.ret10.match : null, m]);
   const cell = v => v == null ? "" : pct(v);
   $("#popqatable tbody").innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${cell(r[1])}</td><td class="n">${cell(r[2])}</td><td class="n">${cell(r[3])}</td></tr>`).join("");
   const best = ours.map(r => Math.max(r[2] || 0, r[3] || 0));
-  fills.popqa_text = `With five passages the two untrained 3B and 4B readers score ${ours.map(r => pct(r[2])).join(" and ")}, level with the trained Self-RAG rows; the paper's untrained 7B baseline with the same passages scores 38.2. Published rows are from Table 2 of the Self-RAG paper.`;
+  { const big = ours.filter(r => r[4] !== "llama1b"), small = ours.find(r => r[4] === "llama1b");
+    const rng = big.length ? (Math.min(...big.map(r => r[2])) === Math.max(...big.map(r => r[2])) ? pct(big[0][2]) : `${pct(Math.min(...big.map(r => r[2])))} to ${pct(Math.max(...big.map(r => r[2])))}`) : "";
+    fills.popqa_text = `With five passages the untrained 3B and 4B readers score ${rng}, level with the trained Self-RAG rows (54.9 and 55.8)${small ? `; the 1B reader scores ${pct(small[2])}, still above the paper's untrained 7B baseline with the same passages (38.2)` : `; the paper's untrained 7B baseline with the same passages scores 38.2`}. Published rows are from Table 2 of the Self-RAG paper.`; }
 }
 document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribute("data-fill"); if (fills[k] !== undefined) el.textContent = fills[k]; });
 
