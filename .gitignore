@@ -6,3 +6,5 @@ verification/*.png
 vendor/SDU-Daisy/.git/
 *.gguf
 results/dev/
+daisy-design-handoff.zip
+design-handoff/
