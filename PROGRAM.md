@@ -619,4 +619,4 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
   with our PR's six files; noctrex#1 still open, 0 comments; 27625 has 4 comments, ours (6 Sep 14:12) last.
   The op-label change is a declaration fix, not graph math; our validation against bc3455a4a stands, rebase
   optional unless George asks.
-- Persistent monitor armed this session (30-min gh poll): branch head, noctrex#1 state/comments, 27625 comments.
+- Monitor briefly armed, then STOPPED on Bo's word ("We don't need a watcher"); GitHub threads are checked on ask only.
