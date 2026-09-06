@@ -216,7 +216,6 @@ function drawDecomp(){
   const rowB = [["seg-right", rightIn, "read right", true], ["seg-misread", wrongIn, "misread", true], ["seg-memory", rightOut, "from memory", true], ["seg-wrong", wrongOut, "wrong", false]];
   const ticks = [[dc.in_intros, "3 intros"], [dc.in_intros + dc.below_intro, "whole pages"], [dc.in_intros + dc.below_intro + dc.in_ranks_4_to_10, "top 10"]];
   const k1 = D.ceil_by_cond && D.ceil_by_cond["retrieve-k1-local"]; if (k1) ticks.unshift([Math.round(k1.hit*n), "1 intro"]);
-  const k5 = D.ceil_by_cond && D.ceil_by_cond["retrieve-k5-local"]; if (k5) ticks.push([Math.round(k5.hit*n), "5 intros"]);
   const plus = D.ceil_by_cond && D.ceil_by_cond["retrieve-plus-local"]; if (plus) ticks.push([Math.round(plus.hit*n), "+paragraphs"]);
   const tk = ticks.sort((a,b)=>a[0]-b[0]); const top = 8 + tk.length * 11; const H = top + 4 + 50 + 30 + 24;
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="where the 592 questions go for ${esc(MODELS[decSel])}">`;
