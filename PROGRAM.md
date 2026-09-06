@@ -456,3 +456,10 @@ word-identical 553/592 = 93 percent, EM 8.6 vs 8.4 (the runner's script-template
 patched llama.cpp port: EM 65.8, F1 81.9, against the Mimir report's 66.8 (SE about 2 on 512). 0 ubatch-split warnings, 1742 s
 (3.4 s/row, two in flight, prompts about 600 tokens). Second benchmark on which the port with the v2 patch reproduces the
 group's own run. Page: MWQA table gains the port row. Texts A and B complete (no pending numbers left). 024 (k-sweep) started.
+
+## 2026-09-06 04:05 R11 024 DONE: pages sweep, Gemma 3 4B, one lookup on the offline index, full 592 (labelled side rows)
+1 introduction 60.5 (answer present 66.4) | 3 introductions (main line) 65.7 (75.5) | 5 introductions 65.7 (78.5) |
+3 introductions of 1,800 characters 67.4 (80.6). Reading: from one page to three the score follows the ceiling; from three to
+five the ceiling rises 3 points and the score does not move (more text to misread); longer introductions of the same three
+pages buy 1.7 points, the paragraphs variant (68.8) remains the best labelled side row. Page: note under the decomposition chart
+and 1-intro / 5-intros ticks. 025 (PopQA Llama 3B) started 04:01; 026 (PR task check) after it.
