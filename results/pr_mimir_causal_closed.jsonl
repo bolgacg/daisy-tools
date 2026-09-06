@@ -1,0 +1,26 @@
+{"gold":"N.F.S. Grundtvig","id":"c70d140c-3320-49ba-8336-988b6e5a0941","mode":"causal","n_gen":3,"n_prompt":158,"prediction":"Hans Christian Andersen"}
+{"gold":"1824","id":"f7e4294e-103a-421c-ad49-5de46f758ce1","mode":"causal","n_gen":4,"n_prompt":160,"prediction":"1930"}
+{"gold":"L.M. Lindeman","id":"5b2a92b2-aab7-4a15-9124-360859b99070","mode":"causal","n_gen":5,"n_prompt":166,"prediction":"Svar: Carl Nielsen"}
+{"gold":"1883","id":"864e666a-e8da-4176-91f5-512460898193","mode":"causal","n_gen":4,"n_prompt":162,"prediction":"1967"}
+{"gold":"1997","id":"7ceb5bbb-e723-477a-b7d2-ddee11db034f","mode":"causal","n_gen":4,"n_prompt":167,"prediction":"1998"}
+{"gold":"Østbroen","id":"d223c5d8-f64d-47e8-9e26-d60ac13d0846","mode":"causal","n_gen":23,"n_prompt":168,"prediction":"Broen, der forbinder Sjælland og Sprogø, hedder Storebæltsbroen."}
+{"gold":"Dronning Margrethe","id":"1cec3111-62c0-4e8e-a410-16d18afa0a00","mode":"causal","n_gen":7,"n_prompt":169,"prediction":"Dronning Margrethe II"}
+{"gold":"254 meter","id":"689700d6-5ab7-4562-bc0f-ed4ebdc1a6ea","mode":"causal","n_gen":4,"n_prompt":170,"prediction":"150 meter"}
+{"gold":"1937","id":"fa2743de-ae80-4454-a87e-a19880986035","mode":"causal","n_gen":4,"n_prompt":162,"prediction":"1979"}
+{"gold":"Kai Normann Andersen","id":"8c49a4ec-50c5-40d2-87a4-1153b3b7f6f0","mode":"causal","n_gen":5,"n_prompt":161,"prediction":"Svar: Carl Nielsen"}
+{"gold":"Aage Steffensen","id":"464b894d-b7b3-4346-8ce7-5667edf58915","mode":"causal","n_gen":12,"n_prompt":163,"prediction":"Søren Ulrik Thomsen og Henrik Nordbrandt"}
+{"gold":"Cocktail","id":"40f7ec14-b22f-41ae-8ff5-e627c2765800","mode":"causal","n_gen":4,"n_prompt":166,"prediction":"Drømmeland"}
+{"gold":"Ekbatana","id":"e6da6b9c-e458-4313-ac4b-dbdbea0e8778","mode":"causal","n_gen":2,"n_prompt":171,"prediction":"Digte"}
+{"gold":"1896","id":"8c6d8333-49fe-4f7e-b825-de025314dc4a","mode":"causal","n_gen":4,"n_prompt":161,"prediction":"1989"}
+{"gold":"Tony Vejslev","id":"b1fc13ae-abf0-41bb-bfcd-b4d412741ecb","mode":"causal","n_gen":8,"n_prompt":184,"prediction":"Søren Ulrik Thomsen"}
+{"gold":"Kurt Ravn","id":"1803a75e-c6e4-4819-bd2d-9173ab3ac95c","mode":"causal","n_gen":6,"n_prompt":176,"prediction":"Svar: Ekbatana"}
+{"gold":"Søren Kierkegaard","id":"f9b894f6-2eee-46b8-bec9-1780b9e787d8","mode":"causal","n_gen":6,"n_prompt":162,"prediction":"Søren Kierkegaard"}
+{"gold":"1843","id":"e4d3d1da-20c2-4c98-94e0-a48dd4c90c41","mode":"causal","n_gen":4,"n_prompt":162,"prediction":"1843"}
+{"gold":"Søren Kierkegaard","id":"9413b5fa-d763-4272-a44e-59057ac2daa3","mode":"causal","n_gen":6,"n_prompt":161,"prediction":"Søren Kierkegaard"}
+{"gold":"Om Valget af det Gode","id":"5e684def-3e55-413c-94e0-f84234c653e2","mode":"causal","n_gen":22,"n_prompt":172,"prediction":"Det andet brev fra assessor Wilhelm til forfatteren A er \"Til A. En brevveksling\"."}
+{"gold":"1987","id":"179ad967-e0a7-4953-8de2-ce925d123733","mode":"causal","n_gen":18,"n_prompt":165,"prediction":"Babettes Gæstebud blev udgivet i 1987."}
+{"gold":"Stéphane Audran","id":"620880a6-abeb-43ea-a937-1bd8253fda82","mode":"causal","n_gen":3,"n_prompt":168,"prediction":"Karen Blixen"}
+{"gold":"La Cocotte","id":"cdb800f1-e66f-40ed-80bb-df6aff8cb149","mode":"causal","n_gen":6,"n_prompt":177,"prediction":"Le Grand Vingtième"}
+{"gold":"Gabriel Axel","id":"575f30f5-d3e4-4d3a-b9fa-d5bd329ed293","mode":"causal","n_gen":5,"n_prompt":169,"prediction":"Babel Tausen"}
+{"gold":"Jeppe Aakjær","id":"57cfe2ef-ddd8-4c1a-b9ec-3b65f1c96471","mode":"causal","n_gen":4,"n_prompt":160,"prediction":"Johannes V. Jensen"}
+{"gold":"1912","id":"26dce655-0362-47a5-a5e3-ab92201a8e29","mode":"causal","n_gen":4,"n_prompt":164,"prediction":"1840"}

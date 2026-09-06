@@ -440,3 +440,10 @@ EM 8.3 | official via hf_server, same template 8.4 | official transformers, dfm 
 Word-identical to the official implementation with the same prompt bytes: 92.4 percent (547/592); causal port 28.7 percent.
 Across the two prompt copies: 81.4 percent. 1043 s for 592 = 1.8 s/q (median 3.0 s per request at two in flight);
 mean answer 5.9 tokens. Texts A and B in lit/PREFIX-PR-TEXTS.md now carry these numbers. Lookup half at 276/592 (01:51).
+
+## 2026-09-06 02:20 R9 021c lookup half, full 592, patched llama.cpp server, one lookup on the offline index (k=3, 900 chars)
+EM 65.9 = official implementation via hf_server 65.9 (same template); word-identical answers 98.8 percent; identical pages
+fetched 100 percent; 0 ubatch-split warnings. Speed: 2384 s for 592 = 4.0 s/q throughput (median 7.7 s per request at two in
+flight) against 13.1 s/q wall (26 s per request, also two in flight) on the transformers path: 3.3x, not 6.5x as first written. From memory: 1.8 s/q vs 1.7 (no gain on short prompts).
+The port with the v2 patch is now validated on both halves of the page's main line. compare step (592 vs the dfm-template
+transformers reference) still running inside 021c; then 022b (their reading benchmark through the port), 024, 025, 026.
