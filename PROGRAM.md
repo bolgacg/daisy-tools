@@ -513,3 +513,10 @@ tools chapter rewritten with why-it-exists lines. Verification: walk.js now fail
 cells, screenshots 17 elements at both widths; caught 4 real overlaps before publish. Skill written: ~/.claude/skills/sci-dataviz.
 Queued from the review: 028 (upstream daisy task on Mimir via the patched port, the last replication path for 9.6 we can run),
 029 (bf16 closed 592). dtype flag added to mimir_official.py.
+
+## 2026-09-06 12:45 R15 028 DONE: the upstream dfm-evals daisy task itself (the library code behind the published number),
+Mimir through the patched port, all 592: exact match 8.6 (se 1.2), F1 11.6, BLEU 7.8, 18 min. Every public replication path is
+now run: our harness 8.3 to 8.4 (both prompt copies), the official transformers implementation 8.4, the library's own Inspect
+task 8.6. All within one standard error of the published 9.6; none reaches it exactly. Remaining untestable differences:
+serving precision (029, bf16, running) and the group's own vLLM/native serving. If 029 also lands near 8.4, the email question
+to the professor is exact: which serving stack and precision produced 9.6.
