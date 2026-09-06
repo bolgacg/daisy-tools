@@ -2,7 +2,7 @@
 Every number on the page comes from this file, which comes from results/*.jsonl."""
 import glob, json, os, re, sys, collections
 sys.path.insert(0, ".")
-from daisy_tools.metrics import exact_match_score as em, f1_score, lenient_match
+from daisy_tools.metrics import exact_match_score as em, f1_score, lenient_match, normalize_text
 
 MODELS = {"mimir": "DFM Mimir 1B (llama.cpp, causal)", "mimir-hf": "DFM Mimir 1B (official, prefix attention)", "mimir-prefix": "DFM Mimir 1B (llama.cpp, patched prefix attention)", "llama1b": "Llama 3.2 1B", "llama3b": "Llama 3.2 3B", "gemma4b": "Gemma 3 4B", "qwen3b": "Qwen 2.5 3B"}
 CONDS = ["closed", "closed-sc", "retrieve", "retrieve-oracle", "retrieve-given-gemma", "retrieve-given-qwen", "retrieve-given-gemma+qwen", "retrieve-k1", "retrieve-k5", "retrieve-c1800", "retrieve-en", "agentic", "agentic-fewshot", "agentic-scaffold", "agentic-native", "agentic-en", "retrieve-local", "retrieve-plus-local", "agentic-local", "agentic-native-local", "retrieve-k1-local", "retrieve-k5-local", "retrieve-c1800-local", "retrieve-wide-local", "retrieve-tworound-local"]
@@ -108,8 +108,16 @@ mimir_paths = [
     {"label": "Official implementation, prefix attention (as trained), fp16, 100 tokens", **(_em_file("results/pred_mimir-official-prefix-t100_closed.jsonl") or {})},
     {"label": "Official implementation, causal attention, fp16, 100 tokens", **(_em_file("results/pred_mimir-official-t100_closed.jsonl") or {})},
     {"label": "Community llama.cpp port (causal only), 8-bit, 64 tokens", **(_em_file("results/pred_mimir_closed.jsonl") or {})},
+    {"label": "Community port with the prefix-attention fix built here, 8-bit, 100 tokens", **(_em_file("results/pred_mimir-prefix_closed.jsonl") or {})},
 ]
 mimir_paths = [m for m in mimir_paths if "em" in m]
+# the fixed port against the official implementation, same prompt bytes (tools/prefix-run/compare_server.py --template dfm)
+port_check = None
+if os.path.exists("results/portcheck_mimir-prefix_vs_official-dfm.jsonl"):
+    pc = load("results/portcheck_mimir-prefix_vs_official-dfm.jsonl")
+    port_check = {"n": len(pc), "identical": sum(normalize_text(r["prediction"] or "") == normalize_text(r["ref"] or "") for r in pc) / len(pc),
+                  "em_port": sum(em(r["prediction"] or "", r["gold"]) for r in pc) / len(pc),
+                  "em_official": sum(em(r["ref"] or "", r["gold"]) for r in pc) / len(pc)}
 inspect_full = json.load(open("results/inspect_full_gemma4b.json")) if os.path.exists("results/inspect_full_gemma4b.json") else None
 popqa = json.load(open("results/popqa_summary.json")) if os.path.exists("results/popqa_summary.json") else None
 # their reading benchmark (multi_wiki_qa, dfm-evals protocol) and EuroEval, per model
@@ -157,7 +165,7 @@ for i, g in gold.items():
     qrows.append(q)
 
 out = {"models": MODELS, "conds": CONDS, "agg": agg, "ceilings": {k: {"hit": v["hit"], "n": v["n"]} for k, v in ceil.items()},
-       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "inspect_full": inspect_full, "popqa": popqa, "noise": noise, "mwqa": mwqa, "euroeval": euroeval, "questions": qrows,
+       "decision": decision, "ceil_by_cond": ceil_by_cond, "fidelity": fidelity, "fidelity_local": fidelity_local, "decomp": decomp, "ask": askq, "replication": rep, "mimir_paths": mimir_paths, "port_check": port_check, "inspect_full": inspect_full, "popqa": popqa, "noise": noise, "mwqa": mwqa, "euroeval": euroeval, "questions": qrows,
        "paper": {"mimir_daisy_em_741": 9.6, "llama70b_f1_741": 0.268, "llama70b_bleu_741": 0.166}}
 json.dump(out, open("site/data.json", "w", encoding="utf-8"), ensure_ascii=False)
 open("site/data.js", "w", encoding="utf-8").write("window.DATA=" + json.dumps(out, ensure_ascii=False) + ";")

@@ -18,7 +18,7 @@ and puts the introductions of the top three pages in front of the group's prompt
 75.5 percent of questions; Mimir converts 86 percent of those. No model here decides when to look: told it may
 search, each either always searched or never did, and Mimir claims to know the answer on 84 percent of the
 questions it then gets wrong. One side finding: the community llama.cpp port reads Mimir's prompt with causal
-attention only, which costs a third of its score from memory (5.6 against 8.4 on the official code path).
+attention only, which costs a third of its score from memory (5.6 against 8.4 on the official code path). A 35-line fix (tools/prefix-run) restores the trained attention; checked against the official implementation on all 592 questions it gives the same score (8.3 against 8.4 from memory, 65.9 against 65.9 with one lookup) and the identical answer on 93 percent of them.
 
 ## Run it
 

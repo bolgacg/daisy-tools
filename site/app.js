@@ -148,7 +148,11 @@ if (D.mwqa) {
   const c = k => D.ceil_by_cond && D.ceil_by_cond[k] ? pct(D.ceil_by_cond[k].hit) : null;
   if (g1 && g3 && g5) fills.ksweep_note = `How many pages to fetch, measured on Gemma 3 4B: one introduction ${pct(g1.em)} (answer present in ${c("retrieve-k1-local")} of prompts), three ${pct(g3.em)} (${c("retrieve-local")}), five ${pct(g5.em)} (${c("retrieve-k5-local")}). Beyond three pages the ceiling keeps rising and the score stops, because every extra page is more text to misread.${gc ? ` Doubling each introduction to 1,800 characters at three pages gives ${pct(gc.em)}.` : ``}`;
 }
-["second_note","mwqa_note","speed_note","ksweep_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
+{
+  const pc = D.port_check, pr = A("mimir-prefix","retrieve-local"), ph = A("mimir-hf","retrieve-local"), pm = D.mwqa && D.mwqa["mimir-prefix"];
+  if (pc) fills.port_fix_note = `The port's author documented the limitation; the fix is 35 lines in six files of llama.cpp: for models trained this way the attention mask lets every prompt token see the whole prompt, the server stops reusing cached prompt prefixes, and a warning fires when a prompt is split. Checked against the official implementation on the same prompt bytes: the identical answer from memory on ${pct(pc.identical)} of the ${pc.n} questions (the causal port manages 29 percent)${pr && ph ? `; with one lookup ${pct(pr.em)} against ${pct(ph.em)}` : ``}${pm ? `; on the group's reading benchmark ${pct(pm.em)} against the 66.8 they report` : ``}.`;
+}
+["second_note","mwqa_note","speed_note","ksweep_note","port_fix_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
 
 /* ---------- replication and ruler tables ---------- */
 {
@@ -353,7 +357,7 @@ if (D.noise) {
   const STEPS = [
     {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page takes the group's own Danish quiz and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first.</b> They are Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
     {sel:"#primer .primer", k:"Five things to know · 2 of 10", html:`Every term used below is defined here: the quiz, from memory, one lookup, the two search engines, and the two scores. The glossary under it stays open.`},
-    {sel:"#mimirtable", k:"The ruler · 3 of 10", html:`<b>Read the three rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round.`},
+    {sel:"#mimirtable", k:"The ruler · 3 of 10", html:`<b>Read the four rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round, and the fourth row is that port with the fix built here.`},
     {sel:"#a1chart", k:"The ruler, from memory · 4 of 10", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
     {sel:"#a2chart", k:"One lookup · 5 of 10", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
     {sel:"#decchart", k:"Where the questions go · 6 of 10", html:`<b>Click a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks are the ceilings of narrower and wider lookups.`},
