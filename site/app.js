@@ -5,8 +5,8 @@ const $ = s => document.querySelector(s);
 const MODELS = Object.assign({}, D.models, {"mimir-hf": "DFM Mimir 1B (official)", "mimir": "DFM Mimir 1B (llama.cpp port)"});
 const ORDER = ["mimir-hf","mimir","llama1b","llama3b","gemma4b","qwen3b"].filter(m => D.models[m] && D.agg.some(a => a.model === m));
 const MAIN = ORDER.filter(m => m !== "mimir");            // the port is shown only where the attention mode is the point
-const pct = x => (x*100).toFixed(1) + " %";
-const pct0 = x => Math.round(x*100) + " %";
+const pct = x => (x*100).toFixed(1) + "%";
+const pct0 = x => Math.round(x*100) + "%";
 const A = (m,c) => D.agg.find(a => a.model===m && a.cond===c);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const CONDN = {closed:"from memory", "closed-sc":"from memory, 5-sample vote", retrieve:"one lookup, search box", "retrieve-oracle":"one lookup, oracle query (search box)",
@@ -30,11 +30,11 @@ const plusRows = MAIN.map(m => A(m,"retrieve-plus-local")).filter(Boolean).sort(
 fills.plus_best = plusRows.length ? `${pct(plusRows[0].em)} for ${MODELS[plusRows[0].model]}` : "";
 const closedSorted = MAIN.map(m => A(m,"closed")).filter(Boolean).sort((a,b) => b.em - a.em);
 const l70 = D.replication["meta-llama-Llama-3.3-70B-Instruct"].EM;
-fills.a1_take = `the best small model from memory, ${MODELS[closedSorted[0].model]}, scores ${pct(closedSorted[0].em)}; the group's 70B model scores ${pct(l70)} on the same questions.`;
+fills.a1_take = `the best small model from memory, ${MODELS[closedSorted[0].model]}, scores ${pct(closedSorted[0].em)}; the released 70B Llama scores ${pct(l70)} on the same questions.`;
 const port = A("mimir","closed");
-fills.a1_verdict = `Their files give their ranking, and Mimir on its official path gives ${pct(mhc.em)} against the paper's 9.6. ` +
-  (port ? `The same weights through the llama.cpp port score ${pct(port.em)}, because the port reads the prompt left to right only. ` : "") +
-  `Mimir, trained on Danish, holds the most from memory, and the whole field is thin.`;
+fills.a1_verdict = `The released prediction files reproduce the published ranking, and Mimir on the official implementation gives ${pct(mhc.em)} against the published 9.6. ` +
+  (port ? `The same weights through the community llama.cpp port give ${pct(port.em)}, because the port reads the prompt left to right only. ` : "") +
+  `Mimir, trained on Danish, retains the most from memory of the five small models.`;
 /* act two */
 const ENG = [
   {k:"box", label:"Wikipedia search box", cond:"retrieve", ceil:D.ceilings.shaped.hit},
@@ -69,13 +69,13 @@ const qc = A("qwen3b","closed"), ql = A("qwen3b","retrieve-local");
 if (qc && ql) { fills.qwen_closed_len = pct(qc.lenient); fills.qwen_local_len = pct(ql.lenient); }
 if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
   const I = D.inspect_full, ic = A("gemma4b","closed");
-  fills.inspect_check = `Checked: run through this task on all 592 questions, Gemma 3 4B scores ${pct(I.daisy_lookup.scores.exact_match.mean)} with the lookup (standard error ${(I.daisy_lookup.scores.exact_match.stderr*100).toFixed(1)}) and ${pct(I.daisy.scores.exact_match.mean)} from memory, against ${pct(gl.em)} and ${pct(ic.em)} from the harness behind this page. The two paths agree to within half a point; the harness allows 64 new tokens, their task 100.`;
+  fills.inspect_check = `Checked: run through this task on all 592 questions, Gemma 3 4B scores ${pct(I.daisy_lookup.scores.exact_match.mean)} with the lookup (standard error ${(I.daisy_lookup.scores.exact_match.stderr*100).toFixed(1)}) and ${pct(I.daisy.scores.exact_match.mean)} from memory, against ${pct(gl.em)} and ${pct(ic.em)} from the harness behind this page. The two paths agree to within half a point; the harness allows 64 new tokens, the official task 100.`;
 }
 /* questions asked along the way */
 {
   const causal = (D.mimir_paths || []).find(m => /causal attention, fp16/.test(m.label));
   fills.q_causal = causal ? pct(causal.em) : (port ? pct(port.em) : "");
-  fills.q_how_good = `Good enough to say the search side is solved. The group's best model from memory, a 70B Llama, scores ${pct(l70)} on these questions, and the nearest published numbers, English systems trained for the task with far larger models, sit at 44 to 64. Two caveats: the interval is about plus or minus 4 points, and the questions were written from Wikipedia pages, so the score says how well pages are found and read.`;
+  fills.q_how_good = `It is the highest score measured on DAISY under any condition. The largest released model, a 70B Llama, scores ${pct(l70)} from memory, and the nearest published numbers, English systems trained for the task with far larger models, sit at 44 to 64 exact match. Two caveats: the 95% interval is about plus or minus 4 points, and the questions were written from Wikipedia pages, so the score measures how well pages are found and read.`;
   const two = A("mimir-hf","retrieve-given-gemma+qwen") || A("mimir-hf","retrieve-given-qwen");
   fills.q_two_models = `Yes, two models in a row, not one combined model: Qwen 2.5 3B writes the search words, Mimir reads the pages and answers${two ? ` (${pct(two.em)} through the search box)` : ""}. It existed because Mimir never writes a search when asked to. The ranked index made it unnecessary: Mimir alone, with the question as the query, scores ${mhl ? pct(mhl.em) : ""}.`;
   let same = 0, tot = 0; D.questions.forEach(q => { const r = q.runs["gemma4b|retrieve-local"]; if (r) { tot++; if ((r.tq||"").trim() === q.q.trim().slice(0,80)) same++; } });
@@ -91,7 +91,7 @@ if (D.inspect_full && D.inspect_full.daisy_lookup && gl) {
 }
 /* PopQA long-tail on the Self-RAG passages */
 if (D.popqa) {
-  const PUB = [["Llama 2 7B (their baseline, untrained)", 0.147, 0.382, null], ["Llama 2 13B (their baseline, untrained)", 0.147, 0.457, null], ["Self-RAG 7B (trained to retrieve and critique)", null, 0.549, null], ["Self-RAG 13B (trained)", null, 0.558, null]];
+  const PUB = [["Llama 2 7B (Self-RAG paper baseline, untrained)", 0.147, 0.382, null], ["Llama 2 13B (Self-RAG paper baseline, untrained)", 0.147, 0.457, null], ["Self-RAG 7B (trained to retrieve and critique)", null, 0.549, null], ["Self-RAG 13B (trained)", null, 0.558, null]];
   const PORDER = ["llama1b","llama3b","qwen3b","gemma4b"];
   const ours = Object.entries(D.popqa).filter(([m, v]) => v.ret5 && v.ret5.n >= 1000).sort((a,b) => PORDER.indexOf(a[0]) - PORDER.indexOf(b[0])).map(([m, v]) => [MODELS[m] + " (this page, untrained)", v.closed ? v.closed.match : null, v.ret5 ? v.ret5.match : null, v.ret10 ? v.ret10.match : null, m]);
   const cell = v => v == null ? "" : pct(v);
@@ -109,9 +109,10 @@ document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribu
   const ol = document.querySelector("#contents ol");
   secs.forEach((sec, i) => {
     const h = sec.querySelector("h2"); if (!h) return;
-    const lab = document.createElement("div"); lab.className = "chlabel"; lab.textContent = `Chapter ${i+1}`; sec.insertBefore(lab, h);
+    const title = h.textContent;
     if (!sec.id) sec.id = "ch" + (i+1);
-    if (ol) ol.insertAdjacentHTML("beforeend", `<li><a href="#${sec.id}">${esc(h.textContent)}</a></li>`);
+    h.innerHTML = `<span class="chno">${i+1}.</span> ${esc(title)}`;
+    if (ol) ol.insertAdjacentHTML("beforeend", `<li><a href="#${sec.id}"><span class="cno">${i+1}.</span> ${esc(title)}</a></li>`);
   });
 }
 
@@ -125,12 +126,12 @@ document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribu
 
 /* ---------- their reading benchmark table ---------- */
 if (D.mwqa) {
-  const PUB = [["DFM Mimir 1B, their run (Mimir report)", 0.668, null, null], ["Qwen 3.5 4B, their run", 0.571, null, null], ["Gemma 3 1B, their run", 0.426, null, null]];
+  const PUB = [["DFM Mimir 1B (published, Mimir report)", 0.668, null, null], ["Qwen 3.5 4B (published)", 0.571, null, null], ["Gemma 3 1B (published)", 0.426, null, null]];
   const ours = MAIN.filter(m => D.mwqa[m]).map(m => [MODELS[m] + " (this page)", D.mwqa[m].em, D.mwqa[m].f1, D.mwqa[m].sec]);
   if (D.mwqa["mimir-prefix"]) ours.unshift(["DFM Mimir 1B (this page, patched llama.cpp port, 512 rows)", D.mwqa["mimir-prefix"].em, D.mwqa["mimir-prefix"].f1, D.mwqa["mimir-prefix"].sec]);
   const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${pct(r[1])}</td><td class="n">${r[2]==null?"":pct(r[2])}</td><td class="n">${r[3]==null?"":r[3].toFixed(1)}</td></tr>`).join("");
   const ll = D.mwqa.llama1b;
-  fills.mwqa_note = `Published rows from the Mimir report's table, same task and code. ${D.mwqa["mimir-prefix"] ? `Mimir through the patched llama.cpp port lands within noise of the report's 66.8 on 512 rows, a second benchmark on which the port now reproduces the group's own run. ` : ``} ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
+  fills.mwqa_note = `Published rows are from the Mimir report, same task and code. ${D.mwqa["mimir-prefix"] ? `Mimir through the patched llama.cpp port lands within noise of the published 66.8 on 512 rows, a second benchmark on which the port reproduces the official run. ` : ``} ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
 }
 
 /* ---------- speed table ---------- */
@@ -150,7 +151,7 @@ if (D.mwqa) {
 }
 {
   const pc = D.port_check, pr = A("mimir-prefix","retrieve-local"), ph = A("mimir-hf","retrieve-local"), pm = D.mwqa && D.mwqa["mimir-prefix"];
-  if (pc) fills.port_fix_note = `The port's author documented the limitation; the fix is 35 lines in six files of llama.cpp: for models trained this way the attention mask lets every prompt token see the whole prompt, the server stops reusing cached prompt prefixes, and a warning fires when a prompt is split. Checked against the official implementation on the same prompt bytes: the identical answer from memory on ${pct(pc.identical)} of the ${pc.n} questions (the causal port manages 29 percent)${pr && ph ? `; with one lookup ${pct(pr.em)} against ${pct(ph.em)}` : ``}${pm ? `; on the group's reading benchmark ${pct(pm.em)} against the 66.8 they report` : ``}.`;
+  if (pc) fills.port_fix_note = `The port's author documented the limitation; the fix is 35 lines in six files of llama.cpp: for models trained this way the attention mask lets every prompt token see the whole prompt, the server stops reusing cached prompt prefixes, and a warning fires when a prompt is split. Checked against the official implementation on the same prompt bytes: the identical answer from memory on ${pct(pc.identical)} of the ${pc.n} questions (the causal port manages 29 percent)${pr && ph ? `; with one lookup ${pct(pr.em)} against ${pct(ph.em)}` : ``}${pm ? `; on Multi Wiki QA ${pct(pm.em)} against the published 66.8` : ``}.`;
 }
 ["second_note","mwqa_note","speed_note","ksweep_note","port_fix_note"].forEach(k => { const el = document.querySelector(`[data-fill=${k}]`); if (el && fills[k] !== undefined) el.textContent = fills[k]; });
 
@@ -165,7 +166,7 @@ if (D.mwqa) {
 
 /* ---------- bar chart helper ---------- */
 function bars(root, items, opts){
-  const W = 640, rowH = 34, left = 170, right = 60, top = 8;
+  const W = 640, rowH = 34, left = 208, right = 60, top = 8;
   const H = top + items.length*rowH + (opts.ref || opts.ceil !== undefined ? 18 : 6);
   const max = Math.max(0.05, ...items.map(i=>i.value), opts.ref ? opts.ref.value : 0, opts.ceil || 0) * 1.08;
   const x = v => left + (W-left-right) * v / max;
@@ -177,19 +178,16 @@ function bars(root, items, opts){
     s += `<rect class="bar ${it.cls||""}" x="${left}" y="${y+2}" width="${Math.max(1,x(it.value)-left)}" height="${rowH-12}" rx="1"></rect>`;
     s += `<text x="${x(it.value)+6}" y="${y+17}">${it.text || pct(it.value)}</text>`;
   });
-  if (opts.ref) { const xr = x(opts.ref.value); s += `<line class="ref" x1="${xr}" y1="${top}" x2="${xr}" y2="${top+items.length*rowH-4}"></line><text class="lab" x="${xr}" y="${H-3}" text-anchor="middle">${esc(opts.ref.label)}</text>`; }
+  if (opts.ref) { const xr = x(opts.ref.value); const anch = xr > W*0.72 ? "end" : "middle"; const lx = anch === "end" ? xr - 5 : xr; s += `<line class="ref" x1="${xr}" y1="${top}" x2="${xr}" y2="${top+items.length*rowH-4}"></line><text class="lab" x="${lx}" y="${H-3}" text-anchor="${anch}">${esc(opts.ref.label)}</text>`; }
   if (opts.ceil !== undefined) s += `<text class="lab" x="${x(opts.ceil)}" y="${H-3}" text-anchor="middle">answer fetched ${pct(opts.ceil)}</text>`;
   s += `<line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${top+items.length*rowH-4}"></line></svg>`;
   root.innerHTML = s;
 }
 
 /* ---------- act 1 ---------- */
-let a1sel = "mimir-hf";
 function drawA1(){
-  const items = ORDER.map(m => { const a = A(m,"closed"); return a ? {label: MODELS[m], value: a.em, cls: m===a1sel ? "on" : ""} : null; }).filter(Boolean);
-  bars($("#a1chart"), items, {ref: {value: l70, label: "Llama 3.3 70B, their run"}, aria: "exact match from memory per model"});
-  $("#a1chips").innerHTML = ORDER.map(m => `<button class="chip ${m===a1sel?"on":""}" data-m="${m}">${esc(MODELS[m])}</button>`).join("");
-  $("#a1chips").querySelectorAll(".chip").forEach(b => b.onclick = () => { a1sel = b.dataset.m; drawA1(); });
+  const items = ORDER.map(m => { const a = A(m,"closed"); return a ? {label: MODELS[m], value: a.em} : null; }).filter(Boolean);
+  bars($("#a1chart"), items, {ref: {value: l70, label: "Llama 3.3 70B (released run)"}, aria: "exact match from memory per model"});
 }
 drawA1();
 
@@ -266,7 +264,7 @@ function drawA3(){
   $("#tiles").innerHTML = tiles.map(t => `<div class="tile ${t.cls} ${tileSel===t.k?"on":""}" data-k="${t.k}"><div class="k">${esc(t.t)}</div><div class="v">${d[t.k]}</div><div class="s">${esc(t.s)} &middot; ${pct0(d[t.k]/n)} of ${n}</div></div>`).join("");
   $("#tiles").querySelectorAll(".tile").forEach(el => el.onclick = () => { tileSel = el.dataset.k; drawA3(); browserFromTile(); });
   const calls = d.called_wrong + d.called_right, wrong = d.called_wrong + d.silent_wrong;
-  $("#tilenote").textContent = `${MODELS[a3m]}, ${VARS.find(([v])=>v===a3v)[1]}: searched on ${calls} of ${n} questions (${pct0(calls/n)}). Of the ${wrong} questions it had wrong from memory, it searched on ${d.called_wrong} (${pct0(d.called_wrong/Math.max(1,wrong))}).` + (calls/n > 0.9 ? " Searching on nearly everything is a policy, not a judgement per question." : "") + (calls/n < 0.05 ? " Never searching is the closed book with extra steps." : "");
+  $("#tilenote").textContent = `${MODELS[a3m]}, ${VARS.find(([v])=>v===a3v)[1]}: searched on ${calls} of ${n} questions (${pct0(calls/n)}). Of the ${wrong} questions it had wrong from memory, it searched on ${d.called_wrong} (${pct0(d.called_wrong/Math.max(1,wrong))}).` + (calls/n > 0.9 ? " Searching on nearly everything is a policy, not a judgement per question." : "") + (calls/n < 0.05 ? " Never searching reproduces the closed book." : "");
 }
 drawA3();
 $("#asktable tbody").innerHTML = D.ask.filter(a => a.model !== "mimir").map(a => `<tr><td>${esc(MODELS[a.model])}</td><td>${esc(VARS.find(([v])=>v===a.variant)?.[1] || CONDN[a.variant] || a.variant)}</td><td class="n">${a.calls}</td><td class="n">${a.first_hit_subject} (${pct0(a.first_hit_subject/a.calls)})</td><td class="n">${pct(a.em_own_query)}</td><td class="n">${a.em_fallback==null ? "" : pct(a.em_fallback) + " (n=" + a.fallbacks + ")"}</td></tr>`).join("");
@@ -337,10 +335,10 @@ drawBrowser();
 if (D.noise) {
   const c = D.noise.counts, n = D.noise.n;
   const rows = [
-    ["leak", "The answer appears in the question", "free points for every model, with or without a lookup"],
+    ["leak", "The answer appears in the question", "answerable from the question alone; every model benefits equally"],
     ["unknown", "The gold answer is 'unknown'", "cannot be answered right by design"],
     ["multi", "Several answers packed into one gold string", "exact match cannot hit them"],
-    ["no_qmark", "A question with a hint and no question mark", "one odd row"],
+    ["no_qmark", "A question with a hint and no question mark", "a single malformed row"],
     ["danish_letters", "Gold answers with æ, ø or å", "the official scorer deletes those letters, which lowers word-level F1 and BLEU for the same rows in every model; exact match is unaffected"]];
   $("#noisetable tbody").innerHTML = rows.filter(r => c[r[0]]).map(r => `<tr class="row" data-f="${r[0]}"><td>${esc(r[1])}</td><td class="n">${c[r[0]]} <span class="lab">(${pct0(c[r[0]]/n)})</span></td><td>${esc(r[2])}</td></tr>`).join("");
   $("#noisetable tbody").querySelectorAll("tr.row").forEach(tr => tr.onclick = () => { window.__flag = tr.dataset.f; $("#btype").value = "flagged"; window.__tileFilter = null; drawBrowser(); $("#browser").scrollIntoView({behavior:"smooth", block:"start"}); });
@@ -355,16 +353,16 @@ if (D.noise) {
 /* ---------- guided tour (spotlight; positions computed from document coordinates, then scrolled) ---------- */
 (function(){
   const STEPS = [
-    {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page takes the group's own Danish quiz and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first.</b> They are Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
-    {sel:"#primer .primer", k:"Five things to know · 2 of 10", html:`Every term used below is defined here: the quiz, from memory, one lookup, the two search engines, and the two scores. The glossary under it stays open.`},
-    {sel:"#mimirtable", k:"The ruler · 3 of 10", html:`<b>Read the four rows.</b> The same Mimir weights score three different numbers depending on how they are run. The official path lands on the paper's number; the common laptop port loses a third of it by reading the prompt the wrong way round, and the fourth row is that port with the fix built here.`},
-    {sel:"#a1chart", k:"The ruler, from memory · 4 of 10", html:`<b>Click a model chip above the chart.</b> Every small model knows almost nothing of the canon from memory. The dotted line is the 70B model from their paper.`},
-    {sel:"#a2chart", k:"One lookup · 5 of 10", html:`<b>Click a search engine.</b> The grey bar is how often the answer was fetched at all; the coloured bars are what each model scored with that text. Switch between the search box and the ranked index: the models did not change, the engine did.`},
-    {sel:"#decchart", k:"Where the questions go · 6 of 10", html:`<b>Click a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks are the ceilings of narrower and wider lookups.`},
-    {sel:"#tiles", k:"The decision · 7 of 10", html:`<b>Click a model, a variant, then a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red tile is the bluff: answered from memory, and wrong.`},
-    {sel:"#asked-first", k:"Questions asked · 8 of 10", html:`Six questions the author was asked while building this, answered in order: what the attention modes mean, how good the score is, whether the two-model pipeline is a trick, why 150 and 592, whether writing the query was part of the test, and what a second retrieval would do.`},
-    {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the page fetched.`},
-    {sel:"#coda pre", k:"Run it yourself · 10 of 10", html:`Three commands reproduce the main table on any machine with a served model, in the group's own evaluation format. The Guided tour button at the top restarts this walkthrough.`},
+    {sel:"#top h1", k:"Welcome · 1 of 10", html:`This page runs DAISY, the Danish Foundation Models benchmark, and gives the models one Wikipedia lookup. <b>Read the four numbers under the title first:</b> Mimir from memory, Mimir with one lookup, the ceiling of that lookup, and how many models knew when to look.`},
+    {sel:"#primer .glossary", k:"Terms · 2 of 10", html:`Every term on the page is defined once, in this list. Answer recall, reading fidelity and the decision are the three that carry the analysis.`},
+    {sel:"#mimirtable", k:"Reproduction · 3 of 10", html:`<b>Four rows, same weights.</b> The official implementation reproduces the published number. The community llama.cpp port loses a third of it by reading the prompt the wrong way round; the fourth row is that port with the fix built for this study.`},
+    {sel:"#a1chart", k:"From memory · 4 of 10", html:`Exact match from memory, one bar per model. Every small model holds almost none of the canon; the dotted line is the released 70B run.`},
+    {sel:"#a2chart", k:"One lookup · 5 of 10", html:`<b>Select a search engine above the chart.</b> The grey band is how often the answer was fetched at all; the bars are what each model scored with that text. Between engines the models do not change; the engine does.`},
+    {sel:"#decchart", k:"Where the questions go · 6 of 10", html:`<b>Select a model above the chart.</b> Top row: where the answer was. Bottom row: what the model did with it. The ticks mark the ceilings of narrower and wider lookups.`},
+    {sel:"#tiles", k:"The decision · 7 of 10", html:`<b>Select a model and a variant, then click a tile.</b> The four counts compare each model's decision to search with its own record from memory. The red count is the bluff: answered from memory, and wrong.`},
+    {sel:"#asked-first", k:"Questions and answers · 8 of 10", html:`Questions a reader is likely to ask, answered in order: the attention modes, how good the headline score is, the two-model pipeline, the choice of 592, the query, and a second retrieval.`},
+    {sel:"#bcontrols", k:"Every answer · 9 of 10", html:`<b>Filter, search, click a row.</b> All 592 questions with every model's answer under every condition, the query used and the pages fetched.`},
+    {sel:"#coda pre", k:"Run it yourself · 10 of 10", html:`Three commands reproduce the main table on any machine with a served model, in the dfm-evals format. The Replay button at the top restarts this walkthrough.`},
   ];
   const root=$("#tour"), hl=$("#tour-hl"), card=$("#tour-card");
   let idx=0;
@@ -391,7 +389,6 @@ if (D.noise) {
   function start(){ idx=0; root.classList.add("on"); place(); }
   $("#tourbtn").addEventListener("click", start);
   window.__tour={start, place, steps:STEPS.length, go:i=>{idx=i; root.classList.add("on"); place();}};
-  let seen=null; try{ seen=localStorage.getItem("daisy_tour"); }catch(e){}
-  if (!seen) setTimeout(start, 700);
+  if (!location.hash) setTimeout(start, 600);
 })();
 })();
