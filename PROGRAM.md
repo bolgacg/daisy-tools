@@ -604,3 +604,11 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
 - "Five in six" stood in the 4203 letter AND CV (now fixed to exact counts, reprinted, render_assert OK).
   lit/SOTA-COMPARABLES.md section 7.5 says 69 percent: source of that figure unidentified, possibly an earlier
   partial run or a different wrong-set definition. DO NOT quote 69 or five-in-six; quote 382 of 521 or recompute.
+
+## 2026-09-06 19:10 Job 030 landed and wired: the second-retrieval table is complete
+- Mimir via the patched port, full 592: retrieve-wide-local EM 71.8 (his best side row, edging plus-local 71.6
+  inside one SE), retrieve-tworound-local EM 66.0 (level with the plain lookup 65.9). Zero split warnings; walls
+  3224 s and 2638 s. Follow-up rate: Mimir asked on 26 of 592, Gemma on 100 of 592.
+- app.js Mimir column falls back to mimir-prefix for conditions mimir-hf never ran; the note names the engine and
+  its validation; second_note rewritten per-model (Gemma: paragraphs best, loses 1.3 to two-round; Mimir: wide
+  edges paragraphs, two-round level). Walk pass clean, published.
