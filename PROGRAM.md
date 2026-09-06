@@ -565,3 +565,16 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
 - 4203 side, same session: letter's stale "is ready for the port's author" became "is now a pull request to its
   author" (vedit, Windows Chrome reprint, render_assert 1pp); daisy_lookup PR text shown to Bo, opening awaits his
   word; professor email drafted with the two-PRs sentence, sending awaits his final approval.
+
+## 2026-09-06 17:40 Percentage mini bars on every table; job 030 queued for the two "not run" Mimir cells
+- Bo's ask ("bg pct full thing"): first attempt painted the cell background proportionally; the walk pass showed it
+  reads as column shading, exactly sci-dataviz rule 4, so replaced by a fixed 56 px track with a proportional blue
+  fill (rgba of --s1) right-aligned beside each percentage, one 0..100 scale everywhere, stated once in the
+  mimirtable note. Applied via pc() to mimirtable, secondtable, speedtable EM, mwqatable EM, typetable, asktable
+  own-query EM, present/absent. "not run" cells keep no bar. Walk pass 1280+420 clean, tour dismissed via
+  localStorage before screenshots. Commit dcc9695, gh-pages republished.
+- Job 030 (queue, running): Mimir retrieve-wide-local + retrieve-tworound-local through the patched prefix server
+  (021c recipe, 017b flags), out results/pred_mimir-prefix_<cond>-local.jsonl. Transformers path would cost ~8.5 h
+  at 26 s/q; the port is validated equal on the main lookup line (65.9 = 65.9, 99% identical), so the side cells run
+  through it and the page note will say so. On landing: scp results, app.js Mimir column falls back to mimir-prefix
+  for these two conditions with the engine named in the note, rebuild, republish.
