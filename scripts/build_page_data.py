@@ -107,11 +107,18 @@ def _em_file(path):
     rows = load(path); return {"em": sum(em(r["prediction"], r["gold"]) for r in rows) / len(rows), "n": len(rows)}
 mimir_paths = [
     {"label": "Official implementation, prefix attention (as trained), fp16, 100 tokens", **(_em_file("results/pred_mimir-official-prefix-t100_closed.jsonl") or {})},
+    {"label": "Official implementation, prefix attention, bfloat16, 100 tokens", **(_em_file("results/pred_mimir-official-prefix-bf16-t100_closed.jsonl") or {})},
     {"label": "Official implementation, causal attention, fp16, 100 tokens", **(_em_file("results/pred_mimir-official-t100_closed.jsonl") or {})},
     {"label": "Community llama.cpp port (causal only), 8-bit, 64 tokens", **(_em_file("results/pred_mimir_closed.jsonl") or {})},
     {"label": "Community port with the prefix-attention fix built here, 8-bit, 100 tokens", **(_em_file("results/pred_mimir-prefix_closed.jsonl") or {})},
 ]
 mimir_paths = [m for m in mimir_paths if "em" in m]
+# the dfm-evals library's own daisy task (Inspect), run through the fixed port: the library code behind the published number
+_libp = glob.glob("results/inspect/*_daisy_Nn6YHSvTkxuueQZxMArtGH.json")
+if _libp:
+    _lib = json.load(open(_libp[0]))["results"]
+    _em = [sc for sc in _lib["scores"] if sc["name"] == "exact_match"][0]["metrics"]["mean"]["value"]
+    mimir_paths.append({"label": "The dfm-evals library's own daisy task, via the fixed port, 8-bit", "em": _em, "n": _lib["total_samples"]})
 # the fixed port against the official implementation, same prompt bytes (tools/prefix-run/compare_server.py --template dfm)
 port_check = None
 if os.path.exists("results/portcheck_mimir-prefix_vs_official-dfm.jsonl"):
