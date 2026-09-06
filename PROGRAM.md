@@ -447,3 +447,7 @@ fetched 100 percent; 0 ubatch-split warnings. Speed: 2384 s for 592 = 4.0 s/q th
 flight) against 13.1 s/q wall (26 s per request, also two in flight) on the transformers path: 3.3x, not 6.5x as first written. From memory: 1.8 s/q vs 1.7 (no gain on short prompts).
 The port with the v2 patch is now validated on both halves of the page's main line. compare step (592 vs the dfm-template
 transformers reference) still running inside 021c; then 022b (their reading benchmark through the port), 024, 025, 026.
+
+## 2026-09-06 02:30 021c DONE. Direct check against the transformers reference (dfm template on both sides, 592 questions):
+word-identical 553/592 = 93 percent, EM 8.6 vs 8.4 (the runner's script-template run: 8.3; all within one SE). Texts updated to
+553/592. 022b started 02:30 (Mimir on MultiWikiQA, 512 rows, through the patched port).
