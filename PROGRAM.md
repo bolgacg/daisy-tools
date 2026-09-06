@@ -612,3 +612,11 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
 - app.js Mimir column falls back to mimir-prefix for conditions mimir-hf never ran; the note names the engine and
   its validation; second_note rewritten per-model (Gemma: paragraphs best, loses 1.3 to two-round; Mimir: wide
   edges paragraphs, two-round level). Walk pass clean, published.
+
+## 2026-09-06 ~21:50 George pushed two review-response commits; NOT our code; watch re-armed
+- hrm-text-support head bc3455a4a -> ddc9ee2d0: conversion/hrm_text.py (-5, rope_type workaround removed) and
+  src/llama-arch.cpp (HRM_Z_L_INIT op label MUL -> ADD). Both answer CISC's cleanup review on 27625. ZERO overlap
+  with our PR's six files; noctrex#1 still open, 0 comments; 27625 has 4 comments, ours (6 Sep 14:12) last.
+  The op-label change is a declaration fix, not graph math; our validation against bc3455a4a stands, rebase
+  optional unless George asks.
+- Persistent monitor armed this session (30-min gh poll): branch head, noctrex#1 state/comments, 27625 comments.
