@@ -597,3 +597,10 @@ Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK;
   SDU-Daisy#2, dfm-evals#8, dfm-evals#9.
 - Next outward item: the professor email, undergoing Bo's requested anxiety pass; sending waits for his word on the
   final text.
+
+## 2026-09-06 18:45 FACT CORRECTION: the scaffold claimed-know share is 382/521 = 73.3%, not "five in six", not 69%
+- Bo's email anxiety pass forced a raw recompute (pred_mimir_agentic-scaffold.jsonl, official exact_match_score,
+  decision "Ja" = claims know): wrong 521, claimed know on 382 (73.3%); of 71 right, claimed know on 28.
+- "Five in six" stood in the 4203 letter AND CV (now fixed to exact counts, reprinted, render_assert OK).
+  lit/SOTA-COMPARABLES.md section 7.5 says 69 percent: source of that figure unidentified, possibly an earlier
+  partial run or a different wrong-set definition. DO NOT quote 69 or five-in-six; quote 382 of 521 or recompute.
