@@ -451,3 +451,8 @@ transformers reference) still running inside 021c; then 022b (their reading benc
 ## 2026-09-06 02:30 021c DONE. Direct check against the transformers reference (dfm template on both sides, 592 questions):
 word-identical 553/592 = 93 percent, EM 8.6 vs 8.4 (the runner's script-template run: 8.3; all within one SE). Texts updated to
 553/592. 022b started 02:30 (Mimir on MultiWikiQA, 512 rows, through the patched port).
+
+## 2026-09-06 03:00 R10 022b DONE: Mimir on their reading benchmark (dfm-evals multi_wiki_qa protocol, 512 rows) through the
+patched llama.cpp port: EM 65.8, F1 81.9, against the Mimir report's 66.8 (SE about 2 on 512). 0 ubatch-split warnings, 1742 s
+(3.4 s/row, two in flight, prompts about 600 tokens). Second benchmark on which the port with the v2 patch reproduces the
+group's own run. Page: MWQA table gains the port row. Texts A and B complete (no pending numbers left). 024 (k-sweep) started.

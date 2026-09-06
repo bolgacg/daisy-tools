@@ -124,9 +124,10 @@ document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribu
 if (D.mwqa) {
   const PUB = [["DFM Mimir 1B, their run (Mimir report)", 0.668, null, null], ["Qwen 3.5 4B, their run", 0.571, null, null], ["Gemma 3 1B, their run", 0.426, null, null]];
   const ours = MAIN.filter(m => D.mwqa[m]).map(m => [MODELS[m] + " (this page)", D.mwqa[m].em, D.mwqa[m].f1, D.mwqa[m].sec]);
+  if (D.mwqa["mimir-prefix"]) ours.unshift(["DFM Mimir 1B (this page, patched llama.cpp port, 512 rows)", D.mwqa["mimir-prefix"].em, D.mwqa["mimir-prefix"].f1, D.mwqa["mimir-prefix"].sec]);
   const el = $("#mwqatable tbody"); if (el) el.innerHTML = PUB.concat(ours).map(r => `<tr><td>${esc(r[0])}</td><td class="n">${pct(r[1])}</td><td class="n">${r[2]==null?"":pct(r[2])}</td><td class="n">${r[3]==null?"":r[3].toFixed(1)}</td></tr>`).join("");
   const ll = D.mwqa.llama1b;
-  fills.mwqa_note = `Published rows from the Mimir report's table, same task and code. ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
+  fills.mwqa_note = `Published rows from the Mimir report's table, same task and code. ${D.mwqa["mimir-prefix"] ? `Mimir through the patched llama.cpp port lands within noise of the report's 66.8 on 512 rows, a second benchmark on which the port now reproduces the group's own run. ` : ``} ${ll ? `Llama 3.2 1B scores near zero because it ignores the instruction to answer in three words, not because it cannot read; its word-level F1 is ${pct0(ll.f1)}.` : ""}${D.euroeval && Object.keys(D.euroeval).length ? ` EuroEval's version of the same dataset, a different prompt and split: ${Object.entries(D.euroeval).map(([m,v]) => `${MODELS[m]||m} ${v.em.toFixed(1)} exact match`).join(", ")}.` : ""}`;
 }
 
 /* ---------- speed table ---------- */
