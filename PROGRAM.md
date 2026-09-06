@@ -520,3 +520,10 @@ now run: our harness 8.3 to 8.4 (both prompt copies), the official transformers 
 task 8.6. All within one standard error of the published 9.6; none reaches it exactly. Remaining untestable differences:
 serving precision (029, bf16, running) and the group's own vLLM/native serving. If 029 also lands near 8.4, the email question
 to the professor is exact: which serving stack and precision produced 9.6.
+
+## 2026-09-06 12:50 R16 029 DONE: Mimir closed-book, official transformers implementation, bfloat16 instead of fp16, full 592:
+EM 8.4, identical to the fp16 reference. Precision eliminated. Final replication ledger for the published 9.6: our harness 8.3
+and 8.6 (the two prompt copies), official transformers fp16 8.4, bf16 8.4, the library's own Inspect task via the fixed port 8.6.
+Every path we can run lands 8.3 to 8.6, all within one SE of 9.6; the only untested difference left is the group's own serving
+stack (vLLM / native engine), which needs newer hardware. The precise question for the professor, when Bo chooses to ask it:
+which serving stack produced the 9.6. Queue empty; watchers on the three GitHub threads continue.
