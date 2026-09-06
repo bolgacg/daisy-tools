@@ -184,9 +184,9 @@ document.querySelectorAll("[data-fill]").forEach(el => { const k = el.getAttribu
 {
   const V = [["retrieve-local","One plain lookup (main line)"],["retrieve-plus-local","Plus the two best paragraphs of the same pages"],["retrieve-wide-local","Ten pages, three introductions plus four best paragraphs"],["retrieve-tworound-local","Model writes a follow-up query when the text lacks the answer"]];
   const gp = v => v == null ? `<td class="n gap">not run</td>` : `<td class="n">${v}</td>`;
-  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td>${g && g.n>=500 ? pc(g.em) : gp(null)}${m && m.n>=500 ? pc(m.em) : gp(null)}${ce ? pc(ce.hit) : gp(null)}${gp(g && g.ptok ? Math.round(g.ptok) : null)}</tr>` : ""; }).join("");
+  const rows = V.map(([c,l]) => { const g = A("gemma4b",c), m = A("mimir-hf",c) || A("mimir-prefix",c); const ce = D.ceil_by_cond && D.ceil_by_cond[c]; return (g||m) ? `<tr><td>${esc(l)}</td>${g && g.n>=500 ? pc(g.em) : gp(null)}${m && m.n>=500 ? pc(m.em) : gp(null)}${ce ? pc(ce.hit) : gp(null)}${gp(g && g.ptok ? Math.round(g.ptok) : null)}</tr>` : ""; }).join("");
   const el = $("#secondtable tbody"); if (el) el.innerHTML = rows;
-  fills.second_note = "The paragraphs variant is the best of them and remains a side row. The wider net raises the ceiling half a point and loses two points of reading; the model-written follow-up query lowers the score, because the extra instruction costs reading fidelity on every question and it asks only one time in six.";
+  fills.second_note = "For Gemma the paragraphs variant is the best of the side rows; for Mimir the wider net edges the paragraphs variant by 0.2 points, inside one standard error. The model-written follow-up query buys nothing: Gemma asks one time in six and loses 1.3 points to the extra instruction, Mimir asks on 26 of the 592 and stays level with the plain lookup.";
 }
 
 /* ---------- their reading benchmark table ---------- */

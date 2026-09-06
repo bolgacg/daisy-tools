@@ -178,7 +178,7 @@ Svar:</pre>
   <h2>Second retrieval</h2>
   <p class="lede">What would a second retrieval step buy? Every variant here adds a selection step beyond one lookup, so none is the main line; each is labelled and its cost is printed.</p>
   <div class="tscroll"><table id="secondtable"><thead><tr><th>Variant, offline index</th><th class="n">Gemma 3 4B</th><th class="n">Mimir 1B</th><th class="n">Answer in fetched text</th><th class="n">Prompt tokens</th></tr></thead><tbody></tbody></table></div>
-  <p class="note"><span data-fill="second_note"></span> Cells marked "not run": the side variants ran on the fastest model only; Mimir on the transformers path costs 26 seconds a question.</p>
+  <p class="note"><span data-fill="second_note"></span> The Mimir cells for the last two variants ran through the llama.cpp port with the prefix-attention fix, which matches the transformers path to the decimal on the main line; the transformers path itself costs 26 seconds a question.</p>
 </section>
 
 <section id="field" class="chapter">
