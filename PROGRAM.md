@@ -535,3 +535,18 @@ Comment https://github.com/ggml-org/llama.cpp/pull/27625#issuecomment-5559786692
 approved wording, PR link inserted). Both under Bo's account, no trailers. Bo settled the AI-disclosure question: if a
 PR is later opened against ggml-org master, the template's AI-usage box is ticked honestly, like noctrex did.
 Watchers live: George's branch head + PR 27625 comment count (monitor bt55a03z1), box queue log (bv1rfai3e).
+
+## 2026-09-06 17:00 HANDOFF FACTS (instance switch; session-scoped things below die with the session)
+Session-scoped, gone after the switch: the two monitors (box queue log; George's branch head + PR 27625 comment count) and
+the scratchpad clones (llama-prefix, dfm-evals). Recreate the llama.cpp branch if a rebase is ever needed: shallow-clone
+noctrex/llama.cpp branch hrm-text-support, run python tools/prefix-run/patch/apply_prefixlm.py ., commit as Bo
+(bolgacg1@gmail.com, no trailers), force-push to bolgacg/llama.cpp branch hrm-text-prefix-lm. The dfm-evals branch
+daisy-lookup-task is safely on github.com/bolgacg/dfm-evals (commit 310ddae).
+Sent and live: page https://bolgacg.github.io/daisy-tools/ ("DAISY, measured", commit 8175923 head); noctrex/llama.cpp#1;
+comment issuecomment-5559786692 on ggml-org/llama.cpp#27625; SDU-Daisy#2 and dfm-evals#8 (no replies as of 16:40).
+Unsent, awaiting Bo: lit/DAISY-LOOKUP-PR-TEXT.md (the daisy_lookup task PR to danish-foundation-models/dfm-evals);
+the question-audit issue to SDU-Daisy (counts on the page); any email to the professor.
+Bo's own list: send daisy-design-handoff.zip (in Windows Downloads and repo root, gitignored) to Claude Design and bring
+files back for verification; pin six repos; delete David_Utrecht via web; replace the CR2032 in gene; submit 4203 by
+Mon 7 Sep 23:59 (letter and CV PDFs current in sdu-applications/submission/4203, rebuilt 6 Sep 02:25).
+Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK; Secure Boot off; queue empty).
