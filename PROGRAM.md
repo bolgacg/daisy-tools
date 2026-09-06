@@ -487,3 +487,14 @@ with Mimir through the patched port, so the PR text can quote Mimir from this co
 exact match 66.0 (stderr 1.9), F1 71.3, BLEU 46.6, 0 split warnings, 2342 s. Harness row 65.9. Both readers' numbers in the PR
 text now come from the PR file itself. Queue empty. Everything else waits on Bo: texts A/B (llama.cpp offer), the daisy_lookup
 PR text, his own read of the page, pins, David_Utrecht, CR2032, submit by Monday 23:59.
+
+## 2026-09-06 11:00 page rewritten on Bo's ten-point review (commit 1619a7f, live)
+1 tour auto-starts on load (button now "Replay the tour"); 2 percent signs joined to the number everywhere (pct/pct0);
+3 headline = four equal bordered cells; 4 contents = three even columns of five, links underlined in the accent colour;
+5 "Five things to know" replaced by "Terms and setup", one uniform definition list of 11 terms incl. contains-gold, decision
+rewritten; 6 no they/their/them for the group anywhere, named forms (DFM, the Mimir report, the published table, the official
+scorer); 7 the prompt collapsible introduced by a sentence; 8 chapter number lives inside the heading ("3. Reproduction"),
+eyebrow label gone; 9 "Nothing below counts" and "a little higher" replaced with sober sentences carrying the actual delta;
+10 the from-memory chart lost its purposeless chips (kept only where clicking changes the data; active chip now filled).
+Also: chart label margin widened, 70B reference label unclipped, Self-RAG baselines named, casual cells reworded.
+Bo also downgraded the session model to Fable 5 (11:00) considering 5.1 lazier; noted.
