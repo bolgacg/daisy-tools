@@ -550,3 +550,18 @@ Bo's own list: send daisy-design-handoff.zip (in Windows Downloads and repo root
 files back for verification; pin six repos; delete David_Utrecht via web; replace the CR2032 in gene; submit 4203 by
 Mon 7 Sep 23:59 (letter and CV PDFs current in sdu-applications/submission/4203, rebuilt 6 Sep 02:25).
 Box gene: healthy after clean shutdown and restart (driver, queue, tailscale OK; Secure Boot off; queue empty).
+
+## 2026-09-06 17:10 Page ledger closed and upstream PRs linked, PUBLISHED (Bo: "1 approved")
+- mimirtable is now six runs plus the published number: added the bf16 row (8.4, scored locally from
+  pred_mimir-official-prefix-bf16-t100_closed.jsonl) and the dfm-evals library's own daisy task through the fixed
+  port (8.6, Inspect json fetched from the box at /home/bo/dfm-evals-test/logs/inspect-daisy-mimir/ into
+  results/inspect/). bf16 sits beside its fp16 twin. The note under the table states the closed ledger: run with
+  prefix attention every public path lands 8.3 to 8.6, bf16 = fp16 so precision is ruled out, only the group's own
+  serving stack untested. (The API says noctrex#1 was created 14:12Z; the 16:50 in the entry above was approximate.)
+- Byline block now links the three open PRs (noctrex#1, SDU-Daisy#2, dfm-evals#8, "Sent upstream from this work,
+  all open"); the port-fix chapter links noctrex#1 too. Walk pass at 1280 and 420 via Playwright element shots, clean.
+- Verified via gh search: exactly three open PRs by bolgacg on all of GitHub, no replies on any yet.
+- master commit as Bo, no trailers; gh-pages republished; live check running at write time.
+- 4203 side, same session: letter's stale "is ready for the port's author" became "is now a pull request to its
+  author" (vedit, Windows Chrome reprint, render_assert 1pp); daisy_lookup PR text shown to Bo, opening awaits his
+  word; professor email drafted with the two-PRs sentence, sending awaits his final approval.
