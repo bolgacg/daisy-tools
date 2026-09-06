@@ -32,6 +32,7 @@ for (mdl, cond), rows in sorted(runs.items()):
                 "calls": calls, "fallback": fb,
                 "sec": sum(r.get("seconds", 0) for r in vals) / n,
                 "ptok": sum(((r.get("usage") or {}).get("prompt_tokens", 0)) for r in vals) / n,
+                "otok": sum(((r.get("usage") or {}).get("completion_tokens", 0)) for r in vals) / n,
                 "by_type": {t: (sum(v) / len(v), len(v)) for t, v in by.items()}})
 
 # ceilings
